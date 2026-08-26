@@ -7,6 +7,7 @@ mod checked;
 mod euclid;
 mod mul_add;
 mod overflowing;
+mod sign;
 mod wrapping;
 
 pub use bytes::*;
@@ -14,4 +15,5 @@ pub use checked::*;
 pub use euclid::*;
 pub use mul_add::*;
 pub use overflowing::*;
+pub use sign::*;
 pub use wrapping::*;

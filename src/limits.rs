@@ -18,6 +18,9 @@ pub trait MaxExtended {
     const MAX_EXTENDED: Self;
 }
 
+pub trait Limits: MinFinite + MaxFinite + MinExtended + MaxExtended {}
+impl<T: MinFinite + MaxFinite + MinExtended + MaxExtended> Limits for T {}
+
 macro_rules! impl_limits_traits_for_ints {
     ($($ty:ty),*) => {
         $(

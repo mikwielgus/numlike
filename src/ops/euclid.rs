@@ -20,6 +20,9 @@ pub trait DivRemEuclid<Rhs: ?Sized = Self> {
     fn div_rem_euclid(self, other: Rhs) -> (Self::Output, Self::Output);
 }
 
+pub trait Euclid: DivEuclid + RemEuclid + DivRemEuclid {}
+impl<T: DivEuclid + RemEuclid + DivRemEuclid> Euclid for T {}
+
 pub trait CheckedDivEuclid<Rhs: ?Sized = Self> {
     type Output;
 
@@ -37,6 +40,9 @@ pub trait CheckedDivRemEuclid<Rhs: ?Sized = Self> {
 
     fn checked_div_rem_euclid(self, other: Rhs) -> Option<(Self::Output, Self::Output)>;
 }
+
+pub trait CheckedEuclid: CheckedDivEuclid + CheckedRemEuclid + CheckedDivRemEuclid {}
+impl<T: CheckedDivEuclid + CheckedRemEuclid + CheckedDivRemEuclid> CheckedEuclid for T {}
 
 macro_rules! impl_euclid_traits_for_ints {
     ($($ty:ty),*) => {

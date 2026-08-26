@@ -7,6 +7,7 @@ use std::cmp::Ordering;
 pub trait NanPartialEq<Rhs: ?Sized = Self> {
     fn eq(&self, other: &Rhs) -> bool;
 
+    #[inline]
     fn ne(&self, other: &Rhs) -> bool {
         !self.eq(other)
     }
