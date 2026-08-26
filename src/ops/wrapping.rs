@@ -26,6 +26,23 @@ pub trait WrappingNeg {
     fn wrapping_neg(self) -> Self::Output;
 }
 
+pub trait WrappingRingOps<Rhs: ?Sized = Self>:
+    WrappingAdd<Rhs, Output = Self>
+    + WrappingSub<Rhs, Output = Self>
+    + WrappingMul<Rhs, Output = Self>
+    + WrappingNeg<Output = Self>
+{
+}
+impl<
+    Rhs,
+    T: WrappingAdd<Rhs, Output = Self>
+        + WrappingSub<Rhs, Output = Self>
+        + WrappingMul<Rhs, Output = Self>
+        + WrappingNeg<Output = Self>,
+> WrappingRingOps<Rhs> for T
+{
+}
+
 pub trait WrappingShl {
     type Output;
 

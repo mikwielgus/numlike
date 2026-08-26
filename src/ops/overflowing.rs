@@ -20,6 +20,27 @@ pub trait OverflowingMul<Rhs: ?Sized = Self> {
     fn overflowing_mul(self, other: Rhs) -> (Self::Output, bool);
 }
 
+pub trait OverflowingNeg {
+    type Output;
+
+    fn overflowing_neg(self) -> (Self::Output, bool);
+}
+
+pub trait OverflowingRingOps<Rhs: ?Sized = Self>:
+    OverflowingAdd<Rhs, Output = Self>
+    + OverflowingSub<Rhs, Output = Self>
+    + OverflowingMul<Rhs, Output = Self>
+{
+}
+impl<
+    Rhs,
+    T: OverflowingAdd<Rhs, Output = Self>
+        + OverflowingSub<Rhs, Output = Self>
+        + OverflowingMul<Rhs, Output = Self>,
+> OverflowingRingOps<Rhs> for T
+{
+}
+
 macro_rules! impl_overflowing_traits_for_ints {
     ($($ty:ty),*) => {
         $(
@@ -47,6 +68,15 @@ macro_rules! impl_overflowing_traits_for_ints {
                 #[inline]
                 fn overflowing_mul(self, other: $ty) -> (Self::Output, bool) {
                     <$ty>::overflowing_mul(self, other)
+                }
+            }
+
+            impl OverflowingNeg for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_neg(self) -> (Self::Output, bool) {
+                    <$ty>::overflowing_neg(self)
                 }
             }
         )*
