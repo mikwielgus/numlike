@@ -2,46 +2,46 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-pub trait DivEuclid<Rhs: ?Sized = Self> {
+pub trait DivEuclid<Rhs = Self> {
     type Output;
 
     fn div_euclid(self, other: Rhs) -> Self::Output;
 }
 
-pub trait RemEuclid<Rhs: ?Sized = Self> {
+pub trait RemEuclid<Rhs = Self> {
     type Output;
 
     fn rem_euclid(self, other: Rhs) -> Self::Output;
 }
 
-pub trait DivRemEuclid<Rhs: ?Sized = Self> {
+pub trait DivRemEuclid<Rhs = Self> {
     type Output;
 
     fn div_rem_euclid(self, other: Rhs) -> (Self::Output, Self::Output);
 }
 
-pub trait Euclid: DivEuclid + RemEuclid + DivRemEuclid {}
+pub trait Euclid: Sized + DivEuclid + RemEuclid + DivRemEuclid {}
 impl<T: DivEuclid + RemEuclid + DivRemEuclid> Euclid for T {}
 
-pub trait CheckedDivEuclid<Rhs: ?Sized = Self> {
+pub trait CheckedDivEuclid<Rhs = Self> {
     type Output;
 
     fn checked_div_euclid(self, other: Rhs) -> Option<Self::Output>;
 }
 
-pub trait CheckedRemEuclid<Rhs: ?Sized = Self> {
+pub trait CheckedRemEuclid<Rhs = Self> {
     type Output;
 
     fn checked_rem_euclid(self, other: Rhs) -> Option<Self::Output>;
 }
 
-pub trait CheckedDivRemEuclid<Rhs: ?Sized = Self> {
+pub trait CheckedDivRemEuclid<Rhs = Self> {
     type Output;
 
     fn checked_div_rem_euclid(self, other: Rhs) -> Option<(Self::Output, Self::Output)>;
 }
 
-pub trait CheckedEuclid: CheckedDivEuclid + CheckedRemEuclid + CheckedDivRemEuclid {}
+pub trait CheckedEuclid: Sized + CheckedDivEuclid + CheckedRemEuclid + CheckedDivRemEuclid {}
 impl<T: CheckedDivEuclid + CheckedRemEuclid + CheckedDivRemEuclid> CheckedEuclid for T {}
 
 macro_rules! impl_euclid_traits_for_ints {

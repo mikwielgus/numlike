@@ -2,19 +2,19 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-pub trait OverflowingAdd<Rhs: ?Sized = Self> {
+pub trait OverflowingAdd<Rhs = Self> {
     type Output;
 
     fn overflowing_add(self, other: Rhs) -> (Self::Output, bool);
 }
 
-pub trait OverflowingSub<Rhs: ?Sized = Self> {
+pub trait OverflowingSub<Rhs = Self> {
     type Output;
 
     fn overflowing_sub(self, other: Rhs) -> (Self::Output, bool);
 }
 
-pub trait OverflowingMul<Rhs: ?Sized = Self> {
+pub trait OverflowingMul<Rhs = Self> {
     type Output;
 
     fn overflowing_mul(self, other: Rhs) -> (Self::Output, bool);
@@ -26,7 +26,7 @@ pub trait OverflowingNeg {
     fn overflowing_neg(self) -> (Self::Output, bool);
 }
 
-pub trait OverflowingRingOps<Rhs: ?Sized = Self>:
+pub trait OverflowingRingOps<Rhs = Self>:
     OverflowingAdd<Rhs, Output = Self>
     + OverflowingSub<Rhs, Output = Self>
     + OverflowingMul<Rhs, Output = Self>

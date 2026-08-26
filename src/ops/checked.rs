@@ -2,25 +2,25 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-pub trait CheckedAdd<Rhs: ?Sized = Self> {
+pub trait CheckedAdd<Rhs = Self> {
     type Output;
 
     fn checked_add(self, other: Rhs) -> Option<Self::Output>;
 }
 
-pub trait CheckedSub<Rhs: ?Sized = Self> {
+pub trait CheckedSub<Rhs = Self> {
     type Output;
 
     fn checked_sub(self, other: Rhs) -> Option<Self::Output>;
 }
 
-pub trait CheckedMul<Rhs: ?Sized = Self> {
+pub trait CheckedMul<Rhs = Self> {
     type Output;
 
     fn checked_mul(self, other: Rhs) -> Option<Self::Output>;
 }
 
-pub trait CheckedDiv<Rhs: ?Sized = Self> {
+pub trait CheckedDiv<Rhs = Self> {
     type Output;
 
     fn checked_div(self, other: Rhs) -> Option<Self::Output>;
@@ -32,7 +32,7 @@ pub trait CheckedNeg {
     fn checked_neg(self) -> Option<Self::Output>;
 }
 
-pub trait CheckedRingOps<Rhs: ?Sized = Self>:
+pub trait CheckedRingOps<Rhs = Self>:
     CheckedAdd<Rhs, Output = Self>
     + CheckedSub<Rhs, Output = Self>
     + CheckedMul<Rhs, Output = Self>
@@ -49,7 +49,7 @@ impl<
 {
 }
 
-pub trait CheckedFieldOps<Rhs: ?Sized = Self>:
+pub trait CheckedFieldOps<Rhs = Self>:
     CheckedAdd<Rhs, Output = Self>
     + CheckedSub<Rhs, Output = Self>
     + CheckedMul<Rhs, Output = Self>
@@ -68,7 +68,7 @@ impl<
 {
 }
 
-pub trait CheckedRem<Rhs: ?Sized = Self> {
+pub trait CheckedRem<Rhs = Self> {
     type Output;
 
     fn checked_rem(self, other: Rhs) -> Option<Self::Output>;
