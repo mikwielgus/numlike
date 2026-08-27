@@ -16,12 +16,16 @@ edition = "2024"
 
 [features]
 default = ["std"]
-## Disable for `no_std` compatibility. Required for power, fused multiply-add,
-## and Euclidean division on floats.
+
+## Disable for `no_std` compatibility.
 std = []
+
+## Use `libm` to implement some operations if `std` is disabled.
+libm = ["dep:libm"]
 
 [dependencies]
 document-features = { version = "0.2", optional = true }
+libm = { version = "0.2", optional = true }
 
 # Enable all feature flags for docs.rs and use scraped examples.
 [package.metadata.docs.rs]
