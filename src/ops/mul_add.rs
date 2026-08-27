@@ -68,6 +68,9 @@ macro_rules! impl_std_mul_add_for_floats {
     };
 }
 
+#[cfg(feature = "std")]
+impl_std_mul_add_for_floats!(f32, f64);
+
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 macro_rules! impl_libm_mul_add_for_float {
     ($ty:ty, $fma:path) => {
@@ -93,9 +96,37 @@ macro_rules! impl_libm_mul_add_for_float {
     };
 }
 
-#[cfg(feature = "std")]
-impl_std_mul_add_for_floats!(f32, f64);
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 impl_libm_mul_add_for_float!(f32, libm::fmaf);
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 impl_libm_mul_add_for_float!(f64, libm::fma);
+
+#[cfg(all(not(feature = "std"), not(feature = "libm")))]
+macro_rules! impl_unfused_mul_add_for_floats {
+    ($($ty:ty),*) => {
+        $(
+            impl MulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn mul_add(self, a: $ty, b: $ty) -> Self::Output {
+                    (self * a) + b
+                }
+            }
+
+            impl CheckedMulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_mul_add(self, a: $ty, b: $ty) -> Option<Self::Output> {
+                    let result = (self * a) + b;
+
+                    result.is_finite().then_some(result)
+                }
+            }
+        )*
+    };
+}
+
+#[cfg(all(not(feature = "std"), not(feature = "libm")))]
+impl_unfused_mul_add_for_floats!(f32, f64);
