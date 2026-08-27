@@ -22,3 +22,8 @@ std = []
 
 [dependencies]
 document-features = { version = "0.2", optional = true }
+
+# Enable all feature flags for docs.rs and use scraped examples.
+[package.metadata.docs.rs]
+cargo-args = ["--all-features", "-Zunstable-options", "-Zrustdoc-scrape-examples"]
+rustdoc-args = ["--cfg", "docsrs"]
