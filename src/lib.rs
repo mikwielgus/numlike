@@ -4,7 +4,9 @@
 
 #![doc(html_root_url = "https://docs.rs/undoredo")]
 #![doc = include_str!("../README.md")]
-// TODO: Feature flags documentation.
+#![cfg_attr(docsrs, doc = "\n## Feature flags\n")]
+#![cfg_attr(docsrs, doc = document_features::document_features!())]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![forbid(unsafe_code)]
 #![no_std]
 
