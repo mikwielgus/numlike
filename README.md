@@ -3,10 +3,10 @@
 Numeric traits for generic mathematics. Less restrictive alternative to
 [`num-traits`](https://docs.rs/num-traits/latest/num_traits/).
 
-## Why `numlike` and not `num-traits`
+## Why `numlike` and not `num-traits`?
 
 We developed `numlike` because we disagree with many of design decisions in
-`num-traits`:
+the venerable `num-traits` crate:
 
 - `num-traits`'s
   [`Zero`](https://docs.rs/num-traits/latest/num_traits/identities/trait.Zero.html)
@@ -16,8 +16,8 @@ We developed `numlike` because we disagree with many of design decisions in
   implemented. This makes it impossible to distinguish a *0* for
   algebraic structures that don't implement addition (e.g. [absorption
   monoid](https://ncatlab.org/nlab/show/absorption+monoid), aka. *monoid
-  with zero*), and *1* when there is no multiplication (e.g. because naive
-  implementation for all elements would be inefficient).
+  with zero*), and likewise *1* when there is no multiplication (e.g. because a
+  naive implementation of multiplication for all elements would be inefficient).
 
   - `num-traits` also requires `Output = Self` for `Add` and `Mul`, making it
     impossible to use `Zero` and `One` for statically-typed unit of measurement
@@ -26,17 +26,20 @@ We developed `numlike` because we disagree with many of design decisions in
     - `numlike` does not have these problems because it does not have any
       supertraits for its `Zero` and `One` traits.
 
-  - Moreover, `num-traits`'s Zero` and `One` do not provide `ZERO` and `ONE`
+  - Moreover, `num-traits`'s `Zero` and `One` do not provide `ZERO` and `ONE`
     associated constants, but instead return them from `::zero()` and `::one()`
     functions. These constants were only later added through new separate
     traits, `ConstZero` and `ConstOne`, presumably to avoid breaking changes.
+
+    - `numlike`'s `Zero` and `One` provide `ZERO` and `ONE` associated
+      constants.
 
 - `num-traits`'s
   [`Bounded`](https://docs.rs/num-traits/latest/num_traits/bounds/trait.Bounded.html)
   trait only returns **finite** minimum and maximum values. This makes no
   difference for integers, but for floats e.g. `.max_value()` returns
   [`f64::MAX`](https://doc.rust-lang.org/std/primitive.f64.html#associatedconstant.MAX),
-  which is actually the largest finite number, not the positive infinity --
+  which is actually the largest finite number, not the positive infinity.
   `num-traits` has no way to generically obtain positive or negative infinity as
   min. or max. value.
 
@@ -46,7 +49,7 @@ We developed `numlike` because we disagree with many of design decisions in
     traits that result in negative and positive infinities for floats, and
     [`MinFinite`](https://docs.rs/numlike/latest/numlike/limits/trait.MinFinite.html)/
     [`MaxFinite`](https://docs.rs/numlike/latest/numlike/limits/trait.MaxFinite.html)
-    traits that give only finite values just as `num-traits`'s above `Bounded`
+    traits that give only finite values just as above `num-traits`'s `Bounded`
     does.
 
 - `num-traits` provides `.signum()` and
@@ -73,9 +76,10 @@ We developed `numlike` because we disagree with many of design decisions in
   - `numlike` implements its own versions of these traits for all numeric
     primitives.
 
-- Developers of `num-traits` seem to avoid breaking changes. This provides
-  stability for users, but prevents at least some of the above issues from
-  being solved.
+- Developers of `num-traits` seem to avoid breaking changes, strongly preferring
+  to create new traits instead of making modifications to existing ones. This
+  provides stability for users, but prevents at least some of the above issues
+  from being solved.
 
   - Because of that, we have decided to roll our own library (this crate).
     However, because it's in active development, we are lacking the stability of
@@ -90,6 +94,7 @@ We developed `numlike` because we disagree with many of design decisions in
     [`NanPartialOrd`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanPartialOrd.html),
     [`NanOrd`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanOrd.html).
 
-    - If you want `core::cmp` traits instead, consider using `ordered-float`'s
-      [`OrderedFloat`](https://docs.rs/ordered-float/latest/ordered_float/struct
-      .OrderedFloat.html) type wrapper instead.
+    - If you want `core::cmp` traits instead, consider using `ordered-float`
+      crate's
+      [`OrderedFloat`](https://docs.rs/ordered-float/latest/ordered_float/struct.OrderedFloat.html)
+      float type wrapper instead.
