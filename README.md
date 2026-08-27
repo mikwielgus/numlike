@@ -1,3 +1,14 @@
+<!--
+SPDX-FileCopyrightText: 2026 numlike contributors
+
+SPDX-License-Identifier: MIT OR Apache-2.0
+-->
+
+[![Repository](https://img.shields.io/badge/repository-GitHub-0FBF3E)](https://github.com/mikwielgus/numlike)
+[![Docs](https://docs.rs/numlike/badge.svg)](https://docs.rs/numlike/)
+[![Crates.io](https://img.shields.io/crates/v/numlike.svg)](https://crates.io/crates/numlike)
+[![MIT OR Apache 2.0](https://img.shields.io/crates/l/numlike.svg)](#licence)
+
 # numlike
 
 Numeric traits for generic mathematics. Less restrictive alternative to
