@@ -113,6 +113,7 @@ macro_rules! impl_euclid_traits_for_ints {
     };
 }
 
+#[cfg(feature = "std")]
 macro_rules! impl_euclid_traits_for_floats {
     ($($ty:ty),*) => {
         $(
@@ -188,4 +189,6 @@ macro_rules! impl_euclid_traits_for_floats {
 
 impl_euclid_traits_for_ints!(i8, i16, i32, i64, i128, isize);
 impl_euclid_traits_for_ints!(u8, u16, u32, u64, u128, usize);
+
+#[cfg(feature = "std")]
 impl_euclid_traits_for_floats!(f32, f64);

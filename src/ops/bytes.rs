@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use std::mem::size_of;
+use core::mem::size_of;
 
 pub trait ToBeBytes {
     type Bytes;

@@ -6,8 +6,14 @@ description = "Numeric traits for generic mathematics. Less restrictive alternat
 repository = "https://github.com/mikwielgus/numlike"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
-keywords = ["mathematics", "numerics"]
+keywords = ["mathematics", "numerics", "no_std"]
 categories = ["algorithms", "science", "no-std"]
 edition = "2024"
+
+[features]
+default = ["std"]
+## Disable for `no_std` compatibility. Required for power, fused multiply-add,
+## and Euclidean division on floats.
+std = []
 
 [dependencies]

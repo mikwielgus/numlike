@@ -6,7 +6,10 @@
 #![doc = include_str!("../README.md")]
 // TODO: Feature flags documentation.
 #![forbid(unsafe_code)]
-//#![no_std]
+#![no_std]
+
+#[cfg(feature = "std")]
+extern crate std;
 
 pub mod elem;
 pub mod limits;

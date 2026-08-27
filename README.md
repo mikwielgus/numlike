@@ -3,6 +3,11 @@
 Numeric traits for generic mathematics. Less restrictive alternative to
 [`num-traits`](https://docs.rs/num-traits/latest/num_traits/).
 
+This crate has no `unsafe` code and no mandatory third-party dependencies, and
+is `no_std`-compatible. However, when operating on floats, `pow()`, `mul_add()`,
+`div_euclid()`, `rem_euclid()`, `div_rem_euclid()` functions and their checked
+variants still require `std`.
+
 ## Why `numlike` and not `num-traits`?
 
 We developed `numlike` because we disagree with many of design decisions in
