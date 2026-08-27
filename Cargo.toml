@@ -1,6 +1,6 @@
 [package]
 name = "numlike"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Mikolaj Wielgus <wielgusmikolaj@gmail.com>"]
 description = "Numeric traits for generic mathematics. Less restrictive alternative to num-traits."
 repository = "https://github.com/mikwielgus/numlike"
