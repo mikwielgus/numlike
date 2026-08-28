@@ -10,7 +10,7 @@ pub trait NegAssign {
     fn neg_assign(&mut self);
 }
 
-pub trait AllArithmeticOps<Rhs = Self>: ArithmeticOps<Rhs> + ArithmeticAssignOps<Rhs> {}
+pub trait FullArithmeticOps<Rhs = Self>: ArithmeticOps<Rhs> + ArithmeticAssignOps<Rhs> {}
 
 pub trait ArithmeticOps<Rhs = Self>:
     Add<Rhs, Output = Self>
@@ -84,3 +84,33 @@ impl<Rhs, T: AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + DivAssign<Rhs> +
     FieldAssignOps<Rhs> for T
 {
 }
+
+macro_rules! impl_neg_assign_for_signed_types {
+    ($($ty:ty),*) => {
+        $(
+            impl NegAssign for $ty {
+                #[inline]
+                fn neg_assign(&mut self) {
+                    *self = Neg::neg(*self);
+                }
+            }
+        )*
+    };
+}
+
+/*macro_rules! impl_neg_assign_for_unsigned_types {
+    ($($ty:ty),*) => {
+        $(
+            impl NegAssign for $ty {
+                #[inline]
+                fn neg_assign(&mut self) {
+                    *self = (*self).wrapping_neg();
+                }
+            }
+        )*
+    };
+}*/
+
+impl_neg_assign_for_signed_types!(i8, i16, i32, i64, i128, isize);
+//impl_neg_assign_for_unsigned_types!(u8, u16, u32, u64, u128, usize);
+impl_neg_assign_for_signed_types!(f32, f64);
