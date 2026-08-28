@@ -15,12 +15,25 @@ Numeric traits for generic mathematics. Less restrictive and less conservative
 alternative to [`num-traits`](https://docs.rs/num-traits/latest/num_traits/).
 
 This crate has no `unsafe` code and no mandatory third-party dependencies, and
-is `no_std`-compatible.
+is `no_std`-compatible. Most of `no_std` operations on floating point numbers
+still have a dependency on [`libm`](https://docs.rs/libm/latest/libm/), which is
+gated behind `libm` feature flag.
 
-## Why `numlike` and not `num-traits`?
+## Usage
 
-We developed `numlike` because we disagree with many of design decisions in
-the venerable `num-traits` crate:
+### Adding dependency
+
+```toml
+[dependencies]
+numlike = { version = "0.1.2" }
+```
+
+## Comparison to other libraries
+
+### Why `numlike` and not `num-traits`?
+
+We developed `numlike` primarily because we disagree with many of design
+decisions in the venerable `num-traits` crate.
 
 - `num-traits`'s
   [`Zero`](https://docs.rs/num-traits/latest/num_traits/identities/trait.Zero.html)
@@ -30,14 +43,15 @@ the venerable `num-traits` crate:
   implemented. This makes it impossible to distinguish a *0* for
   algebraic structures that don't implement addition (e.g. [absorption
   magma](https://ncatlab.org/nlab/show/absorption+magma) and [absorption
-  monoid](https://ncatlab.org/nlab/show/absorption+monoid), aka. *monoid with
-  zero*), and likewise *1* when there is no multiplication (e.g. because a naive
+  monoid](https://ncatlab.org/nlab/show/absorption+monoid), aka. *magma
+  with zero* and *monoid with zero*), and likewise *1* when there is no
+  multiplication (e.g. because a naive
   implementation of multiplication for all elements would be inefficient).
   - `num-traits` also requires `Output = Self` for `Add` and `Mul`, making it
     impossible to use `Zero` and `One` for statically-typed unit of measurement
     libraries like [`uom`](https://docs.rs/uom/latest/uom/).
     - `numlike` does not have these problems because it does not have any
-      supertraits for its `Zero` and `One` traits.
+      supertraits for its `Zero` and `One`.
   - Moreover, `num-traits`'s `Zero` and `One` do not provide `ZERO` and `ONE`
     associated constants, but instead return them from `::zero()` and `::one()`
     functions. These constants were only later added through new separate
@@ -48,10 +62,10 @@ the venerable `num-traits` crate:
   [`Bounded`](https://docs.rs/num-traits/latest/num_traits/bounds/trait.Bounded.html)
   trait only returns **finite** minimum and maximum values. This makes no
   difference for integers, but e.g. for floats `.max_value()` returns
-  [`f64::MAX`](https://doc.rust-lang.org/std/primitive.f64.html#associatedconstant.MAX),
-  which is actually the largest finite number, not the positive infinity.
-  `num-traits` has no way to generically obtain positive or negative infinity as
-  min. or max. value.
+  [`f32::MAX`](https://doc.rust-lang.org/std/primitive.f64.html#associatedconstant.MAX),
+  which is actually the largest finite number, equal to `3.40282347e+38`, not
+  the positive infinity. `num-traits` has no interface to generically obtain
+  positive or negative infinity as min. or max. value.
   - `numlike` solves that by providing
     [`MinExtended`](https://docs.rs/numlike/latest/numlike/limits/trait.MinExtended.html)/
     [`MaxExtended`](https://docs.rs/numlike/latest/numlike/limits/trait.MaxExtended.html)
@@ -65,10 +79,11 @@ the venerable `num-traits` crate:
   [`Signed`](https://docs.rs/num-traits/latest/num_traits/sign/trait.Signed.html)
   trait, which excludes unsigned integer types.
   - But having these methods generically for both signed and unsigned types
-    can be useful for finding canonical denominators and reducing fractions, so
-    `numlike` provides these methods through decoupled traits,
+    can be useful for finding canonical denominators, reducing fractions,
+    combining and simplifying radicals, so `numlike` provides these methods
+    through two decoupled traits,
     [`Signum`](https://docs.rs/numlike/latest/numlike/ops/trait.Signum.html)
-    and [`Abs`](https://docs.rs/numlike/latest/numlike/ops/trait.Abs.html)
+    and [`Abs`](https://docs.rs/numlike/latest/numlike/ops/trait.Abs.html),
     implemented for all numeric primitives.
 - `num-traits` does not provide checked mathematical operation traits,
   [`CheckedAdd`](https://docs.rs/num-traits/latest/num_traits/ops/checked/trait.CheckedAdd.html),
@@ -86,7 +101,7 @@ the venerable `num-traits` crate:
   from being solved.
   - Because of that, we have decided to roll our own library (this crate).
     However, because it's in active development, we are lacking the stability of
-    `num-traits`, as we are likely to have many breaking changes.
+    `num-traits` -- we are much more likely to have breaking changes and bugs.
 - Furthermore, `numlike` also has its own features, such as:
   - Equality and order traits that fix `NaN`s to be the highest value in the
     set, even larger than positive infinity, allowing for total order:
