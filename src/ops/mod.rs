@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+mod arith;
 mod bytes;
 mod checked;
-mod core;
 mod euclid;
 mod mul_add;
 mod overflowing;
@@ -12,9 +12,9 @@ mod pow;
 mod sign;
 mod wrapping;
 
+pub use arith::*;
 pub use bytes::*;
 pub use checked::*;
-pub use core::*;
 pub use euclid::*;
 pub use mul_add::*;
 pub use overflowing::*;

@@ -44,9 +44,11 @@ decisions in the venerable `num-traits` crate.
   algebraic structures that don't implement addition (e.g. [absorption
   magma](https://ncatlab.org/nlab/show/absorption+magma) and [absorption
   monoid](https://ncatlab.org/nlab/show/absorption+monoid), aka. *magma
-  with zero* and *monoid with zero*), and likewise *1* when there is no
-  multiplication (e.g. because a naive
-  implementation of multiplication for all elements would be inefficient).
+  with zero* and *monoid with zero*), and likewise *1* when
+  there is no multiplication (e.g. because a naive implementation
+  of multiplication for all elements would be inefficient, or
+  because *1* is understood as the generating element (aka.
+  [generator](https://en.wikipedia.org/wiki/Generator_(mathematics)))).
   - `num-traits` also requires `Output = Self` for `Add` and `Mul`, making it
     impossible to use `Zero` and `One` for statically-typed unit of measurement
     libraries like [`uom`](https://docs.rs/uom/latest/uom/).
