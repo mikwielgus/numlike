@@ -6,7 +6,26 @@ use core::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
 
-pub trait PlainArithOps<Rhs = Self>: ArithOps<Rhs> + ArithmeticAssignOps<Rhs> {}
+pub trait PlainArithOps<Rhs = Self>:
+    ArithOps<Rhs> + ArithAssignOps<Rhs> + FusedArithOps<Rhs> + FusedArithAssignOps<Rhs>
+{
+}
+
+pub trait FusedArithOps<Rhs = Self>: MulAdd<Rhs, Rhs> {}
+impl<Rhs, T: MulAdd<Rhs, Rhs>> FusedArithOps<Rhs> for T {}
+
+pub trait MulAdd<A = Self, B = Self> {
+    type Output;
+
+    fn mul_add(self, a: A, b: B) -> Self::Output;
+}
+
+pub trait FusedArithAssignOps<Rhs = Self>: MulAddAssign<Rhs, Rhs> {}
+impl<Rhs, T: MulAddAssign<Rhs, Rhs>> FusedArithAssignOps<Rhs> for T {}
+
+pub trait MulAddAssign<A = Self, B = Self> {
+    fn mul_add_assign(&mut self, a: A, b: B);
+}
 
 pub trait ArithOps<Rhs = Self>: EuclidOps<Rhs> + FieldOps<Rhs> + Rem<Rhs, Output = Self> {}
 impl<Rhs, T: EuclidOps<Rhs> + FieldOps<Rhs> + Rem<Rhs, Output = Self>> ArithOps<Rhs> for T {}
@@ -40,8 +59,8 @@ pub trait DivRemEuclid<Rhs = Self> {
     fn div_rem_euclid(self, other: Rhs) -> (Self::Output, Self::Output);
 }
 
-pub trait ArithmeticAssignOps<Rhs = Self>: FieldAssignOps<Rhs> + RemAssign<Rhs> {}
-impl<Rhs, T: FieldAssignOps<Rhs> + RemAssign<Rhs>> ArithmeticAssignOps<Rhs> for T {}
+pub trait ArithAssignOps<Rhs = Self>: FieldAssignOps<Rhs> + RemAssign<Rhs> {}
+impl<Rhs, T: FieldAssignOps<Rhs> + RemAssign<Rhs>> ArithAssignOps<Rhs> for T {}
 
 pub trait FieldOps<Rhs = Self>: RingOps<Rhs> + Div<Rhs, Output = Self> {}
 impl<Rhs, T: RingOps<Rhs> + Div<Rhs, Output = Self>> FieldOps<Rhs> for T {}
@@ -150,6 +169,28 @@ macro_rules! impl_div_rem_trait {
     };
 }
 
+macro_rules! impl_mul_add_trait {
+    ($($ty:ty),*) => {
+        $(
+            impl MulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn mul_add(self, a: $ty, b: $ty) -> Self::Output {
+                    (self * a) + b
+                }
+            }
+
+            impl MulAddAssign<$ty, $ty> for $ty {
+                #[inline]
+                fn mul_add_assign(&mut self, a: $ty, b: $ty) {
+                    *self = MulAdd::mul_add(*self, a, b);
+                }
+            }
+        )*
+    };
+}
+
 macro_rules! impl_neg_assign_trait {
     ($($ty:ty),*) => {
         $(
@@ -167,6 +208,7 @@ macro_rules! impl_plain_arith_traits_for_signed_ints {
     ($($ty:ty),*) => {
         impl_div_rem_trait!($($ty),*);
         impl_euclid_traits!($($ty),*);
+        impl_mul_add_trait!($($ty),*);
         impl_neg_assign_trait!($($ty),*);
     };
 }
@@ -175,6 +217,7 @@ macro_rules! impl_plain_arith_traits_for_unsigned_ints {
     ($($ty:ty),*) => {
         impl_div_rem_trait!($($ty),*);
         impl_euclid_traits!($($ty),*);
+        impl_mul_add_trait!($($ty),*);
     };
 }
 
@@ -190,3 +233,81 @@ macro_rules! impl_plain_arith_traits_for_floats {
 impl_plain_arith_traits_for_signed_ints!(i8, i16, i32, i64, i128, isize);
 impl_plain_arith_traits_for_unsigned_ints!(u8, u16, u32, u64, u128, usize);
 impl_plain_arith_traits_for_floats!(f32, f64);
+
+#[cfg(feature = "std")]
+macro_rules! impl_std_mul_add_for_floats {
+    ($($ty:ty),*) => {
+        $(
+            impl MulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn mul_add(self, a: $ty, b: $ty) -> Self::Output {
+                    <$ty>::mul_add(self, a, b)
+                }
+            }
+
+            impl MulAddAssign<$ty, $ty> for $ty {
+                #[inline]
+                fn mul_add_assign(&mut self, a: $ty, b: $ty) {
+                    *self = MulAdd::mul_add(*self, a, b);
+                }
+            }
+        )*
+    };
+}
+
+#[cfg(feature = "std")]
+impl_std_mul_add_for_floats!(f32, f64);
+
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+macro_rules! impl_libm_mul_add_for_float {
+    ($ty:ty, $fma:path) => {
+        impl MulAdd<$ty, $ty> for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn mul_add(self, a: $ty, b: $ty) -> Self::Output {
+                $fma(self, a, b)
+            }
+        }
+
+        impl MulAddAssign<$ty, $ty> for $ty {
+            #[inline]
+            fn mul_add_assign(&mut self, a: $ty, b: $ty) {
+                *self = MulAdd::mul_add(*self, a, b);
+            }
+        }
+    };
+}
+
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_libm_mul_add_for_float!(f32, libm::fmaf);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_libm_mul_add_for_float!(f64, libm::fma);
+
+#[cfg(all(not(feature = "std"), not(feature = "libm")))]
+macro_rules! impl_unfused_mul_add_for_floats {
+    ($($ty:ty),*) => {
+        $(
+            impl MulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn mul_add(self, a: $ty, b: $ty) -> Self::Output {
+                    (self * a) + b
+                }
+            }
+
+            impl MulAddAssign<$ty, $ty> for $ty {
+                #[inline]
+                fn mul_add_assign(&mut self, a: $ty, b: $ty) {
+                    *self = MulAdd::mul_add(*self, a, b);
+                }
+            }
+        )*
+    };
+}
+
+#[cfg(all(not(feature = "std"), not(feature = "libm")))]
+impl_unfused_mul_add_for_floats!(f32, f64);

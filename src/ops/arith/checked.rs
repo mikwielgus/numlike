@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use super::plain::MulAdd;
+
 pub trait CheckedArithmeticOps<Rhs = Self>:
     CheckedFieldOps<Rhs> + CheckedRem<Rhs, Output = Self>
 {
@@ -68,6 +70,12 @@ pub trait CheckedNeg {
     type Output;
 
     fn checked_neg(self) -> Option<Self::Output>;
+}
+
+pub trait CheckedMulAdd<A = Self, B = Self> {
+    type Output;
+
+    fn checked_mul_add(self, a: A, b: B) -> Option<Self::Output>;
 }
 
 pub trait CheckedEuclid: Sized + CheckedDivEuclid + CheckedRemEuclid + CheckedDivRemEuclid {}
@@ -145,6 +153,15 @@ macro_rules! impl_checked_traits_for_ints {
                 #[inline]
                 fn checked_neg(self) -> Option<Self::Output> {
                     <$ty>::checked_neg(self)
+                }
+            }
+
+            impl CheckedMulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_mul_add(self, a: $ty, b: $ty) -> Option<Self::Output> {
+                    <$ty>::checked_mul(self, a).and_then(|product| <$ty>::checked_add(product, b))
                 }
             }
 
@@ -251,6 +268,17 @@ macro_rules! impl_checked_traits_for_floats {
                 #[inline]
                 fn checked_neg(self) -> Option<Self::Output> {
                     let result = -self;
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            impl CheckedMulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_mul_add(self, a: $ty, b: $ty) -> Option<Self::Output> {
+                    let result = MulAdd::mul_add(self, a, b);
 
                     result.is_finite().then_some(result)
                 }
