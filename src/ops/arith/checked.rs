@@ -4,13 +4,74 @@
 
 use super::plain::MulAdd;
 
-pub trait CheckedArithmeticOps<Rhs = Self>:
-    CheckedFieldOps<Rhs> + CheckedRem<Rhs, Output = Self>
+pub trait CheckedPlainArithOps<Rhs = Self>:
+    CheckedArithOps<Rhs> + CheckedFusedArithOps<Rhs>
 {
 }
-impl<Rhs, T: CheckedFieldOps<Rhs> + CheckedRem<Rhs, Output = Self>> CheckedArithmeticOps<Rhs>
-    for T
+
+pub trait CheckedFusedArithOps<Rhs = Self>: CheckedMulAdd<Rhs, Rhs> {}
+impl<Rhs, T: CheckedMulAdd<Rhs, Rhs>> CheckedFusedArithOps<Rhs> for T {}
+
+pub trait CheckedMulAdd<A = Self, B = Self> {
+    type Output;
+
+    fn checked_mul_add(self, a: A, b: B) -> Option<Self::Output>;
+}
+
+pub trait CheckedArithOps<Rhs = Self>:
+    CheckedEuclidOps<Rhs>
+    + CheckedFieldOps<Rhs>
+    + CheckedRem<Rhs, Output = Self>
+    + CheckedDivRem<Rhs, Output = Self>
 {
+}
+impl<
+    Rhs,
+    T: CheckedEuclidOps<Rhs>
+        + CheckedFieldOps<Rhs>
+        + CheckedRem<Rhs, Output = Self>
+        + CheckedDivRem<Rhs, Output = Self>,
+> CheckedArithOps<Rhs> for T
+{
+}
+
+pub trait CheckedRem<Rhs = Self> {
+    type Output;
+
+    fn checked_rem(self, other: Rhs) -> Option<Self::Output>;
+}
+
+pub trait CheckedDivRem<Rhs> {
+    type Output;
+
+    fn checked_div_rem(self, other: Rhs) -> Option<(Self::Output, Self::Output)>;
+}
+
+pub trait CheckedEuclidOps<Rhs>:
+    CheckedDivEuclid<Rhs> + CheckedRemEuclid<Rhs> + CheckedDivRemEuclid<Rhs>
+{
+}
+impl<Rhs, T: CheckedDivEuclid<Rhs> + CheckedRemEuclid<Rhs> + CheckedDivRemEuclid<Rhs>>
+    CheckedEuclidOps<Rhs> for T
+{
+}
+
+pub trait CheckedDivEuclid<Rhs = Self> {
+    type Output;
+
+    fn checked_div_euclid(self, other: Rhs) -> Option<Self::Output>;
+}
+
+pub trait CheckedRemEuclid<Rhs = Self> {
+    type Output;
+
+    fn checked_rem_euclid(self, other: Rhs) -> Option<Self::Output>;
+}
+
+pub trait CheckedDivRemEuclid<Rhs = Self> {
+    type Output;
+
+    fn checked_div_rem_euclid(self, other: Rhs) -> Option<(Self::Output, Self::Output)>;
 }
 
 pub trait CheckedFieldOps<Rhs = Self>:
@@ -18,6 +79,12 @@ pub trait CheckedFieldOps<Rhs = Self>:
 {
 }
 impl<Rhs, T: CheckedRingOps<Rhs> + CheckedDiv<Rhs, Output = Self>> CheckedFieldOps<Rhs> for T {}
+
+pub trait CheckedDiv<Rhs = Self> {
+    type Output;
+
+    fn checked_div(self, other: Rhs) -> Option<Self::Output>;
+}
 
 pub trait CheckedRingOps<Rhs = Self>:
     CheckedAdd<Rhs, Output = Self>
@@ -54,52 +121,13 @@ pub trait CheckedMul<Rhs = Self> {
     fn checked_mul(self, other: Rhs) -> Option<Self::Output>;
 }
 
-pub trait CheckedDiv<Rhs = Self> {
-    type Output;
-
-    fn checked_div(self, other: Rhs) -> Option<Self::Output>;
-}
-
-pub trait CheckedRem<Rhs = Self> {
-    type Output;
-
-    fn checked_rem(self, other: Rhs) -> Option<Self::Output>;
-}
-
 pub trait CheckedNeg {
     type Output;
 
     fn checked_neg(self) -> Option<Self::Output>;
 }
 
-pub trait CheckedMulAdd<A = Self, B = Self> {
-    type Output;
-
-    fn checked_mul_add(self, a: A, b: B) -> Option<Self::Output>;
-}
-
-pub trait CheckedEuclid: Sized + CheckedDivEuclid + CheckedRemEuclid + CheckedDivRemEuclid {}
-impl<T: CheckedDivEuclid + CheckedRemEuclid + CheckedDivRemEuclid> CheckedEuclid for T {}
-
-pub trait CheckedDivEuclid<Rhs = Self> {
-    type Output;
-
-    fn checked_div_euclid(self, other: Rhs) -> Option<Self::Output>;
-}
-
-pub trait CheckedRemEuclid<Rhs = Self> {
-    type Output;
-
-    fn checked_rem_euclid(self, other: Rhs) -> Option<Self::Output>;
-}
-
-pub trait CheckedDivRemEuclid<Rhs = Self> {
-    type Output;
-
-    fn checked_div_rem_euclid(self, other: Rhs) -> Option<(Self::Output, Self::Output)>;
-}
-
-macro_rules! impl_checked_traits_for_ints {
+macro_rules! impl_checked_ring_field_traits_for_ints {
     ($($ty:ty),*) => {
         $(
             impl CheckedAdd<$ty> for $ty {
@@ -155,16 +183,13 @@ macro_rules! impl_checked_traits_for_ints {
                     <$ty>::checked_neg(self)
                 }
             }
+        )*
+    };
+}
 
-            impl CheckedMulAdd<$ty, $ty> for $ty {
-                type Output = $ty;
-
-                #[inline]
-                fn checked_mul_add(self, a: $ty, b: $ty) -> Option<Self::Output> {
-                    <$ty>::checked_mul(self, a).and_then(|product| <$ty>::checked_add(product, b))
-                }
-            }
-
+macro_rules! impl_checked_euclid_traits {
+    ($($ty:ty),*) => {
+        $(
             impl CheckedDivEuclid<$ty> for $ty {
                 type Output = $ty;
 
@@ -201,10 +226,55 @@ macro_rules! impl_checked_traits_for_ints {
     };
 }
 
-impl_checked_traits_for_ints!(i8, i16, i32, i64, i128, isize);
-impl_checked_traits_for_ints!(u8, u16, u32, u64, u128, usize);
+macro_rules! impl_checked_div_rem_trait {
+    ($($ty:ty),*) => {
+        $(
+            impl CheckedDivRem<$ty> for $ty {
+                type Output = $ty;
 
-macro_rules! impl_checked_traits_for_floats {
+                #[inline]
+                fn checked_div_rem(self, other: $ty) -> Option<(Self::Output, Self::Output)> {
+                    Some((<$ty>::checked_div(self, other)?, <$ty>::checked_rem(self, other)?))
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_checked_mul_add_trait {
+    ($($ty:ty),*) => {
+        $(
+            impl CheckedMulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_mul_add(self, a: $ty, b: $ty) -> Option<Self::Output> {
+                    <$ty>::checked_mul(self, a).and_then(|product| <$ty>::checked_add(product, b))
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_checked_arith_traits_for_signed_ints {
+    ($($ty:ty),*) => {
+        impl_checked_ring_field_traits_for_ints!($($ty),*);
+        impl_checked_div_rem_trait!($($ty),*);
+        impl_checked_euclid_traits!($($ty),*);
+        impl_checked_mul_add_trait!($($ty),*);
+    };
+}
+
+macro_rules! impl_checked_arith_traits_for_unsigned_ints {
+    ($($ty:ty),*) => {
+        impl_checked_ring_field_traits_for_ints!($($ty),*);
+        impl_checked_div_rem_trait!($($ty),*);
+        impl_checked_euclid_traits!($($ty),*);
+        impl_checked_mul_add_trait!($($ty),*);
+    };
+}
+
+macro_rules! impl_checked_ring_field_traits_for_floats {
     ($($ty:ty),*) => {
         $(
             impl CheckedAdd<$ty> for $ty {
@@ -272,19 +342,32 @@ macro_rules! impl_checked_traits_for_floats {
                     result.is_finite().then_some(result)
                 }
             }
+        )*
+    };
+}
 
-            impl CheckedMulAdd<$ty, $ty> for $ty {
+macro_rules! impl_checked_div_rem_trait_for_floats {
+    ($($ty:ty),*) => {
+        $(
+            impl CheckedDivRem<$ty> for $ty {
                 type Output = $ty;
 
                 #[inline]
-                fn checked_mul_add(self, a: $ty, b: $ty) -> Option<Self::Output> {
-                    let result = MulAdd::mul_add(self, a, b);
+                fn checked_div_rem(self, other: $ty) -> Option<(Self::Output, Self::Output)> {
+                    let div = self / other;
+                    let rem = self % other;
 
-                    result.is_finite().then_some(result)
+                    (div.is_finite() && rem.is_finite()).then_some((div, rem))
                 }
             }
+        )*
+    };
+}
 
-            #[cfg(feature = "std")]
+#[cfg(feature = "std")]
+macro_rules! impl_checked_euclid_traits_for_floats {
+    ($($ty:ty),*) => {
+        $(
             impl CheckedDivEuclid<$ty> for $ty {
                 type Output = $ty;
 
@@ -296,7 +379,6 @@ macro_rules! impl_checked_traits_for_floats {
                 }
             }
 
-            #[cfg(feature = "std")]
             impl CheckedRemEuclid<$ty> for $ty {
                 type Output = $ty;
 
@@ -308,7 +390,6 @@ macro_rules! impl_checked_traits_for_floats {
                 }
             }
 
-            #[cfg(feature = "std")]
             impl CheckedDivRemEuclid<$ty> for $ty {
                 type Output = $ty;
 
@@ -327,4 +408,34 @@ macro_rules! impl_checked_traits_for_floats {
     };
 }
 
-impl_checked_traits_for_floats!(f32, f64);
+macro_rules! impl_checked_mul_add_trait_for_floats {
+    ($($ty:ty),*) => {
+        $(
+            impl CheckedMulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_mul_add(self, a: $ty, b: $ty) -> Option<Self::Output> {
+                    let result = MulAdd::mul_add(self, a, b);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_checked_arith_traits_for_floats {
+    ($($ty:ty),*) => {
+        impl_checked_ring_field_traits_for_floats!($($ty),*);
+        impl_checked_div_rem_trait_for_floats!($($ty),*);
+        #[cfg(feature = "std")]
+        impl_checked_euclid_traits_for_floats!($($ty),*);
+    };
+}
+
+impl_checked_arith_traits_for_signed_ints!(i8, i16, i32, i64, i128, isize);
+impl_checked_arith_traits_for_unsigned_ints!(u8, u16, u32, u64, u128, usize);
+impl_checked_arith_traits_for_floats!(f32, f64);
+
+impl_checked_mul_add_trait_for_floats!(f32, f64);

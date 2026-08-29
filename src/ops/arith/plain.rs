@@ -27,8 +27,20 @@ pub trait MulAddAssign<A = Self, B = Self> {
     fn mul_add_assign(&mut self, a: A, b: B);
 }
 
-pub trait ArithOps<Rhs = Self>: EuclidOps<Rhs> + FieldOps<Rhs> + Rem<Rhs, Output = Self> {}
-impl<Rhs, T: EuclidOps<Rhs> + FieldOps<Rhs> + Rem<Rhs, Output = Self>> ArithOps<Rhs> for T {}
+pub trait ArithOps<Rhs = Self>:
+    EuclidOps<Rhs> + FieldOps<Rhs> + Rem<Rhs, Output = Self> + DivRem<Rhs, Output = Self>
+{
+}
+impl<Rhs, T: EuclidOps<Rhs> + FieldOps<Rhs> + Rem<Rhs, Output = Self> + DivRem<Rhs, Output = Self>>
+    ArithOps<Rhs> for T
+{
+}
+
+pub trait DivRem<Rhs> {
+    type Output;
+
+    fn div_rem(self, other: Rhs) -> (Self::Output, Self::Output);
+}
 
 pub trait EuclidOps<Rhs>: DivEuclid<Rhs> + RemEuclid<Rhs> + DivRemEuclid<Rhs> {}
 impl<Rhs, T: DivEuclid<Rhs> + RemEuclid<Rhs> + DivRemEuclid<Rhs>> EuclidOps<Rhs> for T {}
@@ -67,12 +79,6 @@ impl<Rhs, T: RingOps<Rhs> + Div<Rhs, Output = Self>> FieldOps<Rhs> for T {}
 
 pub trait FieldAssignOps<Rhs = Self>: RingAssignOps<Rhs> + DivAssign<Rhs> {}
 impl<Rhs, T: RingAssignOps<Rhs> + DivAssign<Rhs>> FieldAssignOps<Rhs> for T {}
-
-pub trait DivRem<Rhs> {
-    type Output;
-
-    fn div_rem(self, other: Rhs) -> (Self::Output, Self::Output);
-}
 
 pub trait RingOps<Rhs = Self>:
     Add<Rhs, Output = Self> + Sub<Rhs, Output = Self> + Mul<Rhs, Output = Self> + Neg<Output = Self>
