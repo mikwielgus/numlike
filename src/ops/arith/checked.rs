@@ -74,18 +74,6 @@ pub trait CheckedRem<Rhs = Self> {
     fn checked_rem(self, other: Rhs) -> Option<Self::Output>;
 }
 
-pub trait CheckedShl {
-    type Output;
-
-    fn checked_shl(self, rhs: u32) -> Option<Self::Output>;
-}
-
-pub trait CheckedShr {
-    type Output;
-
-    fn checked_shr(self, rhs: u32) -> Option<Self::Output>;
-}
-
 macro_rules! impl_checked_traits_for_ints {
     ($($ty:ty),*) => {
         $(
@@ -140,24 +128,6 @@ macro_rules! impl_checked_traits_for_ints {
                 #[inline]
                 fn checked_neg(self) -> Option<Self::Output> {
                     <$ty>::checked_neg(self)
-                }
-            }
-
-            impl CheckedShl for $ty {
-                type Output = $ty;
-
-                #[inline]
-                fn checked_shl(self, rhs: u32) -> Option<Self::Output> {
-                    <$ty>::checked_shl(self, rhs)
-                }
-            }
-
-            impl CheckedShr for $ty {
-                type Output = $ty;
-
-                #[inline]
-                fn checked_shr(self, rhs: u32) -> Option<Self::Output> {
-                    <$ty>::checked_shr(self, rhs)
                 }
             }
         )*

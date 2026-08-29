@@ -43,18 +43,6 @@ impl<
 {
 }
 
-pub trait WrappingShl {
-    type Output;
-
-    fn wrapping_shl(self, rhs: u32) -> Self::Output;
-}
-
-pub trait WrappingShr {
-    type Output;
-
-    fn wrapping_shr(self, rhs: u32) -> Self::Output;
-}
-
 macro_rules! impl_wrapping_traits_for_ints {
     ($($ty:ty),*) => {
         $(
@@ -91,24 +79,6 @@ macro_rules! impl_wrapping_traits_for_ints {
                 #[inline]
                 fn wrapping_neg(self) -> Self::Output {
                     <$ty>::wrapping_neg(self)
-                }
-            }
-
-            impl WrappingShl for $ty {
-                type Output = $ty;
-
-                #[inline]
-                fn wrapping_shl(self, rhs: u32) -> Self::Output {
-                    <$ty>::wrapping_shl(self, rhs)
-                }
-            }
-
-            impl WrappingShr for $ty {
-                type Output = $ty;
-
-                #[inline]
-                fn wrapping_shr(self, rhs: u32) -> Self::Output {
-                    <$ty>::wrapping_shr(self, rhs)
                 }
             }
         )*

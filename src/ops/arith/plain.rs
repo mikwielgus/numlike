@@ -37,6 +37,12 @@ pub trait ArithmeticAssignOps<Rhs = Self>:
     AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + DivAssign<Rhs> + NegAssign + RemAssign<Rhs>
 {
 }
+impl<
+    Rhs,
+    T: AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + DivAssign<Rhs> + NegAssign + RemAssign<Rhs>,
+> ArithmeticAssignOps<Rhs> for T
+{
+}
 
 pub trait RingOps<Rhs = Self>:
     Add<Rhs, Output = Self> + Sub<Rhs, Output = Self> + Mul<Rhs, Output = Self> + Neg<Output = Self>
@@ -54,6 +60,10 @@ impl<
 
 pub trait RingAssignOps<Rhs = Self>:
     AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + NegAssign
+{
+}
+impl<Rhs, T: AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + NegAssign> RingAssignOps<Rhs>
+    for T
 {
 }
 
