@@ -39,15 +39,16 @@ decisions in the venerable `num-traits` crate.
   [`Zero`](https://docs.rs/num-traits/latest/num_traits/identities/trait.Zero.html)
   and
   [`One`](https://docs.rs/num-traits/latest/num_traits/identities/trait.One.html)
-  traits respectively require `Add` and `Mul` traits to be
+  traits require `Add` and `Mul` traits, respectively, to be
   implemented. This makes it impossible to distinguish a *0* for
   algebraic structures that don't implement addition (e.g. [absorption
   magma](https://ncatlab.org/nlab/show/absorption+magma) and [absorption
-  monoid](https://ncatlab.org/nlab/show/absorption+monoid), aka. *magma
-  with zero* and *monoid with zero*), and likewise *1* when
-  there is no multiplication (e.g. because a naive implementation
-  of multiplication for all elements would be inefficient, or
-  because *1* is understood as the generating element (aka.
+  monoid](https://ncatlab.org/nlab/show/absorption+monoid), aka.
+  *magma with zero* and *monoid with zero*, where *0* is merely the
+  [absorbing element](https://en.wikipedia.org/wiki/Absorbing_element)),
+  and likewise *1* when there is no multiplication (e.g. because a
+  naive implementation of multiplication for all elements would be
+  inefficient, or because *1* is merely the generating element (aka.
   [generator](https://en.wikipedia.org/wiki/Generator_(mathematics)))).
   - `num-traits` also requires `Output = Self` for `Add` and `Mul`, making it
     impossible to use `Zero` and `One` for statically-typed unit of measurement
@@ -59,7 +60,7 @@ decisions in the venerable `num-traits` crate.
     functions. These constants were only later added through new separate
     traits, `ConstZero` and `ConstOne`, presumably to avoid breaking changes.
     - `numlike`'s `Zero` and `One` provide `ZERO` and `ONE` associated
-      constants.
+      constants directly.
 - `num-traits`'s
   [`Bounded`](https://docs.rs/num-traits/latest/num_traits/bounds/trait.Bounded.html)
   trait only returns **finite** minimum and maximum values. This makes no
@@ -67,7 +68,7 @@ decisions in the venerable `num-traits` crate.
   [`f32::MAX`](https://doc.rust-lang.org/std/primitive.f64.html#associatedconstant.MAX),
   which is actually the largest finite number, equal to `3.40282347e+38`, not
   the positive infinity. `num-traits` has no interface to generically obtain
-  positive or negative infinity as min. or max. value.
+  negative or positive infinity as min. or max. value.
   - `numlike` solves that by providing
     [`MinExtended`](https://docs.rs/numlike/latest/numlike/limits/trait.MinExtended.html)/
     [`MaxExtended`](https://docs.rs/numlike/latest/numlike/limits/trait.MaxExtended.html)

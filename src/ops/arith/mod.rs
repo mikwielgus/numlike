@@ -5,7 +5,9 @@
 mod checked;
 mod overflowing;
 mod plain;
+mod wrapping;
 
 pub use checked::*;
 pub use overflowing::*;
 pub use plain::*;
+pub use wrapping::*;
