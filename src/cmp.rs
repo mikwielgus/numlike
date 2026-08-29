@@ -4,7 +4,7 @@
 
 use core::cmp::Ordering;
 
-pub trait NanPartialEq<Rhs: ?Sized = Self> {
+pub trait NanfixPartialEq<Rhs: ?Sized = Self> {
     fn eq(&self, other: &Rhs) -> bool;
 
     #[inline]
@@ -13,11 +13,11 @@ pub trait NanPartialEq<Rhs: ?Sized = Self> {
     }
 }
 
-pub trait NanEq<Rhs: ?Sized = Self>: NanPartialEq {}
+pub trait NanfixEq<Rhs: ?Sized = Self>: NanfixPartialEq {}
 
 macro_rules! def_cmp_traits {
-    ($partial_ord:ident, $ord:ident, $partial_eq:ident, $eq:ident) => {
-        pub trait $partial_ord<Rhs: ?Sized = Self>: $partial_eq {
+    ($partial_ord:ident, $ord:ident) => {
+        pub trait $partial_ord<Rhs: ?Sized = Self>: NanfixPartialEq {
             fn partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
 
             #[inline]
@@ -41,36 +41,55 @@ macro_rules! def_cmp_traits {
             }
         }
 
-        pub trait $ord<Rhs: ?Sized = Self>: $eq + $partial_ord {
+        pub trait $ord<Rhs: ?Sized = Self>: NanfixEq + $partial_ord {
             fn cmp(&self, other: &Rhs) -> Ordering;
         }
     };
 }
 
-def_cmp_traits!(NanPartialOrd, NanOrd, NanPartialEq, NanEq);
-//def_cmp_traits!(NanMaxPartialOrd, NanMaxOrd, NanPartialEq, NanEq);
-//def_cmp_traits!(NanMinPartialOrd, NanMinOrd, NanPartialEq, NanEq);
+def_cmp_traits!(NanminPartialOrd, NanminOrd);
+def_cmp_traits!(NanmaxPartialOrd, NanmaxOrd);
 
-macro_rules! impl_cmp_traits_for_ords {
+macro_rules! impl_nanfix_eq_traits_for_ords {
     ($($ty:ty),*) => {
         $(
-            impl NanPartialEq<$ty> for $ty {
+            impl NanfixPartialEq<$ty> for $ty {
                 #[inline]
                 fn eq(&self, other: &$ty) -> bool {
                     PartialEq::eq(self, other)
                 }
             }
 
-            impl NanEq<$ty> for $ty {}
+            impl NanfixEq<$ty> for $ty {}
+        )*
+    };
+}
 
-            impl NanPartialOrd<$ty> for $ty {
+macro_rules! impl_nanmin_nanmax_ord_traits_for_ords {
+    ($($ty:ty),*) => {
+        $(
+            impl NanminPartialOrd<$ty> for $ty {
                 #[inline]
                 fn partial_cmp(&self, other: &$ty) -> Option<Ordering> {
                     PartialOrd::partial_cmp(self, other)
                 }
             }
 
-            impl NanOrd<$ty> for $ty {
+            impl NanminOrd<$ty> for $ty {
+                #[inline]
+                fn cmp(&self, other: &$ty) -> Ordering {
+                    Ord::cmp(self, other)
+                }
+            }
+
+            impl NanmaxPartialOrd<$ty> for $ty {
+                #[inline]
+                fn partial_cmp(&self, other: &$ty) -> Option<Ordering> {
+                    PartialOrd::partial_cmp(self, other)
+                }
+            }
+
+            impl NanmaxOrd<$ty> for $ty {
                 #[inline]
                 fn cmp(&self, other: &$ty) -> Ordering {
                     Ord::cmp(self, other)
@@ -80,26 +99,30 @@ macro_rules! impl_cmp_traits_for_ords {
     };
 }
 
-impl_cmp_traits_for_ords!(i8, i16, i32, i64, i128, isize);
-impl_cmp_traits_for_ords!(u8, u16, u32, u64, u128, usize);
-impl_cmp_traits_for_ords!(char, bool, ());
+impl_nanfix_eq_traits_for_ords!(i8, i16, i32, i64, i128, isize);
+impl_nanfix_eq_traits_for_ords!(u8, u16, u32, u64, u128, usize);
+impl_nanfix_eq_traits_for_ords!(char, bool, ());
+
+impl_nanmin_nanmax_ord_traits_for_ords!(i8, i16, i32, i64, i128, isize);
+impl_nanmin_nanmax_ord_traits_for_ords!(u8, u16, u32, u64, u128, usize);
+impl_nanmin_nanmax_ord_traits_for_ords!(char, bool, ());
 
 macro_rules! impl_cmp_traits_for_floats {
     ($($ty:ty),*) => {
         $(
-            impl NanPartialEq<$ty> for $ty {
+            impl NanfixPartialEq<$ty> for $ty {
                 #[inline]
                 fn eq(&self, other: &$ty) -> bool {
                     (self.is_nan() && other.is_nan()) || PartialEq::eq(self, other)
                 }
             }
 
-            impl NanEq<$ty> for $ty {}
+            impl NanfixEq<$ty> for $ty {}
 
-            impl NanPartialOrd<$ty> for $ty {
+            impl NanmaxPartialOrd<$ty> for $ty {
                 #[inline]
                 fn partial_cmp(&self, other: &$ty) -> Option<Ordering> {
-                    Some(NanOrd::cmp(self, other))
+                    Some(NanmaxOrd::cmp(self, other))
                 }
 
                 #[inline]
@@ -108,12 +131,37 @@ macro_rules! impl_cmp_traits_for_floats {
                 }
             }
 
-            impl NanOrd<$ty> for $ty {
+            impl NanmaxOrd<$ty> for $ty {
                 #[inline]
                 fn cmp(&self, other: &$ty) -> Ordering {
-                    if NanPartialOrd::lt(self, other) {
+                    if NanmaxPartialOrd::lt(self, other) {
                         Ordering::Less
-                    } else if NanPartialOrd::gt(other, self) {
+                    } else if NanmaxPartialOrd::gt(other, self) {
+                        Ordering::Greater
+                    } else {
+                        Ordering::Equal
+                    }
+                }
+            }
+
+            impl NanminPartialOrd<$ty> for $ty {
+                #[inline]
+                fn partial_cmp(&self, other: &$ty) -> Option<Ordering> {
+                    Some(NanminOrd::cmp(self, other))
+                }
+
+                #[inline]
+                fn ge(&self, other: &$ty) -> bool {
+                    self.is_nan() | PartialOrd::ge(self, other)
+                }
+            }
+
+            impl NanminOrd<$ty> for $ty {
+                #[inline]
+                fn cmp(&self, other: &$ty) -> Ordering {
+                    if NanminPartialOrd::lt(self, other) {
+                        Ordering::Less
+                    } else if NanminPartialOrd::gt(other, self) {
                         Ordering::Greater
                     } else {
                         Ordering::Equal
