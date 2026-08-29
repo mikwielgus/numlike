@@ -20,6 +20,14 @@ pub trait WrappingMul<Rhs = Self> {
     fn wrapping_mul(self, other: Rhs) -> Self::Output;
 }
 
+pub trait WrappingDiv<Rhs = Self> {
+    type Output;
+
+    fn wrapping_div(self, other: Rhs) -> Self::Output;
+}
+
+// TODO: wrapping rem?
+
 pub trait WrappingNeg {
     type Output;
 
@@ -70,6 +78,15 @@ macro_rules! impl_wrapping_traits_for_ints {
                 #[inline]
                 fn wrapping_mul(self, other: $ty) -> Self::Output {
                     <$ty>::wrapping_mul(self, other)
+                }
+            }
+
+            impl WrappingDiv<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_div(self, other: $ty) -> Self::Output {
+                    <$ty>::wrapping_div(self, other)
                 }
             }
 

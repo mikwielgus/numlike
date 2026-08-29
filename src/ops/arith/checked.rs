@@ -26,17 +26,25 @@ pub trait CheckedDiv<Rhs = Self> {
     fn checked_div(self, other: Rhs) -> Option<Self::Output>;
 }
 
+pub trait CheckedRem<Rhs = Self> {
+    type Output;
+
+    fn checked_rem(self, other: Rhs) -> Option<Self::Output>;
+}
+
 pub trait CheckedNeg {
     type Output;
 
     fn checked_neg(self) -> Option<Self::Output>;
 }
 
-pub trait CheckedRingOps<Rhs = Self>:
+pub trait CheckedArithmeticOps<Rhs = Self>:
     CheckedAdd<Rhs, Output = Self>
     + CheckedSub<Rhs, Output = Self>
     + CheckedMul<Rhs, Output = Self>
-    + CheckedNeg<Output = Self>
+    + CheckedDiv<Rhs, Output = Self>
+    + CheckedRem<Rhs, Output = Self>
+    + CheckedNeg
 {
 }
 impl<
@@ -44,8 +52,10 @@ impl<
     T: CheckedAdd<Rhs, Output = Self>
         + CheckedSub<Rhs, Output = Self>
         + CheckedMul<Rhs, Output = Self>
-        + CheckedNeg<Output = Self>,
-> CheckedRingOps<Rhs> for T
+        + CheckedDiv<Rhs, Output = Self>
+        + CheckedRem<Rhs, Output = Self>
+        + CheckedNeg,
+> CheckedArithmeticOps<Rhs> for T
 {
 }
 
@@ -68,10 +78,21 @@ impl<
 {
 }
 
-pub trait CheckedRem<Rhs = Self> {
-    type Output;
-
-    fn checked_rem(self, other: Rhs) -> Option<Self::Output>;
+pub trait CheckedRingOps<Rhs = Self>:
+    CheckedAdd<Rhs, Output = Self>
+    + CheckedSub<Rhs, Output = Self>
+    + CheckedMul<Rhs, Output = Self>
+    + CheckedNeg<Output = Self>
+{
+}
+impl<
+    Rhs,
+    T: CheckedAdd<Rhs, Output = Self>
+        + CheckedSub<Rhs, Output = Self>
+        + CheckedMul<Rhs, Output = Self>
+        + CheckedNeg<Output = Self>,
+> CheckedRingOps<Rhs> for T
+{
 }
 
 macro_rules! impl_checked_traits_for_ints {
