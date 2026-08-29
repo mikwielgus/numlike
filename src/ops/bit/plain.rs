@@ -11,18 +11,15 @@ pub trait NotAssign {
     fn not_assign(&mut self);
 }
 
-pub trait FullBitwiseOps<Rhs = Self>: BitwiseOps<Rhs> + BitwiseAssignOps<Rhs> {}
+pub trait FullBitOps<Rhs = Self>: BitOps<Rhs> + BitAssignOps<Rhs> {}
 
-pub trait BitwiseOps<Rhs = Self>:
+pub trait BitOps<Rhs = Self>:
     BitAnd<Rhs> + BitOr<Rhs> + BitXor<Rhs> + Not + Shl<Rhs> + Shr<Rhs>
 {
 }
-impl<Rhs, T: BitAnd<Rhs> + BitOr<Rhs> + BitXor<Rhs> + Not + Shl<Rhs> + Shr<Rhs>> BitwiseOps<Rhs>
-    for T
-{
-}
+impl<Rhs, T: BitAnd<Rhs> + BitOr<Rhs> + BitXor<Rhs> + Not + Shl<Rhs> + Shr<Rhs>> BitOps<Rhs> for T {}
 
-pub trait BitwiseAssignOps<Rhs = Self>:
+pub trait BitAssignOps<Rhs = Self>:
     BitAndAssign<Rhs>
     + BitOrAssign<Rhs>
     + BitXorAssign<Rhs>
@@ -39,7 +36,7 @@ impl<
         + NotAssign
         + ShlAssign<Rhs>
         + ShrAssign<Rhs>,
-> BitwiseAssignOps<Rhs> for T
+> BitAssignOps<Rhs> for T
 {
 }
 
