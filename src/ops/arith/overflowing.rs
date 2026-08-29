@@ -2,6 +2,37 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+pub trait OverflowingArithmeticOps<Rhs = Self>: OverflowingFieldOps<Rhs> {
+    // TODO: overflowing rem?
+}
+impl<Rhs, T: OverflowingFieldOps<Rhs>> OverflowingArithmeticOps<Rhs> for T {}
+
+pub trait OverflowingFieldOps<Rhs = Self>:
+    OverflowingRingOps<Rhs> + OverflowingDiv<Rhs, Output = Self>
+{
+}
+impl<Rhs, T: OverflowingRingOps<Rhs> + OverflowingDiv<Rhs, Output = Self>> OverflowingFieldOps<Rhs>
+    for T
+{
+}
+
+pub trait OverflowingRingOps<Rhs = Self>:
+    OverflowingAdd<Rhs, Output = Self>
+    + OverflowingSub<Rhs, Output = Self>
+    + OverflowingMul<Rhs, Output = Self>
+    + OverflowingNeg<Output = Self>
+{
+}
+impl<
+    Rhs,
+    T: OverflowingAdd<Rhs, Output = Self>
+        + OverflowingSub<Rhs, Output = Self>
+        + OverflowingMul<Rhs, Output = Self>
+        + OverflowingNeg<Output = Self>,
+> OverflowingRingOps<Rhs> for T
+{
+}
+
 pub trait OverflowingAdd<Rhs = Self> {
     type Output;
 
@@ -32,61 +63,6 @@ pub trait OverflowingNeg {
     type Output;
 
     fn overflowing_neg(self) -> (Self::Output, bool);
-}
-
-pub trait OverflowingArithmeticOps<Rhs = Self>:
-    OverflowingAdd<Rhs, Output = Self>
-    + OverflowingSub<Rhs, Output = Self>
-    + OverflowingMul<Rhs, Output = Self>
-    + OverflowingDiv<Rhs, Output = Self>
-    //+ OverflowingRem?
-    + OverflowingNeg<Output = Self> {}
-impl<
-    Rhs,
-    T: OverflowingAdd<Rhs, Output = Self>
-        + OverflowingSub<Rhs, Output = Self>
-        + OverflowingMul<Rhs, Output = Self>
-        + OverflowingDiv<Rhs, Output = Self>
-        //+ OverflowingRem?
-        + OverflowingNeg<Output = Self>,
-> OverflowingArithmeticOps<Rhs> for T
-{
-}
-
-pub trait OverflowingFieldOps<Rhs = Self>:
-    OverflowingAdd<Rhs, Output = Self>
-    + OverflowingSub<Rhs, Output = Self>
-    + OverflowingMul<Rhs, Output = Self>
-    + OverflowingDiv<Rhs, Output = Self>
-    + OverflowingNeg<Output = Self>
-{
-}
-impl<
-    Rhs,
-    T: OverflowingAdd<Rhs, Output = Self>
-        + OverflowingSub<Rhs, Output = Self>
-        + OverflowingMul<Rhs, Output = Self>
-        + OverflowingDiv<Rhs, Output = Self>
-        + OverflowingNeg<Output = Self>,
-> OverflowingFieldOps<Rhs> for T
-{
-}
-
-pub trait OverflowingRingOps<Rhs = Self>:
-    OverflowingAdd<Rhs, Output = Self>
-    + OverflowingSub<Rhs, Output = Self>
-    + OverflowingMul<Rhs, Output = Self>
-    + OverflowingNeg<Output = Self>
-{
-}
-impl<
-    Rhs,
-    T: OverflowingAdd<Rhs, Output = Self>
-        + OverflowingSub<Rhs, Output = Self>
-        + OverflowingMul<Rhs, Output = Self>
-        + OverflowingNeg<Output = Self>,
-> OverflowingRingOps<Rhs> for T
-{
 }
 
 macro_rules! impl_overflowing_traits_for_ints {

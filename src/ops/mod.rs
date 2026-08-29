@@ -5,7 +5,6 @@
 mod arith;
 mod bitwise;
 mod bytes;
-mod euclid;
 mod mul_add;
 mod pow;
 mod sign;
@@ -13,7 +12,6 @@ mod sign;
 pub use arith::*;
 pub use bitwise::*;
 pub use bytes::*;
-pub use euclid::*;
 pub use mul_add::*;
 pub use pow::*;
 pub use sign::*;

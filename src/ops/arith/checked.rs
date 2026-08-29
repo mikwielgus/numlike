@@ -2,6 +2,38 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+pub trait CheckedArithmeticOps<Rhs = Self>:
+    CheckedFieldOps<Rhs> + CheckedRem<Rhs, Output = Self>
+{
+}
+impl<Rhs, T: CheckedFieldOps<Rhs> + CheckedRem<Rhs, Output = Self>> CheckedArithmeticOps<Rhs>
+    for T
+{
+}
+
+pub trait CheckedFieldOps<Rhs = Self>:
+    CheckedRingOps<Rhs> + CheckedDiv<Rhs, Output = Self>
+{
+}
+impl<Rhs, T: CheckedRingOps<Rhs> + CheckedDiv<Rhs, Output = Self>> CheckedFieldOps<Rhs> for T {}
+
+pub trait CheckedRingOps<Rhs = Self>:
+    CheckedAdd<Rhs, Output = Self>
+    + CheckedSub<Rhs, Output = Self>
+    + CheckedMul<Rhs, Output = Self>
+    + CheckedNeg<Output = Self>
+{
+}
+impl<
+    Rhs,
+    T: CheckedAdd<Rhs, Output = Self>
+        + CheckedSub<Rhs, Output = Self>
+        + CheckedMul<Rhs, Output = Self>
+        + CheckedNeg<Output = Self>,
+> CheckedRingOps<Rhs> for T
+{
+}
+
 pub trait CheckedAdd<Rhs = Self> {
     type Output;
 
@@ -38,61 +70,25 @@ pub trait CheckedNeg {
     fn checked_neg(self) -> Option<Self::Output>;
 }
 
-pub trait CheckedArithmeticOps<Rhs = Self>:
-    CheckedAdd<Rhs, Output = Self>
-    + CheckedSub<Rhs, Output = Self>
-    + CheckedMul<Rhs, Output = Self>
-    + CheckedDiv<Rhs, Output = Self>
-    + CheckedRem<Rhs, Output = Self>
-    + CheckedNeg
-{
-}
-impl<
-    Rhs,
-    T: CheckedAdd<Rhs, Output = Self>
-        + CheckedSub<Rhs, Output = Self>
-        + CheckedMul<Rhs, Output = Self>
-        + CheckedDiv<Rhs, Output = Self>
-        + CheckedRem<Rhs, Output = Self>
-        + CheckedNeg,
-> CheckedArithmeticOps<Rhs> for T
-{
+pub trait CheckedEuclid: Sized + CheckedDivEuclid + CheckedRemEuclid + CheckedDivRemEuclid {}
+impl<T: CheckedDivEuclid + CheckedRemEuclid + CheckedDivRemEuclid> CheckedEuclid for T {}
+
+pub trait CheckedDivEuclid<Rhs = Self> {
+    type Output;
+
+    fn checked_div_euclid(self, other: Rhs) -> Option<Self::Output>;
 }
 
-pub trait CheckedFieldOps<Rhs = Self>:
-    CheckedAdd<Rhs, Output = Self>
-    + CheckedSub<Rhs, Output = Self>
-    + CheckedMul<Rhs, Output = Self>
-    + CheckedDiv<Rhs, Output = Self>
-    + CheckedNeg<Output = Self>
-{
-}
-impl<
-    Rhs,
-    T: CheckedAdd<Rhs, Output = Self>
-        + CheckedSub<Rhs, Output = Self>
-        + CheckedMul<Rhs, Output = Self>
-        + CheckedDiv<Rhs, Output = Self>
-        + CheckedNeg<Output = Self>,
-> CheckedFieldOps<Rhs> for T
-{
+pub trait CheckedRemEuclid<Rhs = Self> {
+    type Output;
+
+    fn checked_rem_euclid(self, other: Rhs) -> Option<Self::Output>;
 }
 
-pub trait CheckedRingOps<Rhs = Self>:
-    CheckedAdd<Rhs, Output = Self>
-    + CheckedSub<Rhs, Output = Self>
-    + CheckedMul<Rhs, Output = Self>
-    + CheckedNeg<Output = Self>
-{
-}
-impl<
-    Rhs,
-    T: CheckedAdd<Rhs, Output = Self>
-        + CheckedSub<Rhs, Output = Self>
-        + CheckedMul<Rhs, Output = Self>
-        + CheckedNeg<Output = Self>,
-> CheckedRingOps<Rhs> for T
-{
+pub trait CheckedDivRemEuclid<Rhs = Self> {
+    type Output;
+
+    fn checked_div_rem_euclid(self, other: Rhs) -> Option<(Self::Output, Self::Output)>;
 }
 
 macro_rules! impl_checked_traits_for_ints {
@@ -149,6 +145,39 @@ macro_rules! impl_checked_traits_for_ints {
                 #[inline]
                 fn checked_neg(self) -> Option<Self::Output> {
                     <$ty>::checked_neg(self)
+                }
+            }
+
+            impl CheckedDivEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_div_euclid(self, other: $ty) -> Option<Self::Output> {
+                    <$ty>::checked_div_euclid(self, other)
+                }
+            }
+
+            impl CheckedRemEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_rem_euclid(self, other: $ty) -> Option<Self::Output> {
+                    <$ty>::checked_rem_euclid(self, other)
+                }
+            }
+
+            impl CheckedDivRemEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_div_rem_euclid(
+                    self,
+                    other: $ty,
+                ) -> Option<(Self::Output, Self::Output)> {
+                    Some((
+                        <$ty>::checked_div_euclid(self, other)?,
+                        <$ty>::checked_rem_euclid(self, other)?,
+                    ))
                 }
             }
         )*
@@ -224,6 +253,46 @@ macro_rules! impl_checked_traits_for_floats {
                     let result = -self;
 
                     result.is_finite().then_some(result)
+                }
+            }
+
+            #[cfg(feature = "std")]
+            impl CheckedDivEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_div_euclid(self, other: $ty) -> Option<Self::Output> {
+                    let result = <$ty>::div_euclid(self, other);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            #[cfg(feature = "std")]
+            impl CheckedRemEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_rem_euclid(self, other: $ty) -> Option<Self::Output> {
+                    let result = <$ty>::rem_euclid(self, other);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            #[cfg(feature = "std")]
+            impl CheckedDivRemEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_div_rem_euclid(
+                    self,
+                    other: $ty,
+                ) -> Option<(Self::Output, Self::Output)> {
+                    let div = <$ty>::div_euclid(self, other);
+                    let rem = <$ty>::rem_euclid(self, other);
+
+                    (div.is_finite() && rem.is_finite()).then_some((div, rem))
                 }
             }
         )*

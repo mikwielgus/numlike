@@ -2,6 +2,23 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+pub trait WrappingRingOps<Rhs = Self>:
+    WrappingAdd<Rhs, Output = Self>
+    + WrappingSub<Rhs, Output = Self>
+    + WrappingMul<Rhs, Output = Self>
+    + WrappingNeg<Output = Self>
+{
+}
+impl<
+    Rhs,
+    T: WrappingAdd<Rhs, Output = Self>
+        + WrappingSub<Rhs, Output = Self>
+        + WrappingMul<Rhs, Output = Self>
+        + WrappingNeg<Output = Self>,
+> WrappingRingOps<Rhs> for T
+{
+}
+
 pub trait WrappingAdd<Rhs = Self> {
     type Output;
 
@@ -32,23 +49,6 @@ pub trait WrappingNeg {
     type Output;
 
     fn wrapping_neg(self) -> Self::Output;
-}
-
-pub trait WrappingRingOps<Rhs = Self>:
-    WrappingAdd<Rhs, Output = Self>
-    + WrappingSub<Rhs, Output = Self>
-    + WrappingMul<Rhs, Output = Self>
-    + WrappingNeg<Output = Self>
-{
-}
-impl<
-    Rhs,
-    T: WrappingAdd<Rhs, Output = Self>
-        + WrappingSub<Rhs, Output = Self>
-        + WrappingMul<Rhs, Output = Self>
-        + WrappingNeg<Output = Self>,
-> WrappingRingOps<Rhs> for T
-{
 }
 
 macro_rules! impl_wrapping_traits_for_ints {
