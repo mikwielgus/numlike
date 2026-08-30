@@ -11,8 +11,9 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 
 # numlike
 
-Numeric traits for generic mathematics. Less restrictive and less conservative
-alternative to [`num-traits`](https://docs.rs/num-traits/latest/num_traits/).
+Numeric traits for generic mathematics. More fine-grained,
+less restrictive and less conservative alternative to
+[`num-traits`](https://docs.rs/num-traits/latest/num_traits/).
 
 This crate has no `unsafe` code and no mandatory third-party dependencies, and
 is `no_std`-compatible. Most of `no_std` operations on floating point numbers
@@ -45,11 +46,11 @@ decisions in the venerable `num-traits` crate.
   magma](https://ncatlab.org/nlab/show/absorption+magma) and [absorption
   monoid](https://ncatlab.org/nlab/show/absorption+monoid), aka.
   *magma with zero* and *monoid with zero*, where *0* is merely the
-  [absorbing element](https://en.wikipedia.org/wiki/Absorbing_element)),
-  and likewise *1* when there is no multiplication (e.g. because a
-  naive implementation of multiplication for all elements would be
-  inefficient, or because *1* is merely the generating element (aka.
-  [generator](https://en.wikipedia.org/wiki/Generator_(mathematics)))).
+  [absorbing element](https://en.wikipedia.org/wiki/Absorbing_element)).
+  Likewise, *1* can't be distinguished with `num-traits` when there is no
+  multiplication (e.g. because a naive implementation of multiplication for all
+  elements would be inefficient, or because *1* is merely the generating element
+  (aka. [generator](https://en.wikipedia.org/wiki/Generator_(mathematics)))).
   - `num-traits` also requires `Output = Self` for `Add` and `Mul`, making it
     impossible to use `Zero` and `One` for statically-typed unit of measurement
     libraries like [`uom`](https://docs.rs/uom/latest/uom/).
@@ -108,10 +109,12 @@ decisions in the venerable `num-traits` crate.
 - Furthermore, `numlike` also has its own features, such as:
   - Equality and order traits that fix `NaN`s to be the highest value in the
     set, even larger than positive infinity, allowing for total order:
-    [`NanPartialEq`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanPartialEq.html),
-    [`NanEq`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanEq.html),
-    [`NanPartialOrd`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanPartialOrd.html),
-    [`NanOrd`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanOrd.html).
+    [`NanfixPartialEq`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanfixPartialEq.html),
+    [`NanfixEq`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanfixEq.html),
+    [`NanmaxPartialOrd`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanmaxPartialOrd.html),
+    [`NanmaxOrd`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanmaxOrd.html),
+    [`NanminPartialOrd`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanminPartialOrd.html),
+    [`NanminOrd`](https://docs.rs/numlike/latest/numlike/cmp/trait.NanminOrd.html).
     - But if you want `core::cmp` traits instead, consider using `ordered-float`
       crate's
       [`OrderedFloat`](https://docs.rs/ordered-float/latest/ordered_float/struct.OrderedFloat.html)

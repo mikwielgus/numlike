@@ -5,11 +5,13 @@
 mod exp;
 mod hyp;
 mod pow;
+mod round;
 mod sign;
 mod trig;
 
 pub use exp::*;
 pub use hyp::*;
 pub use pow::*;
+pub use round::*;
 pub use sign::*;
 pub use trig::*;
