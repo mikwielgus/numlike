@@ -17,5 +17,6 @@ pub mod elem;
 pub mod limits;
 //pub mod group;
 pub mod cmp;
+pub mod fns;
 pub mod ops;
 //pub mod ring;
