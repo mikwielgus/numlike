@@ -4,6 +4,8 @@
 
 mod pow;
 mod sign;
+mod trig;
 
 pub use pow::*;
 pub use sign::*;
+pub use trig::*;

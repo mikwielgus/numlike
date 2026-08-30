@@ -6,7 +6,7 @@ use core::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
 
-pub trait PlainArithOps<Rhs = Self>:
+pub trait FullArithOps<Rhs = Self>:
     ArithOps<Rhs> + ArithAssignOps<Rhs> + FusedArithOps<Rhs> + FusedArithAssignOps<Rhs>
 {
 }

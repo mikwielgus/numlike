@@ -17,14 +17,14 @@ pub trait Abs {
 pub trait Sign: Signum + Abs {}
 impl<T: Signum + Abs> Sign for T {}
 
-macro_rules! impl_sign_traits_for_ords {
+macro_rules! impl_sign_traits_for_signeds {
     ($($ty:ty),*) => {
         $(
             impl Signum for $ty {
                 type Output = $ty;
 
                 #[inline]
-                fn signum(self) -> Self {
+                fn signum(self) -> Self::Output {
                     <$ty>::signum(self)
                 }
             }
@@ -33,7 +33,7 @@ macro_rules! impl_sign_traits_for_ords {
                 type Output = $ty;
 
                 #[inline]
-                fn abs(self) -> Self {
+                fn abs(self) -> Self::Output {
                     <$ty>::abs(self)
                 }
             }
@@ -41,5 +41,5 @@ macro_rules! impl_sign_traits_for_ords {
     };
 }
 
-impl_sign_traits_for_ords!(i8, i16, i32, i64, i128, isize);
+impl_sign_traits_for_signeds!(i8, i16, i32, i64, i128, isize);
 // TODO: unsigned types, probably.
