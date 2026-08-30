@@ -35,6 +35,45 @@ pub trait Log<Rhs = Self> {
     fn log(self, base: Rhs) -> Self::Output;
 }
 
+pub trait CheckedLogFns<Rhs = Self>:
+    CheckedLn + CheckedLog2 + CheckedLog10 + CheckedLn1p + CheckedLog<Rhs>
+{
+}
+impl<Rhs, T: CheckedLn + CheckedLog2 + CheckedLog10 + CheckedLn1p + CheckedLog<Rhs>>
+    CheckedLogFns<Rhs> for T
+{
+}
+
+pub trait CheckedLn {
+    type Output;
+
+    fn checked_ln(self) -> Option<Self::Output>;
+}
+
+pub trait CheckedLog2 {
+    type Output;
+
+    fn checked_log2(self) -> Option<Self::Output>;
+}
+
+pub trait CheckedLog10 {
+    type Output;
+
+    fn checked_log10(self) -> Option<Self::Output>;
+}
+
+pub trait CheckedLn1p {
+    type Output;
+
+    fn checked_ln_1p(self) -> Option<Self::Output>;
+}
+
+pub trait CheckedLog<Rhs = Self> {
+    type Output;
+
+    fn checked_log(self, base: Rhs) -> Option<Self::Output>;
+}
+
 pub trait Ilog<Rhs = Self> {
     type Output;
 
@@ -116,6 +155,61 @@ macro_rules! impl_log_traits_for_floats {
                 #[inline]
                 fn log(self, base: $ty) -> Self::Output {
                     <$ty>::log(self, base)
+                }
+            }
+
+            impl CheckedLn for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_ln(self) -> Option<Self::Output> {
+                    let result = <$ty>::ln(self);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            impl CheckedLog2 for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_log2(self) -> Option<Self::Output> {
+                    let result = <$ty>::log2(self);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            impl CheckedLog10 for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_log10(self) -> Option<Self::Output> {
+                    let result = <$ty>::log10(self);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            impl CheckedLn1p for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_ln_1p(self) -> Option<Self::Output> {
+                    let result = <$ty>::ln_1p(self);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            impl CheckedLog<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_log(self, base: $ty) -> Option<Self::Output> {
+                    let result = <$ty>::log(self, base);
+
+                    result.is_finite().then_some(result)
                 }
             }
         )*
