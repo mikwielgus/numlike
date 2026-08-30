@@ -2,13 +2,13 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-pub trait Pow<Rhs> {
+pub trait Pow<Rhs = Self> {
     type Output;
 
     fn pow(self, rhs: Rhs) -> Self::Output;
 }
 
-pub trait CheckedPow<Rhs> {
+pub trait CheckedPow<Rhs = Self> {
     type Output;
 
     fn checked_pow(self, rhs: Rhs) -> Option<Self::Output>;
