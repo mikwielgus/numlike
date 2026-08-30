@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use super::round::Floor;
+
 pub trait RootFns: Sqrt + Cbrt {}
 impl<T: Sqrt + Cbrt> RootFns for T {}
 
@@ -55,7 +57,7 @@ macro_rules! impl_root_traits_for_floats {
 
                 #[inline]
                 fn isqrt(self) -> Self::Output {
-                    <$ty>::sqrt(self).floor()
+                    Floor::floor(<$ty>::sqrt(self))
                 }
             }
 
@@ -64,7 +66,7 @@ macro_rules! impl_root_traits_for_floats {
 
                 #[inline]
                 fn checked_isqrt(self) -> Option<Self::Output> {
-                    let result = <$ty>::sqrt(self).floor();
+                    let result = Floor::floor(<$ty>::sqrt(self));
 
                     result.is_finite().then_some(result)
                 }
