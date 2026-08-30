@@ -5,6 +5,7 @@
 mod exp;
 mod hyp;
 mod pow;
+mod root;
 mod round;
 mod sign;
 mod trig;
@@ -12,6 +13,7 @@ mod trig;
 pub use exp::*;
 pub use hyp::*;
 pub use pow::*;
+pub use root::*;
 pub use round::*;
 pub use sign::*;
 pub use trig::*;

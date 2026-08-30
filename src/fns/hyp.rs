@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-pub trait FullHypFns<Rhs = Self>: HypFns + InvHypFns<Rhs> {}
-impl<Rhs, T: HypFns + InvHypFns<Rhs>> FullHypFns<Rhs> for T {}
+/*pub trait FullHypFns<Rhs = Self>: HypFns + InvHypFns<Rhs> {}
+impl<Rhs, T: HypFns + InvHypFns<Rhs>> FullHypFns<Rhs> for T {}*/
 
 pub trait HypFns: Sinh + Cosh + Tanh {}
 impl<T: Sinh + Cosh + Tanh> HypFns for T {}

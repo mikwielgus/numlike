@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-pub trait FullTrigFns<Rhs = Self>: TrigFns + InvTrigFns<Rhs> {}
-impl<Rhs, T: TrigFns + InvTrigFns<Rhs>> FullTrigFns<Rhs> for T {}
+/*pub trait FullTrigFns<Rhs = Self>: TrigFns + InvTrigFns<Rhs> {}
+impl<Rhs, T: TrigFns + InvTrigFns<Rhs>> FullTrigFns<Rhs> for T {}*/
 
 pub trait TrigFns: ClassicalTrigFns + SinCos {}
 impl<T: ClassicalTrigFns + SinCos> TrigFns for T {}
