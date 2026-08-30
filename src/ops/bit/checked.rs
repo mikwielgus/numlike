@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+pub trait CheckedBitOps: CheckedShl + CheckedShr {}
+impl<T: CheckedShl + CheckedShr> CheckedBitOps for T {}
+
 pub trait CheckedShl {
     type Output;
 

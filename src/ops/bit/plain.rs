@@ -7,10 +7,6 @@ use core::ops::{
     ShrAssign,
 };
 
-pub trait NotAssign {
-    fn not_assign(&mut self);
-}
-
 pub trait FullBitOps<Rhs = Self>: BitOps<Rhs> + BitAssignOps<Rhs> {}
 
 pub trait BitOps<Rhs = Self>:
@@ -38,6 +34,10 @@ impl<
         + ShrAssign<Rhs>,
 > BitAssignOps<Rhs> for T
 {
+}
+
+pub trait NotAssign {
+    fn not_assign(&mut self);
 }
 
 macro_rules! impl_not_assign_for_bitwisables {

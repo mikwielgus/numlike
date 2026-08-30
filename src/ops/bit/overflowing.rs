@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+pub trait OverflowingBitOps: OverflowingShl + OverflowingShr {}
+impl<T: OverflowingShl + OverflowingShr> OverflowingBitOps for T {}
+
 pub trait OverflowingShl {
     type Output;
 

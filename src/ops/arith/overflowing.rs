@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-pub trait OverflowingPlainArithOps<Rhs = Self>:
+pub trait FullOverflowingArithOps<Rhs = Self>:
     OverflowingArithOps<Rhs> + OverflowingFusedArithOps<Rhs>
 {
 }
