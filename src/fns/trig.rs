@@ -5,8 +5,17 @@
 pub trait FullTrigFns<Rhs = Self>: TrigFns + InvTrigFns<Rhs> {}
 impl<Rhs, T: TrigFns + InvTrigFns<Rhs>> FullTrigFns<Rhs> for T {}
 
-pub trait TrigFns: Sin + Cos + Tan {}
-impl<T: Sin + Cos + Tan> TrigFns for T {}
+pub trait TrigFns: ClassicalTrigFns + SinCos {}
+impl<T: ClassicalTrigFns + SinCos> TrigFns for T {}
+
+pub trait SinCos {
+    type Output;
+
+    fn sin_cos(self) -> (Self::Output, Self::Output);
+}
+
+pub trait ClassicalTrigFns: Sin + Cos + Tan {}
+impl<T: Sin + Cos + Tan> ClassicalTrigFns for T {}
 
 pub trait Sin {
     type Output;
@@ -59,6 +68,15 @@ pub trait Atan {
 macro_rules! impl_trig_traits_for_floats {
     ($($ty:ty),*) => {
         $(
+            impl SinCos for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn sin_cos(self) -> (Self::Output, Self::Output) {
+                    <$ty>::sin_cos(self)
+                }
+            }
+
             impl Sin for $ty {
                 type Output = $ty;
 

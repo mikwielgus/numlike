@@ -82,7 +82,7 @@ macro_rules! impl_trig_traits_for_floats {
 
                 #[inline]
                 fn asinh(self) -> Self::Output {
-                    <$ty>::asin(self)
+                    <$ty>::asinh(self)
                 }
             }
 
@@ -91,7 +91,7 @@ macro_rules! impl_trig_traits_for_floats {
 
                 #[inline]
                 fn acosh(self) -> Self::Output {
-                    <$ty>::acos(self)
+                    <$ty>::acosh(self)
                 }
             }
 
@@ -100,7 +100,7 @@ macro_rules! impl_trig_traits_for_floats {
 
                 #[inline]
                 fn atanh(self) -> Self::Output {
-                    <$ty>::atan(self)
+                    <$ty>::atanh(self)
                 }
             }
         )*
