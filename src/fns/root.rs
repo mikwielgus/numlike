@@ -49,6 +49,26 @@ macro_rules! impl_root_traits_for_floats {
                     <$ty>::cbrt(self)
                 }
             }
+
+            impl Isqrt for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn isqrt(self) -> Self::Output {
+                    <$ty>::sqrt(self).floor()
+                }
+            }
+
+            impl CheckedIsqrt for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_isqrt(self) -> Option<Self::Output> {
+                    let result = <$ty>::sqrt(self).floor();
+
+                    result.is_finite().then_some(result)
+                }
+            }
         )*
     };
 }
