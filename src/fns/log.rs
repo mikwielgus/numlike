@@ -2,8 +2,14 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-pub trait LogFns<Rhs = Self>: Ln + Log2 + Log10 + Ln1p + Log<Rhs> {}
-impl<Rhs, T: Ln + Log2 + Log10 + Ln1p + Log<Rhs>> LogFns<Rhs> for T {}
+pub trait LogFns<Rhs = Self>: Log<Rhs> + Ln + Log2 + Log10 + Ln1p {}
+impl<Rhs, T: Log<Rhs> + Ln + Log2 + Log10 + Ln1p> LogFns<Rhs> for T {}
+
+pub trait Log<Rhs = Self> {
+    type Output;
+
+    fn log(self, base: Rhs) -> Self::Output;
+}
 
 pub trait Ln {
     type Output;
@@ -29,19 +35,19 @@ pub trait Ln1p {
     fn ln_1p(self) -> Self::Output;
 }
 
-pub trait Log<Rhs = Self> {
-    type Output;
-
-    fn log(self, base: Rhs) -> Self::Output;
-}
-
 pub trait CheckedLogFns<Rhs = Self>:
-    CheckedLn + CheckedLog2 + CheckedLog10 + CheckedLn1p + CheckedLog<Rhs>
+    CheckedLog<Rhs> + CheckedLn + CheckedLog2 + CheckedLog10 + CheckedLn1p
 {
 }
-impl<Rhs, T: CheckedLn + CheckedLog2 + CheckedLog10 + CheckedLn1p + CheckedLog<Rhs>>
+impl<Rhs, T: CheckedLog<Rhs> + CheckedLn + CheckedLog2 + CheckedLog10 + CheckedLn1p>
     CheckedLogFns<Rhs> for T
 {
+}
+
+pub trait CheckedLog<Rhs = Self> {
+    type Output;
+
+    fn checked_log(self, base: Rhs) -> Option<Self::Output>;
 }
 
 pub trait CheckedLn {
@@ -68,11 +74,8 @@ pub trait CheckedLn1p {
     fn checked_ln_1p(self) -> Option<Self::Output>;
 }
 
-pub trait CheckedLog<Rhs = Self> {
-    type Output;
-
-    fn checked_log(self, base: Rhs) -> Option<Self::Output>;
-}
+pub trait IlogFns<Rhs = Self>: Ilog<Rhs> + Ilog2 + Ilog10 {}
+impl<Rhs, T: Ilog<Rhs> + Ilog2 + Ilog10> IlogFns<Rhs> for T {}
 
 pub trait Ilog<Rhs = Self> {
     type Output;
@@ -91,6 +94,9 @@ pub trait Ilog10 {
 
     fn ilog10(self) -> Self::Output;
 }
+
+pub trait CheckedIlogFns<Rhs = Self>: CheckedIlog<Rhs> + CheckedIlog2 + CheckedIlog10 {}
+impl<Rhs, T: CheckedIlog<Rhs> + CheckedIlog2 + CheckedIlog10> CheckedIlogFns<Rhs> for T {}
 
 pub trait CheckedIlog<Rhs = Self> {
     type Output;
