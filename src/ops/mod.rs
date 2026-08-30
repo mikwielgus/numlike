@@ -4,8 +4,6 @@
 
 mod arith;
 mod bit;
-mod bytes;
 
 pub use arith::*;
 pub use bit::*;
-pub use bytes::*;

@@ -13,6 +13,7 @@
 #[cfg(feature = "std")]
 extern crate std;
 
+pub mod bytes;
 pub mod elem;
 pub mod limits;
 //pub mod group;
