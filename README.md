@@ -26,7 +26,7 @@ gated behind `libm` feature flag.
 
 ```toml
 [dependencies]
-numlike = { version = "0.1.3" }
+numlike = { version = "0.1.5" }
 ```
 
 ## Comparison to other libraries
