@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+pub trait SignFns: Signum + Abs {}
+impl<T: Signum + Abs> SignFns for T {}
+
 pub trait Signum {
     type Output;
 
@@ -14,8 +17,11 @@ pub trait Abs {
     fn abs(self) -> Self::Output;
 }
 
-pub trait Sign: Signum + Abs {}
-impl<T: Signum + Abs> Sign for T {}
+pub trait CheckedAbs {
+    type Output;
+
+    fn checked_abs(self) -> Option<Self::Output>;
+}
 
 macro_rules! impl_sign_traits_for_signeds {
     ($($ty:ty),*) => {
@@ -35,6 +41,15 @@ macro_rules! impl_sign_traits_for_signeds {
                 #[inline]
                 fn abs(self) -> Self::Output {
                     <$ty>::abs(self)
+                }
+            }
+
+            impl CheckedAbs for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_abs(self) -> Option<Self::Output> {
+                    <$ty>::checked_abs(self)
                 }
             }
         )*

@@ -19,6 +19,12 @@ pub trait Cbrt {
     fn cbrt(self) -> Self::Output;
 }
 
+pub trait CheckedSqrt {
+    type Output;
+
+    fn checked_sqrt(self) -> Option<Self::Output>;
+}
+
 pub trait Isqrt {
     type Output;
 
@@ -67,6 +73,17 @@ macro_rules! impl_root_traits_for_floats {
                 #[inline]
                 fn checked_isqrt(self) -> Option<Self::Output> {
                     let result = Floor::floor(<$ty>::sqrt(self));
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            impl CheckedSqrt for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_sqrt(self) -> Option<Self::Output> {
+                    let result = <$ty>::sqrt(self);
 
                     result.is_finite().then_some(result)
                 }

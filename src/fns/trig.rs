@@ -35,6 +35,12 @@ pub trait Tan {
     fn tan(self) -> Self::Output;
 }
 
+pub trait CheckedTan {
+    type Output;
+
+    fn checked_tan(self) -> Option<Self::Output>;
+}
+
 pub trait InvTrigFns<Rhs = Self>: ClassicalInvTrigFns<Rhs> + Atan2<Rhs> {}
 impl<Rhs, T: ClassicalInvTrigFns<Rhs> + Atan2<Rhs>> InvTrigFns<Rhs> for T {}
 
@@ -63,6 +69,21 @@ pub trait Atan {
     type Output;
 
     fn atan(self) -> Self::Output;
+}
+
+pub trait CheckedClassicalInvTrigFns<Rhs = Self>: CheckedAsin + CheckedAcos {}
+impl<Rhs, T: CheckedAsin + CheckedAcos> CheckedClassicalInvTrigFns<Rhs> for T {}
+
+pub trait CheckedAsin {
+    type Output;
+
+    fn checked_asin(self) -> Option<Self::Output>;
+}
+
+pub trait CheckedAcos {
+    type Output;
+
+    fn checked_acos(self) -> Option<Self::Output>;
 }
 
 macro_rules! impl_trig_traits_for_floats {
@@ -104,6 +125,17 @@ macro_rules! impl_trig_traits_for_floats {
                 }
             }
 
+            impl CheckedTan for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_tan(self) -> Option<Self::Output> {
+                    let result = <$ty>::tan(self);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
             impl Atan2<$ty> for $ty {
                 type Output = $ty;
 
@@ -137,6 +169,28 @@ macro_rules! impl_trig_traits_for_floats {
                 #[inline]
                 fn atan(self) -> Self::Output {
                     <$ty>::atan(self)
+                }
+            }
+
+            impl CheckedAsin for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_asin(self) -> Option<Self::Output> {
+                    let result = <$ty>::asin(self);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            impl CheckedAcos for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_acos(self) -> Option<Self::Output> {
+                    let result = <$ty>::acos(self);
+
+                    result.is_finite().then_some(result)
                 }
             }
         )*

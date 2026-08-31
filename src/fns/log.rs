@@ -119,6 +119,15 @@ pub trait CheckedIlog10 {
 macro_rules! impl_log_traits_for_floats {
     ($($ty:ty),*) => {
         $(
+            impl Log<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn log(self, base: $ty) -> Self::Output {
+                    <$ty>::log(self, base)
+                }
+            }
+
             impl Ln for $ty {
                 type Output = $ty;
 
@@ -155,12 +164,14 @@ macro_rules! impl_log_traits_for_floats {
                 }
             }
 
-            impl Log<$ty> for $ty {
+            impl CheckedLog<$ty> for $ty {
                 type Output = $ty;
 
                 #[inline]
-                fn log(self, base: $ty) -> Self::Output {
-                    <$ty>::log(self, base)
+                fn checked_log(self, base: $ty) -> Option<Self::Output> {
+                    let result = <$ty>::log(self, base);
+
+                    result.is_finite().then_some(result)
                 }
             }
 
@@ -203,17 +214,6 @@ macro_rules! impl_log_traits_for_floats {
                 #[inline]
                 fn checked_ln_1p(self) -> Option<Self::Output> {
                     let result = <$ty>::ln_1p(self);
-
-                    result.is_finite().then_some(result)
-                }
-            }
-
-            impl CheckedLog<$ty> for $ty {
-                type Output = $ty;
-
-                #[inline]
-                fn checked_log(self, base: $ty) -> Option<Self::Output> {
-                    let result = <$ty>::log(self, base);
 
                     result.is_finite().then_some(result)
                 }

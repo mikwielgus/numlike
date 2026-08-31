@@ -26,6 +26,23 @@ pub trait Tanh {
     fn tanh(self) -> Self::Output;
 }
 
+pub trait CheckedHypFns: CheckedSinh + CheckedCosh {}
+impl<T: CheckedSinh + CheckedCosh> CheckedHypFns for T {}
+
+pub trait CheckedSinh {
+    type Output;
+
+    fn checked_sinh(self) -> Option<Self::Output>;
+}
+
+pub trait CheckedCosh {
+    type Output;
+
+    fn checked_cosh(self) -> Option<Self::Output>;
+}
+
+// No checked `atanh` because it does not have restricted domain.
+
 pub trait InvHypFns<Rhs = Self>: Asinh + Acosh + Atanh {}
 impl<Rhs, T: Asinh + Acosh + Atanh> InvHypFns<Rhs> for T {}
 
@@ -45,6 +62,27 @@ pub trait Atanh {
     type Output;
 
     fn atanh(self) -> Self::Output;
+}
+
+pub trait CheckedInvHypFns<Rhs = Self>: /*CheckedAsinh +*/ CheckedAcosh + CheckedAtanh {}
+impl<Rhs, T: CheckedAcosh + CheckedAtanh> CheckedInvHypFns<Rhs> for T {}
+
+/*pub trait CheckedAsinh {
+    type Output;
+
+    fn checked_asinh(self) -> Option<Self::Output>;
+}*/
+
+pub trait CheckedAcosh {
+    type Output;
+
+    fn checked_acosh(self) -> Option<Self::Output>;
+}
+
+pub trait CheckedAtanh {
+    type Output;
+
+    fn checked_atanh(self) -> Option<Self::Output>;
 }
 
 macro_rules! impl_trig_traits_for_floats {
@@ -77,6 +115,28 @@ macro_rules! impl_trig_traits_for_floats {
                 }
             }
 
+            impl CheckedSinh for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_sinh(self) -> Option<Self::Output> {
+                    let result = <$ty>::sinh(self);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            impl CheckedCosh for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_cosh(self) -> Option<Self::Output> {
+                    let result = <$ty>::cosh(self);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
             impl Asinh for $ty {
                 type Output = $ty;
 
@@ -101,6 +161,39 @@ macro_rules! impl_trig_traits_for_floats {
                 #[inline]
                 fn atanh(self) -> Self::Output {
                     <$ty>::atanh(self)
+                }
+            }
+
+            /*impl CheckedAsinh for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_asinh(self) -> Option<Self::Output> {
+                    let result = <$ty>::asinh(self);
+
+                    result.is_finite().then_some(result)
+                }
+            }*/
+
+            impl CheckedAcosh for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_acosh(self) -> Option<Self::Output> {
+                    let result = <$ty>::acosh(self);
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            impl CheckedAtanh for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_atanh(self) -> Option<Self::Output> {
+                    let result = <$ty>::atanh(self);
+
+                    result.is_finite().then_some(result)
                 }
             }
         )*
