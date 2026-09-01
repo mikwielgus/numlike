@@ -20,6 +20,9 @@ is `no_std`-compatible. Most of `no_std` operations on floating point numbers
 still have a dependency on [`libm`](https://docs.rs/libm/latest/libm/), which is
 gated behind `libm` feature flag.
 
+If you need abstract container traits instead of abstract number traits, check
+out another crate of ours, [`maplike`](https://github.com/mikwielgus/maplike).
+
 ## Usage
 
 ### Adding dependency
@@ -41,19 +44,27 @@ decisions in the venerable `num-traits` crate.
   and
   [`One`](https://docs.rs/num-traits/latest/num_traits/identities/trait.One.html)
   traits require `Add` and `Mul` traits, respectively, to be
-  implemented. This makes it impossible to distinguish a *0* for
-  algebraic structures that don't implement addition (e.g. [absorption
-  magma](https://ncatlab.org/nlab/show/absorption+magma) and [absorption
-  monoid](https://ncatlab.org/nlab/show/absorption+monoid), aka.
-  *magma with zero* and *monoid with zero*, where *0* is merely the
-  [absorbing element](https://en.wikipedia.org/wiki/Absorbing_element)).
-  Likewise, *1* can't be distinguished with `num-traits` when there is no
-  multiplication (e.g. because a naive implementation of multiplication for all
-  elements would be inefficient, or because *1* is merely the generating element
-  (aka. [generator](https://en.wikipedia.org/wiki/Generator_(mathematics)))).
-  - `num-traits` also requires `Output = Self` for `Add` and `Mul`, making it
-    impossible to use `Zero` and `One` for statically-typed unit of measurement
-    libraries like [`uom`](https://docs.rs/uom/latest/uom/).
+  implemented.
+
+  This makes it impossible to distinguish a *0* for algebraic
+  structures that don't implement addition. For example, [absorption
+  magma](https://ncatlab.org/nlab/show/absorption+magma) (magma with zero)
+  and [absorption monoid](https://ncatlab.org/nlab/show/absorption+monoid)
+  (monoid with zero) are usually described without addition,
+  yet still with an element denoted as as *0*, the [absorbing
+  element](https://en.wikipedia.org/wiki/Absorbing_element) (or just
+  *absorber*).
+
+  Likewise, there are reasons to distinguish a *1* when there
+  is no multiplication. For example, a complete multiplication
+  implementation for all elements could be inefficient, or *1* may
+  be supposed to designate merely the generating element (aka. the
+  [*generator*](https://en.wikipedia.org/wiki/Generator_(mathematics)))).
+  - `num-traits` also requires `Output = Self` (closed operation) for `Add` and
+    `Mul`, making it impossible to use `Zero` and `One` for statically-typed
+    unit of measurement libraries like [`uom`](https://docs.rs/uom/latest/uom/),
+    where e.g. multiplying two lengths gives you area, which lies in a different
+    space.
     - `numlike` does not have these problems because it does not have any
       supertraits for its `Zero` and `One`.
   - Moreover, `num-traits`'s `Zero` and `One` do not provide `ZERO` and `ONE`
@@ -65,11 +76,12 @@ decisions in the venerable `num-traits` crate.
 - `num-traits`'s
   [`Bounded`](https://docs.rs/num-traits/latest/num_traits/bounds/trait.Bounded.html)
   trait only returns **finite** minimum and maximum values. This makes no
-  difference for integers, but e.g. for floats `.max_value()` returns
-  [`f32::MAX`](https://doc.rust-lang.org/std/primitive.f64.html#associatedconstant.MAX),
+  difference for integers, but does for floats. For instance, for `f32`,
+  `.max_value()` returns
+  [`f32::MAX`](https://doc.rust-lang.org/std/primitive.f32.html#associatedconstant.MAX),
   which is actually the largest finite number, equal to `3.40282347e+38`, not
   the positive infinity. `num-traits` has no interface to generically obtain
-  negative or positive infinity as min. or max. value.
+  negative or positive infinity as the min. or max. value.
   - `numlike` solves that by providing
     [`MinExtended`](https://docs.rs/numlike/latest/numlike/limits/trait.MinExtended.html)/
     [`MaxExtended`](https://docs.rs/numlike/latest/numlike/limits/trait.MaxExtended.html)
