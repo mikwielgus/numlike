@@ -2,27 +2,39 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-/// Converts a value from one type to another.
+/// Convert a value from one type to another, possibly with lossy approximation.
+///
+/// This trait is analogous to standard library's [`From`], but allows
+/// the conversion to be approximate and thus lossy. It is the inverse of
+/// [`CastInto`].
 ///
 /// Internally, `as` operator is used to convert between Rust primitives. For
 /// non-exact conversion where a non-primitive type are involved, rounding
-/// behavior is left to the implementors, but consistency with `as` is
-/// encouraged.
+/// behavior is left to the implementors, but aiming for consistency with `as`
+/// is highly encouraged.
 pub trait CastFrom<T> {
+    /// Convert to this type from the input type, possibly with lossy
+    /// approximation.
     fn cast_from(value: T) -> Self;
 }
 
-/// Converts a value from one type to another.
+/// Convert a value from one type to another, possibly with lossy approximation.
 ///
-/// Internally, `as` operator is used to convert between Rust primitives. For
-/// non-exact conversion where a non-primitive type are involved, rounding
-/// behavior is left to the implementors, but consistency with `as` is
-/// encouraged.
+/// This trait is analogous to standard library's [`From`], but allows
+/// the conversion to be approximate and thus lossy. It is the inverse of
+/// [`CastFrom`].
 ///
-/// Just as with Rust's standard library's `Into`, It is recommended to not
+/// Internally, the `as` operator is used to convert between Rust primitives.
+/// For non-exact conversion where a non-primitive type are involved, rounding
+/// behavior is left to the implementors, but aiming for consistency with `as`
+/// is highly encouraged.
+///
+/// Analogously to Rust standard library's [`Into`], it is recommended to not
 /// implement this trait directly, as it already has a blanket implementation
-/// for types that implement `CastFrom`.
+/// for types that implement [`CastFrom`].
 pub trait CastInto<T> {
+    /// Convert this type into the (usually inferred) input type, possibly with
+    /// lossy approximation.
     fn cast_into(self) -> T;
 }
 
