@@ -4,39 +4,72 @@
 
 use core::mem::size_of;
 
+/// Returns the memory representation of this value as a byte array in
+/// big-endian (network) byte order.
 pub trait ToBeBytes {
     type Bytes;
 
+    /// Returns the memory representation of this number as a byte array in
+    /// big-endian (network) byte order.
     fn to_be_bytes(self) -> Self::Bytes;
 }
 
+/// Returns the memory representation of this value as a byte array in
+/// little-endian byte order.
 pub trait ToLeBytes {
     type Bytes;
 
+    /// Returns the memory representation of this number as a byte array in
+    /// little-endian byte order.
     fn to_le_bytes(self) -> Self::Bytes;
 }
 
+/// Returns the memory representation of this value as a byte array in native
+/// byte order.
+///
+/// As the target platform’s native endianness is used, portable code should use
+/// [`to_be_bytes`] or [`to_le_bytes`], as appropriate, instead.
 pub trait ToNeBytes {
     type Bytes;
 
+    /// Returns the memory representation of this number as a byte array in
+    /// native byte order.
     fn to_ne_bytes(self) -> Self::Bytes;
 }
 
+/// Creates a value from its representation as a byte array in big-endian byte
+/// order.
 pub trait FromBeBytes {
     type Bytes;
 
+    /// Creates a value from its representation as a byte array in big-endian
+    /// byte order.
     fn from_be_bytes(bytes: Self::Bytes) -> Self;
 }
 
+/// Creates a value from its representation as a byte array in little-endian
+/// byte order.
 pub trait FromLeBytes {
     type Bytes;
 
+    /// Creates a value from its representation as a byte array in little-endian
+    /// byte order.
     fn from_le_bytes(bytes: Self::Bytes) -> Self;
 }
 
+/// Creates a value from its representation as a byte array in native byte
+/// order.
+///
+/// As the target platform’s native endianness is used, portable code should use
+/// [`from_be_bytes`] or [`from_le_bytes`], as appropriate, instead.
 pub trait FromNeBytes {
     type Bytes;
 
+    /// Creates a value from its representation as a byte array in native byte
+    /// order.
+    ///
+    /// As the target platform’s native endianness is used, portable code should
+    /// use [`from_be_bytes`] or [`from_le_bytes`], as appropriate, instead.
     fn from_ne_bytes(bytes: Self::Bytes) -> Self;
 }
 
