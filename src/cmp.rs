@@ -4,18 +4,33 @@
 
 use core::cmp::Ordering;
 
+/// Trait for partial equality, identical to [`PartialEq`], except that `NaN` is
+/// treated as equal to itself, in contradiction to the IEEE 754 floating point
+/// number standard.
+///
+/// NaN-fix equality is virtually always total, so you probably want to also
+/// implement [`NanfixEq`].
 pub trait NanfixPartialEq<Rhs: ?Sized = Self> {
+    /// Test whether self and the other value are equal, treating NaN as equal
+    /// to itself.
     fn eq(&self, other: &Rhs) -> bool;
 
+    /// Test whether self and the other value not equal, treating NaN as equal
+    /// to itself.
     #[inline]
     fn ne(&self, other: &Rhs) -> bool {
         !self.eq(other)
     }
 }
 
+/// Trait to be implemented if [`NanfixPartialEq`] is a total equality
+/// (virtually always it is).
+///
+/// The distinction between [`NanfixPartialEq`] and [`NanfixEq`] primarily
+/// exists to mirror Rust standard library's [`PartialEq`] and [`Eq`].
 pub trait NanfixEq<Rhs: ?Sized = Self>: NanfixPartialEq {}
 
-macro_rules! def_cmp_traits {
+/*macro_rules! def_cmp_traits {
     ($partial_ord:ident, $ord:ident) => {
         pub trait $partial_ord<Rhs: ?Sized = Self>: NanfixPartialEq {
             fn partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
@@ -45,10 +60,108 @@ macro_rules! def_cmp_traits {
             fn cmp(&self, other: &Rhs) -> Ordering;
         }
     };
+}*/
+
+/*def_cmp_traits!(NanminPartialOrd, NanminOrd);
+def_cmp_traits!(NanmaxPartialOrd, NanmaxOrd);*/
+
+/// Trait for partial order where NaNs are fixed to be the smallest element in
+/// the set, smaller even than the negative infinity.
+///
+/// This is virtually always also a total order, so most likely you want to
+/// implement [`NanminOrd`] too.
+pub trait NanminPartialOrd<Rhs: ?Sized = Self>: NanfixPartialEq {
+    /// This method returns an (NaN-min) ordering between self and other values
+    /// if one exists.
+    fn partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
+
+    /// Checks if `self` is (NaN-min) less than `other`.
+    #[inline]
+    fn lt(&self, other: &Rhs) -> bool {
+        self.partial_cmp(other).is_some_and(Ordering::is_lt)
+    }
+
+    /// Checks if `self` is (NaN-min) less or equal to `other`.
+    #[inline]
+    fn le(&self, other: &Rhs) -> bool {
+        self.partial_cmp(other).is_some_and(Ordering::is_le)
+    }
+
+    /// Checks if `self` is (NaN-min) greater than `other`.
+    #[inline]
+    fn gt(&self, other: &Rhs) -> bool {
+        self.partial_cmp(other).is_some_and(Ordering::is_gt)
+    }
+
+    /// Checks if `self` is (NaN-min) greater or equal to `other`.
+    #[inline]
+    fn ge(&self, other: &Rhs) -> bool {
+        self.partial_cmp(other).is_some_and(Ordering::is_ge)
+    }
 }
 
-def_cmp_traits!(NanminPartialOrd, NanminOrd);
-def_cmp_traits!(NanmaxPartialOrd, NanmaxOrd);
+/// Trait for total order where NaNs are fixed to be the smallest element in the
+/// set, smaller even than the negative infinity.
+///
+/// NaN-min order is virtually always total. The distinction between
+/// [`NanminPartialOrd`] and [`NanminOrd`] primarily exists to mirror Rust
+/// standard library's [`PartialOrd`] and [`Ord`].
+pub trait NanminOrd<Rhs: ?Sized = Self>: NanfixEq + NanminPartialOrd {
+    /// This method returns an (NaN-min) `Ordering` between `self` and `other`.
+    ///
+    /// By convention, `self.cmp(&other)` returns the ordering matching the
+    /// expression `self <operator> other` if true.
+    fn cmp(&self, other: &Rhs) -> Ordering;
+}
+
+/// Trait for partial order where NaNs are fixed to be the greatest element in
+/// the set, greater even than the positive infinity.
+///
+/// This is virtually always also a total order, so most likely you want to
+/// implement [`NanmaxOrd`] too.
+pub trait NanmaxPartialOrd<Rhs: ?Sized = Self>: NanfixPartialEq {
+    /// This method returns an (NaN-max) ordering between self and other values
+    /// if one exists.
+    fn partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
+
+    /// Checks if `self` is (NaN-max) less than `other`.
+    #[inline]
+    fn lt(&self, other: &Rhs) -> bool {
+        self.partial_cmp(other).is_some_and(Ordering::is_lt)
+    }
+
+    /// Checks if `self` is (NaN-max) less or equal to `other`.
+    #[inline]
+    fn le(&self, other: &Rhs) -> bool {
+        self.partial_cmp(other).is_some_and(Ordering::is_le)
+    }
+
+    /// Checks if `self` is (NaN-max) greater than `other`.
+    #[inline]
+    fn gt(&self, other: &Rhs) -> bool {
+        self.partial_cmp(other).is_some_and(Ordering::is_gt)
+    }
+
+    /// Checks if `self` is (NaN-max) greater or equal to `other`.
+    #[inline]
+    fn ge(&self, other: &Rhs) -> bool {
+        self.partial_cmp(other).is_some_and(Ordering::is_ge)
+    }
+}
+
+/// Trait for total order where NaNs are fixed to be the greatest element in the
+/// set, greater even than the positive infinity.
+///
+/// NaN-max order is virtually always total. The distinction between
+/// [`NanmaxPartialOrd`] and [`NanmaxOrd`] primarily exists to mirror Rust
+/// standard library's [`PartialOrd`] and [`Ord`].
+pub trait NanmaxOrd<Rhs: ?Sized = Self>: NanfixEq + NanmaxPartialOrd {
+    /// This method returns an (NaN-max) `Ordering` between `self` and `other`.
+
+    /// By convention, `self.cmp(&other)` returns the ordering matching the
+    /// expression `self <operator> other` if true.
+    fn cmp(&self, other: &Rhs) -> Ordering;
+}
 
 macro_rules! impl_nanfix_eq_traits_for_ords {
     ($($ty:ty),*) => {

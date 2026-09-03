@@ -9,9 +9,9 @@
 /// [`CastInto`].
 ///
 /// Internally, `as` operator is used to convert between Rust primitives. For
-/// non-exact conversion where a non-primitive type are involved, rounding
-/// behavior is left to the implementors, but aiming for consistency with `as`
-/// is highly encouraged.
+/// non-exact conversion where a non-primitive type is involved, the decision
+/// how rounding should be done is left to the implementors, but aiming for
+/// consistency with `as` is highly encouraged.
 pub trait CastFrom<T> {
     /// Convert to this type from the input type, possibly with lossy
     /// approximation.
@@ -24,10 +24,10 @@ pub trait CastFrom<T> {
 /// the conversion to be approximate and thus lossy. It is the inverse of
 /// [`CastFrom`].
 ///
-/// Internally, the `as` operator is used to convert between Rust primitives.
-/// For non-exact conversion where a non-primitive type are involved, rounding
-/// behavior is left to the implementors, but aiming for consistency with `as`
-/// is highly encouraged.
+/// Internally, `as` operator is used to convert between Rust primitives. For
+/// non-exact conversion where a non-primitive type is involved, the decision
+/// how rounding should be done is left to the implementors, but aiming for
+/// consistency with `as` is highly encouraged.
 ///
 /// Analogously to Rust standard library's [`Into`], it is recommended to not
 /// implement this trait directly, as it already has a blanket implementation
