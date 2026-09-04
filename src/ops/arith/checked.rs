@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 use super::plain::MulAdd;
+#[cfg(any(feature = "std", feature = "libm"))]
+use super::plain::{DivEuclid, RemEuclid};
 
 /// Bundle of checked arithmetic and fused arithmetic operations.
 pub trait CheckedPlainArithOps<Rhs = Self>:
@@ -427,7 +429,7 @@ macro_rules! impl_checked_div_rem_trait_for_floats {
     };
 }
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", feature = "libm"))]
 macro_rules! impl_checked_euclid_traits_for_floats {
     ($($ty:ty),*) => {
         $(
@@ -436,7 +438,7 @@ macro_rules! impl_checked_euclid_traits_for_floats {
 
                 #[inline]
                 fn checked_div_euclid(self, other: $ty) -> Option<Self::Output> {
-                    let result = <$ty>::div_euclid(self, other);
+                    let result = DivEuclid::div_euclid(self, other);
 
                     result.is_finite().then_some(result)
                 }
@@ -447,7 +449,7 @@ macro_rules! impl_checked_euclid_traits_for_floats {
 
                 #[inline]
                 fn checked_rem_euclid(self, other: $ty) -> Option<Self::Output> {
-                    let result = <$ty>::rem_euclid(self, other);
+                    let result = RemEuclid::rem_euclid(self, other);
 
                     result.is_finite().then_some(result)
                 }
@@ -461,8 +463,8 @@ macro_rules! impl_checked_euclid_traits_for_floats {
                     self,
                     other: $ty,
                 ) -> Option<(Self::Output, Self::Output)> {
-                    let div = <$ty>::div_euclid(self, other);
-                    let rem = <$ty>::rem_euclid(self, other);
+                    let div = DivEuclid::div_euclid(self, other);
+                    let rem = RemEuclid::rem_euclid(self, other);
 
                     (div.is_finite() && rem.is_finite()).then_some((div, rem))
                 }
@@ -492,7 +494,7 @@ macro_rules! impl_checked_arith_traits_for_floats {
     ($($ty:ty),*) => {
         impl_checked_ring_field_traits_for_floats!($($ty),*);
         impl_checked_div_rem_trait_for_floats!($($ty),*);
-        #[cfg(feature = "std")]
+        #[cfg(any(feature = "std", feature = "libm"))]
         impl_checked_euclid_traits_for_floats!($($ty),*);
     };
 }

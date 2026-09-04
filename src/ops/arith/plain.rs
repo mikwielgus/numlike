@@ -194,52 +194,47 @@ pub trait NegAssign {
 }
 
 macro_rules! impl_euclid_traits {
-    ($($ty:ty),*) => {
-        $(
-            impl DivEuclid<$ty> for $ty {
-                type Output = $ty;
+    ($ty:ty, $div_euclid:expr, $rem_euclid:expr) => {
+        impl DivEuclid<$ty> for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn div_euclid(self, other: $ty) -> Self::Output {
-                    <$ty>::div_euclid(self, other)
-                }
+            #[inline]
+            fn div_euclid(self, other: $ty) -> Self::Output {
+                ($div_euclid)(self, other)
             }
+        }
 
-            impl DivEuclidAssign<$ty> for $ty {
-                #[inline]
-                fn div_euclid_assign(&mut self, other: $ty) {
-                    *self = <$ty>::div_euclid(*self, other);
-                }
+        impl DivEuclidAssign<$ty> for $ty {
+            #[inline]
+            fn div_euclid_assign(&mut self, other: $ty) {
+                *self = ($div_euclid)(*self, other);
             }
+        }
 
-            impl RemEuclid<$ty> for $ty {
-                type Output = $ty;
+        impl RemEuclid<$ty> for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn rem_euclid(self, other: $ty) -> Self::Output {
-                    <$ty>::rem_euclid(self, other)
-                }
+            #[inline]
+            fn rem_euclid(self, other: $ty) -> Self::Output {
+                ($rem_euclid)(self, other)
             }
+        }
 
-            impl RemEuclidAssign<$ty> for $ty {
-                #[inline]
-                fn rem_euclid_assign(&mut self, other: $ty) {
-                    *self = <$ty>::rem_euclid(*self, other);
-                }
+        impl RemEuclidAssign<$ty> for $ty {
+            #[inline]
+            fn rem_euclid_assign(&mut self, other: $ty) {
+                *self = ($rem_euclid)(*self, other);
             }
+        }
 
-            impl DivRemEuclid<$ty> for $ty {
-                type Output = $ty;
+        impl DivRemEuclid<$ty> for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn div_rem_euclid(self, other: $ty) -> (Self::Output, Self::Output) {
-                    (
-                        <$ty>::div_euclid(self, other),
-                        <$ty>::rem_euclid(self, other),
-                    )
-                }
+            #[inline]
+            fn div_rem_euclid(self, other: $ty) -> (Self::Output, Self::Output) {
+                (($div_euclid)(self, other), ($rem_euclid)(self, other))
             }
-        )*
+        }
     };
 }
 
@@ -299,7 +294,9 @@ macro_rules! impl_neg_assign_trait {
 macro_rules! impl_plain_arith_traits_for_signed_ints {
     ($($ty:ty),*) => {
         impl_div_rem_trait!($($ty),*);
-        impl_euclid_traits!($($ty),*);
+        $(
+            impl_euclid_traits!($ty, <$ty>::div_euclid, <$ty>::rem_euclid);
+        )*
         impl_mul_add_trait!($($ty),*);
         impl_neg_assign_trait!($($ty),*);
     };
@@ -308,7 +305,9 @@ macro_rules! impl_plain_arith_traits_for_signed_ints {
 macro_rules! impl_plain_arith_traits_for_unsigned_ints {
     ($($ty:ty),*) => {
         impl_div_rem_trait!($($ty),*);
-        impl_euclid_traits!($($ty),*);
+        $(
+            impl_euclid_traits!($ty, <$ty>::div_euclid, <$ty>::rem_euclid);
+        )*
         impl_mul_add_trait!($($ty),*);
     };
 }
@@ -316,8 +315,10 @@ macro_rules! impl_plain_arith_traits_for_unsigned_ints {
 macro_rules! impl_plain_arith_traits_for_floats {
     ($($ty:ty),*) => {
         impl_div_rem_trait!($($ty),*);
-        #[cfg(feature = "std")]
-        impl_euclid_traits!($($ty),*);
+        $(
+            #[cfg(feature = "std")]
+            impl_euclid_traits!($ty, <$ty>::div_euclid, <$ty>::rem_euclid);
+        )*
         impl_neg_assign_trait!($($ty),*);
     };
 }
@@ -326,34 +327,53 @@ impl_plain_arith_traits_for_signed_ints!(i8, i16, i32, i64, i128, isize);
 impl_plain_arith_traits_for_unsigned_ints!(u8, u16, u32, u64, u128, usize);
 impl_plain_arith_traits_for_floats!(f32, f64);
 
-#[cfg(feature = "std")]
-macro_rules! impl_std_mul_add_for_floats {
-    ($($ty:ty),*) => {
-        $(
-            impl MulAdd<$ty, $ty> for $ty {
-                type Output = $ty;
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+#[inline]
+fn libm_div_euclid_f32(this: f32, other: f32) -> f32 {
+    let q = libm::truncf(this / other);
 
-                #[inline]
-                fn mul_add(self, a: $ty, b: $ty) -> Self::Output {
-                    <$ty>::mul_add(self, a, b)
-                }
-            }
+    if (this % other) < 0.0 {
+        return if other > 0.0 { q - 1.0 } else { q + 1.0 };
+    }
 
-            impl MulAddAssign<$ty, $ty> for $ty {
-                #[inline]
-                fn mul_add_assign(&mut self, a: $ty, b: $ty) {
-                    *self = MulAdd::mul_add(*self, a, b);
-                }
-            }
-        )*
-    };
+    q
 }
 
-#[cfg(feature = "std")]
-impl_std_mul_add_for_floats!(f32, f64);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+#[inline]
+fn libm_rem_euclid_f32(this: f32, other: f32) -> f32 {
+    let r = this % other;
+
+    if r < 0.0 { r + libm::fabsf(other) } else { r }
+}
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
-macro_rules! impl_libm_mul_add_for_float {
+#[inline]
+fn libm_div_euclid_f64(this: f64, other: f64) -> f64 {
+    let q = libm::trunc(this / other);
+
+    if (this % other) < 0.0 {
+        return if other > 0.0 { q - 1.0 } else { q + 1.0 };
+    }
+
+    q
+}
+
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+#[inline]
+fn libm_rem_euclid_f64(this: f64, other: f64) -> f64 {
+    let r = this % other;
+
+    if r < 0.0 { r + libm::fabs(other) } else { r }
+}
+
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_euclid_traits!(f32, libm_div_euclid_f32, libm_rem_euclid_f32);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_euclid_traits!(f64, libm_div_euclid_f64, libm_rem_euclid_f64);
+
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! impl_mul_add_for_float {
     ($ty:ty, $fma:path) => {
         impl MulAdd<$ty, $ty> for $ty {
             type Output = $ty;
@@ -373,10 +393,14 @@ macro_rules! impl_libm_mul_add_for_float {
     };
 }
 
+#[cfg(feature = "std")]
+impl_mul_add_for_float!(f32, f32::mul_add);
+#[cfg(feature = "std")]
+impl_mul_add_for_float!(f64, f64::mul_add);
 #[cfg(all(not(feature = "std"), feature = "libm"))]
-impl_libm_mul_add_for_float!(f32, libm::fmaf);
+impl_mul_add_for_float!(f32, libm::fmaf);
 #[cfg(all(not(feature = "std"), feature = "libm"))]
-impl_libm_mul_add_for_float!(f64, libm::fma);
+impl_mul_add_for_float!(f64, libm::fma);
 
 #[cfg(all(not(feature = "std"), not(feature = "libm")))]
 macro_rules! impl_unfused_mul_add_for_floats {

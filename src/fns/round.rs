@@ -67,55 +67,89 @@ pub trait Ceil {
     fn ceil(self) -> Self::Output;
 }
 
-macro_rules! impl_round_traits_for_floats {
-    ($($ty:ty),*) => {
-        $(
-            impl Round for $ty {
-                type Output = $ty;
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! impl_round_traits_for_float {
+    ($ty:ty, $round:path, $trunc:path, $round_ties_even:path, $floor:path, $ceil:path) => {
+        impl Round for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn round(self) -> Self::Output {
-                    <$ty>::round(self)
-                }
+            #[inline]
+            fn round(self) -> Self::Output {
+                $round(self)
             }
+        }
 
-            impl Trunc for $ty {
-                type Output = $ty;
+        impl Trunc for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn trunc(self) -> Self::Output {
-                    <$ty>::trunc(self)
-                }
+            #[inline]
+            fn trunc(self) -> Self::Output {
+                $trunc(self)
             }
+        }
 
-            impl RoundTiesEven for $ty {
-                type Output = $ty;
+        impl RoundTiesEven for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn round_ties_even(self) -> Self::Output {
-                    <$ty>::round_ties_even(self)
-                }
+            #[inline]
+            fn round_ties_even(self) -> Self::Output {
+                $round_ties_even(self)
             }
+        }
 
-            impl Floor for $ty {
-                type Output = $ty;
+        impl Floor for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn floor(self) -> Self::Output {
-                    <$ty>::floor(self)
-                }
+            #[inline]
+            fn floor(self) -> Self::Output {
+                $floor(self)
             }
+        }
 
-            impl Ceil for $ty {
-                type Output = $ty;
+        impl Ceil for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn ceil(self) -> Self::Output {
-                    <$ty>::ceil(self)
-                }
+            #[inline]
+            fn ceil(self) -> Self::Output {
+                $ceil(self)
             }
-        )*
+        }
     };
 }
 
-impl_round_traits_for_floats!(f32, f64);
+#[cfg(feature = "std")]
+impl_round_traits_for_float!(
+    f32,
+    f32::round,
+    f32::trunc,
+    f32::round_ties_even,
+    f32::floor,
+    f32::ceil
+);
+#[cfg(feature = "std")]
+impl_round_traits_for_float!(
+    f64,
+    f64::round,
+    f64::trunc,
+    f64::round_ties_even,
+    f64::floor,
+    f64::ceil
+);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_round_traits_for_float!(
+    f32,
+    libm::roundf,
+    libm::truncf,
+    libm::roundevenf,
+    libm::floorf,
+    libm::ceilf
+);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_round_traits_for_float!(
+    f64,
+    libm::round,
+    libm::trunc,
+    libm::roundeven,
+    libm::floor,
+    libm::ceil
+);

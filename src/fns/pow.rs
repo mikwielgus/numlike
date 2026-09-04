@@ -96,9 +96,9 @@ impl_pow_for_int_for_all_rhs!(i64);
 impl_pow_for_int_for_all_rhs!(i128);
 impl_pow_for_int_for_all_rhs!(isize);
 
-#[cfg(feature = "std")]
-macro_rules! impl_std_pow_for_float {
-    ($t:ty, $rhs:ty, $desired_rhs:ty, $method:expr) => {
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! impl_pow_for_float {
+    ($t:ty, $rhs:ty, $desired_rhs:ty, $method:path) => {
         impl Pow<$rhs> for $t {
             type Output = $t;
 
@@ -108,57 +108,6 @@ macro_rules! impl_std_pow_for_float {
                 //self,
                 //rhs.try_into().expect("exponent out of range for `powi`"),
                 //)
-                ($method)(self, rhs as $desired_rhs)
-            }
-        }
-
-        impl CheckedPow<$rhs> for $t {
-            type Output = $t;
-
-            #[inline]
-            fn checked_pow(self, rhs: $rhs) -> Option<$t> {
-                //let result = rhs.try_into().ok().map(|exp| <$t>::powi(self, exp))?;
-                let result = ($method)(self, rhs as $desired_rhs);
-
-                result.is_finite().then_some(result)
-            }
-        }
-    };
-}
-
-#[cfg(feature = "std")]
-macro_rules! impl_std_pow_for_float_for_all_rhs {
-    ($t:ty) => {
-        impl_std_pow_for_float!($t, i8, i32, <$t>::powi);
-        impl_std_pow_for_float!($t, u8, i32, <$t>::powi);
-        impl_std_pow_for_float!($t, i16, i32, <$t>::powi);
-        impl_std_pow_for_float!($t, u16, i32, <$t>::powi);
-        impl_std_pow_for_float!($t, i32, i32, <$t>::powi);
-        impl_std_pow_for_float!($t, u32, $t, <$t>::powf);
-        //impl_std_pow_for_float!($t, u32);
-        //impl_std_pow_for_float!($t, i64);
-        //impl_std_pow_for_float!($t, u64);
-        //impl_std_pow_for_float!($t, i128);
-        //impl_std_pow_for_float!($t, u128);
-        //impl_std_pow_for_float!($t, isize);
-        //impl_std_pow_for_float!($t, usize);
-        impl_std_pow_for_float!($t, $t, $t, <$t>::powf);
-    };
-}
-
-#[cfg(feature = "std")]
-impl_std_pow_for_float_for_all_rhs!(f32);
-#[cfg(feature = "std")]
-impl_std_pow_for_float_for_all_rhs!(f64);
-
-#[cfg(all(not(feature = "std"), feature = "libm"))]
-macro_rules! impl_libm_pow_for_float {
-    ($t:ty, $rhs:ty, $method:path, $desired_rhs:ty) => {
-        impl Pow<$rhs> for $t {
-            type Output = $t;
-
-            #[inline]
-            fn pow(self, rhs: $rhs) -> $t {
                 $method(self, rhs as $desired_rhs)
             }
         }
@@ -168,6 +117,7 @@ macro_rules! impl_libm_pow_for_float {
 
             #[inline]
             fn checked_pow(self, rhs: $rhs) -> Option<$t> {
+                //let result = rhs.try_into().ok().map(|exp| <$t>::powi(self, exp))?;
                 let result = $method(self, rhs as $desired_rhs);
 
                 result.is_finite().then_some(result)
@@ -176,27 +126,31 @@ macro_rules! impl_libm_pow_for_float {
     };
 }
 
-#[cfg(all(not(feature = "std"), feature = "libm"))]
-macro_rules! impl_libm_pow_for_float_for_all_rhs {
-    ($t:ty, $method:path, $desired_rhs:ty) => {
-        impl_libm_pow_for_float!($t, i8, $method, $desired_rhs);
-        impl_libm_pow_for_float!($t, u8, $method, $desired_rhs);
-        impl_libm_pow_for_float!($t, i16, $method, $desired_rhs);
-        impl_libm_pow_for_float!($t, u16, $method, $desired_rhs);
-        impl_libm_pow_for_float!($t, i32, $method, $desired_rhs);
-        impl_libm_pow_for_float!($t, u32, $method, $desired_rhs);
-        //impl_std_pow_for_float!($t, u32);
-        //impl_std_pow_for_float!($t, i64);
-        //impl_std_pow_for_float!($t, u64);
-        //impl_std_pow_for_float!($t, i128);
-        //impl_std_pow_for_float!($t, u128);
-        //impl_std_pow_for_float!($t, isize);
-        //impl_std_pow_for_float!($t, usize);
-        impl_libm_pow_for_float!($t, $t, $method, $desired_rhs);
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! impl_pow_for_float_for_all_rhs {
+    ($t:ty, $int_pow:path, $int_rhs:ty, $float_pow:path) => {
+        impl_pow_for_float!($t, i8, $int_rhs, $int_pow);
+        impl_pow_for_float!($t, u8, $int_rhs, $int_pow);
+        impl_pow_for_float!($t, i16, $int_rhs, $int_pow);
+        impl_pow_for_float!($t, u16, $int_rhs, $int_pow);
+        impl_pow_for_float!($t, i32, $int_rhs, $int_pow);
+        impl_pow_for_float!($t, u32, $t, $float_pow);
+        //impl_pow_for_float!($t, u32);
+        //impl_pow_for_float!($t, i64);
+        //impl_pow_for_float!($t, u64);
+        //impl_pow_for_float!($t, i128);
+        //impl_pow_for_float!($t, u128);
+        //impl_pow_for_float!($t, isize);
+        //impl_pow_for_float!($t, usize);
+        impl_pow_for_float!($t, $t, $t, $float_pow);
     };
 }
 
+#[cfg(feature = "std")]
+impl_pow_for_float_for_all_rhs!(f32, f32::powi, i32, f32::powf);
+#[cfg(feature = "std")]
+impl_pow_for_float_for_all_rhs!(f64, f64::powi, i32, f64::powf);
 #[cfg(all(not(feature = "std"), feature = "libm"))]
-impl_libm_pow_for_float_for_all_rhs!(f32, libm::powf, f32);
+impl_pow_for_float_for_all_rhs!(f32, libm::powf, f32, libm::powf);
 #[cfg(all(not(feature = "std"), feature = "libm"))]
-impl_libm_pow_for_float_for_all_rhs!(f64, libm::pow, f64);
+impl_pow_for_float_for_all_rhs!(f64, libm::pow, f64, libm::pow);

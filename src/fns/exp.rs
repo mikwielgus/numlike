@@ -74,70 +74,76 @@ pub trait CheckedExpM1 {
     fn checked_exp_m1(self) -> Option<Self::Output>;
 }
 
-macro_rules! impl_exp_traits_for_floats {
-    ($($ty:ty),*) => {
-        $(
-            impl Exp for $ty {
-                type Output = $ty;
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! impl_exp_traits_for_float {
+    ($ty:ty, $exp:path, $exp2:path, $expm1:path) => {
+        impl Exp for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn exp(self) -> Self::Output {
-                    <$ty>::exp(self)
-                }
+            #[inline]
+            fn exp(self) -> Self::Output {
+                $exp(self)
             }
+        }
 
-            impl Exp2 for $ty {
-                type Output = $ty;
+        impl Exp2 for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn exp2(self) -> Self::Output {
-                    <$ty>::exp2(self)
-                }
+            #[inline]
+            fn exp2(self) -> Self::Output {
+                $exp2(self)
             }
+        }
 
-            impl ExpM1 for $ty {
-                type Output = $ty;
+        impl ExpM1 for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn exp_m1(self) -> Self::Output {
-                    <$ty>::exp_m1(self)
-                }
+            #[inline]
+            fn exp_m1(self) -> Self::Output {
+                $expm1(self)
             }
+        }
 
-            impl CheckedExp for $ty {
-                type Output = $ty;
+        impl CheckedExp for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_exp(self) -> Option<Self::Output> {
-                    let result = <$ty>::exp(self);
+            #[inline]
+            fn checked_exp(self) -> Option<Self::Output> {
+                let result = $exp(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }
 
-            impl CheckedExp2 for $ty {
-                type Output = $ty;
+        impl CheckedExp2 for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_exp2(self) -> Option<Self::Output> {
-                    let result = <$ty>::exp2(self);
+            #[inline]
+            fn checked_exp2(self) -> Option<Self::Output> {
+                let result = $exp2(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }
 
-            impl CheckedExpM1 for $ty {
-                type Output = $ty;
+        impl CheckedExpM1 for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_exp_m1(self) -> Option<Self::Output> {
-                    let result = <$ty>::exp_m1(self);
+            #[inline]
+            fn checked_exp_m1(self) -> Option<Self::Output> {
+                let result = $expm1(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
-        )*
-    }
+        }
+    };
 }
 
-impl_exp_traits_for_floats!(f32, f64);
+#[cfg(feature = "std")]
+impl_exp_traits_for_float!(f32, f32::exp, f32::exp2, f32::exp_m1);
+#[cfg(feature = "std")]
+impl_exp_traits_for_float!(f64, f64::exp, f64::exp2, f64::exp_m1);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_exp_traits_for_float!(f32, libm::expf, libm::exp2f, libm::expm1f);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_exp_traits_for_float!(f64, libm::exp, libm::exp2, libm::expm1);

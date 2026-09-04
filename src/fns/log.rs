@@ -231,113 +231,119 @@ pub trait CheckedIlog10 {
     fn checked_ilog10(self) -> Option<Self::Output>;
 }
 
-macro_rules! impl_log_traits_for_floats {
-    ($($ty:ty),*) => {
-        $(
-            impl Log<$ty> for $ty {
-                type Output = $ty;
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! impl_log_traits_for_float {
+    ($ty:ty, $ln:path, $log2:path, $log10:path, $ln_1p:path) => {
+        impl Log<$ty> for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn log(self, base: $ty) -> Self::Output {
-                    <$ty>::log(self, base)
-                }
+            #[inline]
+            fn log(self, base: $ty) -> Self::Output {
+                $ln(self) / $ln(base)
             }
+        }
 
-            impl Ln for $ty {
-                type Output = $ty;
+        impl Ln for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn ln(self) -> Self::Output {
-                    <$ty>::ln(self)
-                }
+            #[inline]
+            fn ln(self) -> Self::Output {
+                $ln(self)
             }
+        }
 
-            impl Log2 for $ty {
-                type Output = $ty;
+        impl Log2 for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn log2(self) -> Self::Output {
-                    <$ty>::log2(self)
-                }
+            #[inline]
+            fn log2(self) -> Self::Output {
+                $log2(self)
             }
+        }
 
-            impl Log10 for $ty {
-                type Output = $ty;
+        impl Log10 for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn log10(self) -> Self::Output {
-                    <$ty>::log10(self)
-                }
+            #[inline]
+            fn log10(self) -> Self::Output {
+                $log10(self)
             }
+        }
 
-            impl Ln1p for $ty {
-                type Output = $ty;
+        impl Ln1p for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn ln_1p(self) -> Self::Output {
-                    <$ty>::ln_1p(self)
-                }
+            #[inline]
+            fn ln_1p(self) -> Self::Output {
+                $ln_1p(self)
             }
+        }
 
-            impl CheckedLog<$ty> for $ty {
-                type Output = $ty;
+        impl CheckedLog<$ty> for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_log(self, base: $ty) -> Option<Self::Output> {
-                    let result = <$ty>::log(self, base);
+            #[inline]
+            fn checked_log(self, base: $ty) -> Option<Self::Output> {
+                let result = $ln(self) / $ln(base);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }
 
-            impl CheckedLn for $ty {
-                type Output = $ty;
+        impl CheckedLn for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_ln(self) -> Option<Self::Output> {
-                    let result = <$ty>::ln(self);
+            #[inline]
+            fn checked_ln(self) -> Option<Self::Output> {
+                let result = $ln(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }
 
-            impl CheckedLog2 for $ty {
-                type Output = $ty;
+        impl CheckedLog2 for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_log2(self) -> Option<Self::Output> {
-                    let result = <$ty>::log2(self);
+            #[inline]
+            fn checked_log2(self) -> Option<Self::Output> {
+                let result = $log2(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }
 
-            impl CheckedLog10 for $ty {
-                type Output = $ty;
+        impl CheckedLog10 for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_log10(self) -> Option<Self::Output> {
-                    let result = <$ty>::log10(self);
+            #[inline]
+            fn checked_log10(self) -> Option<Self::Output> {
+                let result = $log10(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }
 
-            impl CheckedLn1p for $ty {
-                type Output = $ty;
+        impl CheckedLn1p for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_ln_1p(self) -> Option<Self::Output> {
-                    let result = <$ty>::ln_1p(self);
+            #[inline]
+            fn checked_ln_1p(self) -> Option<Self::Output> {
+                let result = $ln_1p(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
-        )*
+        }
     };
 }
 
-impl_log_traits_for_floats!(f32, f64);
+#[cfg(feature = "std")]
+impl_log_traits_for_float!(f32, f32::ln, f32::log2, f32::log10, f32::ln_1p);
+#[cfg(feature = "std")]
+impl_log_traits_for_float!(f64, f64::ln, f64::log2, f64::log10, f64::ln_1p);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_log_traits_for_float!(f32, libm::logf, libm::log2f, libm::log10f, libm::log1pf);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_log_traits_for_float!(f64, libm::log, libm::log2, libm::log10, libm::log1p);
 
 macro_rules! impl_ilog_traits_for_ints {
     ($($ty:ty),*) => {

@@ -148,115 +148,171 @@ pub trait CheckedAcos {
     fn checked_acos(self) -> Option<Self::Output>;
 }
 
-macro_rules! impl_trig_traits_for_floats {
-    ($($ty:ty),*) => {
-        $(
-            impl SinCos for $ty {
-                type Output = $ty;
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! impl_trig_traits_for_float {
+    (
+        $ty:ty,
+        $sin_cos:path,
+        $sin:path,
+        $cos:path,
+        $tan:path,
+        $atan2:path,
+        $asin:path,
+        $acos:path,
+        $atan:path
+    ) => {
+        impl SinCos for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn sin_cos(self) -> (Self::Output, Self::Output) {
-                    <$ty>::sin_cos(self)
-                }
+            #[inline]
+            fn sin_cos(self) -> (Self::Output, Self::Output) {
+                $sin_cos(self)
             }
+        }
 
-            impl Sin for $ty {
-                type Output = $ty;
+        impl Sin for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn sin(self) -> Self::Output {
-                    <$ty>::sin(self)
-                }
+            #[inline]
+            fn sin(self) -> Self::Output {
+                $sin(self)
             }
+        }
 
-            impl Cos for $ty {
-                type Output = $ty;
+        impl Cos for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn cos(self) -> Self::Output {
-                    <$ty>::cos(self)
-                }
+            #[inline]
+            fn cos(self) -> Self::Output {
+                $cos(self)
             }
+        }
 
-            impl Tan for $ty {
-                type Output = $ty;
+        impl Tan for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn tan(self) -> Self::Output {
-                    <$ty>::tan(self)
-                }
+            #[inline]
+            fn tan(self) -> Self::Output {
+                $tan(self)
             }
+        }
 
-            impl CheckedTan for $ty {
-                type Output = $ty;
+        impl CheckedTan for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_tan(self) -> Option<Self::Output> {
-                    let result = <$ty>::tan(self);
+            #[inline]
+            fn checked_tan(self) -> Option<Self::Output> {
+                let result = $tan(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }
 
-            impl Atan2<$ty> for $ty {
-                type Output = $ty;
+        impl Atan2<$ty> for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn atan2(self, other: $ty) -> Self::Output {
-                    <$ty>::atan2(self, other)
-                }
+            #[inline]
+            fn atan2(self, other: $ty) -> Self::Output {
+                $atan2(self, other)
             }
+        }
 
-            impl Asin for $ty {
-                type Output = $ty;
+        impl Asin for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn asin(self) -> Self::Output {
-                    <$ty>::asin(self)
-                }
+            #[inline]
+            fn asin(self) -> Self::Output {
+                $asin(self)
             }
+        }
 
-            impl Acos for $ty {
-                type Output = $ty;
+        impl Acos for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn acos(self) -> Self::Output {
-                    <$ty>::acos(self)
-                }
+            #[inline]
+            fn acos(self) -> Self::Output {
+                $acos(self)
             }
+        }
 
-            impl Atan for $ty {
-                type Output = $ty;
+        impl Atan for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn atan(self) -> Self::Output {
-                    <$ty>::atan(self)
-                }
+            #[inline]
+            fn atan(self) -> Self::Output {
+                $atan(self)
             }
+        }
 
-            impl CheckedAsin for $ty {
-                type Output = $ty;
+        impl CheckedAsin for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_asin(self) -> Option<Self::Output> {
-                    let result = <$ty>::asin(self);
+            #[inline]
+            fn checked_asin(self) -> Option<Self::Output> {
+                let result = $asin(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }
 
-            impl CheckedAcos for $ty {
-                type Output = $ty;
+        impl CheckedAcos for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_acos(self) -> Option<Self::Output> {
-                    let result = <$ty>::acos(self);
+            #[inline]
+            fn checked_acos(self) -> Option<Self::Output> {
+                let result = $acos(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
-        )*
-    }
+        }
+    };
 }
 
-impl_trig_traits_for_floats!(f32, f64);
+#[cfg(feature = "std")]
+impl_trig_traits_for_float!(
+    f32,
+    f32::sin_cos,
+    f32::sin,
+    f32::cos,
+    f32::tan,
+    f32::atan2,
+    f32::asin,
+    f32::acos,
+    f32::atan
+);
+#[cfg(feature = "std")]
+impl_trig_traits_for_float!(
+    f64,
+    f64::sin_cos,
+    f64::sin,
+    f64::cos,
+    f64::tan,
+    f64::atan2,
+    f64::asin,
+    f64::acos,
+    f64::atan
+);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_trig_traits_for_float!(
+    f32,
+    libm::sincosf,
+    libm::sinf,
+    libm::cosf,
+    libm::tanf,
+    libm::atan2f,
+    libm::asinf,
+    libm::acosf,
+    libm::atanf
+);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_trig_traits_for_float!(
+    f64,
+    libm::sincos,
+    libm::sin,
+    libm::cos,
+    libm::tan,
+    libm::atan2,
+    libm::asin,
+    libm::acos,
+    libm::atan
+);

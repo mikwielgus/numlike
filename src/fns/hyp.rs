@@ -128,119 +128,165 @@ pub trait CheckedAtanh {
     fn checked_atanh(self) -> Option<Self::Output>;
 }
 
-macro_rules! impl_trig_traits_for_floats {
-    ($($ty:ty),*) => {
-        $(
-            impl Sinh for $ty {
-                type Output = $ty;
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! impl_hyp_traits_for_float {
+    (
+        $ty:ty,
+        $sinh:path,
+        $cosh:path,
+        $tanh:path,
+        $asinh:path,
+        $acosh:path,
+        $atanh:path
+    ) => {
+        impl Sinh for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn sinh(self) -> Self::Output {
-                    <$ty>::sinh(self)
-                }
+            #[inline]
+            fn sinh(self) -> Self::Output {
+                $sinh(self)
             }
+        }
 
-            impl Cosh for $ty {
-                type Output = $ty;
+        impl Cosh for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn cosh(self) -> Self::Output {
-                    <$ty>::cosh(self)
-                }
+            #[inline]
+            fn cosh(self) -> Self::Output {
+                $cosh(self)
             }
+        }
 
-            impl Tanh for $ty {
-                type Output = $ty;
+        impl Tanh for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn tanh(self) -> Self::Output {
-                    <$ty>::tanh(self)
-                }
+            #[inline]
+            fn tanh(self) -> Self::Output {
+                $tanh(self)
             }
+        }
 
-            impl CheckedSinh for $ty {
-                type Output = $ty;
+        impl CheckedSinh for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_sinh(self) -> Option<Self::Output> {
-                    let result = <$ty>::sinh(self);
+            #[inline]
+            fn checked_sinh(self) -> Option<Self::Output> {
+                let result = $sinh(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }
 
-            impl CheckedCosh for $ty {
-                type Output = $ty;
+        impl CheckedCosh for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_cosh(self) -> Option<Self::Output> {
-                    let result = <$ty>::cosh(self);
+            #[inline]
+            fn checked_cosh(self) -> Option<Self::Output> {
+                let result = $cosh(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }
 
-            impl Asinh for $ty {
-                type Output = $ty;
+        impl Asinh for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn asinh(self) -> Self::Output {
-                    <$ty>::asinh(self)
-                }
+            #[inline]
+            fn asinh(self) -> Self::Output {
+                $asinh(self)
             }
+        }
 
-            impl Acosh for $ty {
-                type Output = $ty;
+        impl Acosh for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn acosh(self) -> Self::Output {
-                    <$ty>::acosh(self)
-                }
+            #[inline]
+            fn acosh(self) -> Self::Output {
+                $acosh(self)
             }
+        }
 
-            impl Atanh for $ty {
-                type Output = $ty;
+        impl Atanh for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn atanh(self) -> Self::Output {
-                    <$ty>::atanh(self)
-                }
+            #[inline]
+            fn atanh(self) -> Self::Output {
+                $atanh(self)
             }
+        }
 
-            /*impl CheckedAsinh for $ty {
-                type Output = $ty;
+        /*impl CheckedAsinh for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_asinh(self) -> Option<Self::Output> {
-                    let result = <$ty>::asinh(self);
+            #[inline]
+            fn checked_asinh(self) -> Option<Self::Output> {
+                let result = $asinh(self);
 
-                    result.is_finite().then_some(result)
-                }
-            }*/
-
-            impl CheckedAcosh for $ty {
-                type Output = $ty;
-
-                #[inline]
-                fn checked_acosh(self) -> Option<Self::Output> {
-                    let result = <$ty>::acosh(self);
-
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
+        }*/
 
-            impl CheckedAtanh for $ty {
-                type Output = $ty;
+        impl CheckedAcosh for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_atanh(self) -> Option<Self::Output> {
-                    let result = <$ty>::atanh(self);
+            #[inline]
+            fn checked_acosh(self) -> Option<Self::Output> {
+                let result = $acosh(self);
 
-                    result.is_finite().then_some(result)
-                }
+                result.is_finite().then_some(result)
             }
-        )*
-    }
+        }
+
+        impl CheckedAtanh for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn checked_atanh(self) -> Option<Self::Output> {
+                let result = $atanh(self);
+
+                result.is_finite().then_some(result)
+            }
+        }
+    };
 }
 
-impl_trig_traits_for_floats!(f32, f64);
+#[cfg(feature = "std")]
+impl_hyp_traits_for_float!(
+    f32,
+    f32::sinh,
+    f32::cosh,
+    f32::tanh,
+    f32::asinh,
+    f32::acosh,
+    f32::atanh
+);
+#[cfg(feature = "std")]
+impl_hyp_traits_for_float!(
+    f64,
+    f64::sinh,
+    f64::cosh,
+    f64::tanh,
+    f64::asinh,
+    f64::acosh,
+    f64::atanh
+);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_hyp_traits_for_float!(
+    f32,
+    libm::sinhf,
+    libm::coshf,
+    libm::tanhf,
+    libm::asinhf,
+    libm::acoshf,
+    libm::atanhf
+);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl_hyp_traits_for_float!(
+    f64,
+    libm::sinh,
+    libm::cosh,
+    libm::tanh,
+    libm::asinh,
+    libm::acosh,
+    libm::atanh
+);
