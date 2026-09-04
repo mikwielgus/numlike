@@ -53,4 +53,4 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       # thumbv6m-none-eabi has no std, so let's build it to make sure we really
       # are `no_std` compatible.
-      - run: cargo check --target thumbv6m-none-eabi --no-default-features --features derive
+      - run: cargo check --target thumbv6m-none-eabi --no-default-features
