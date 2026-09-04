@@ -29,7 +29,7 @@ out another crate of ours, [`maplike`](https://github.com/mikwielgus/maplike).
 
 ```toml
 [dependencies]
-numlike = { version = "0.1.6" }
+numlike = { version = "0.1.7" }
 ```
 
 ## Comparison to other libraries
