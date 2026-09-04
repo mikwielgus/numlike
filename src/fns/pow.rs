@@ -5,12 +5,29 @@
 pub trait Pow<Rhs = Self> {
     type Output;
 
+    /// Raises `self` to the power of `rhs`.
+    ///
+    /// For integers, this uses exponentiation by squaring.
+    ///
+    /// For floats, this may use an integer or floating-point power depending on
+    /// the exponent type. Using an integer power is generally faster than using
+    /// a floating-point power. It might have a different sequence of rounding
+    /// operations than a floating-point power, so the results are not
+    /// guaranteed to agree.
+    ///
+    /// Note that the floating-point power is special in that it can return
+    /// non-NaN results for NaN inputs. For example, `f32::NAN.pow(0.0)` returns
+    /// `1.0`. However, if an input is a *signaling* NaN, then the result is
+    /// non-deterministically either a NaN or the result that the corresponding
+    /// quiet NaN would produce.
     fn pow(self, rhs: Rhs) -> Self::Output;
 }
 
 pub trait CheckedPow<Rhs = Self> {
     type Output;
 
+    /// Checked exponentiation. Computes `self.pow(rhs)`, returning `None` if
+    /// overflow occurred or the result is not finite.
     fn checked_pow(self, rhs: Rhs) -> Option<Self::Output>;
 }
 

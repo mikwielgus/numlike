@@ -4,36 +4,61 @@
 
 use super::round::Floor;
 
+/// Bundle of root-finding functions.
 pub trait RootFns: Sqrt + Cbrt {}
 impl<T: Sqrt + Cbrt> RootFns for T {}
 
 pub trait Sqrt {
     type Output;
 
+    /// Returns the square root of a number.
+    ///
+    /// Returns NaN if `self` is a negative number other than `-0.0`.
     fn sqrt(self) -> Self::Output;
 }
 
 pub trait Cbrt {
     type Output;
 
+    /// Returns the cube root of a number.
     fn cbrt(self) -> Self::Output;
 }
 
 pub trait CheckedSqrt {
     type Output;
 
+    /// Returns the square root of a number.
+    ///
+    /// Returns `None` if the result is not finite (including when `self` is a
+    /// negative number other than `-0.0`).
     fn checked_sqrt(self) -> Option<Self::Output>;
 }
 
 pub trait Isqrt {
     type Output;
 
+    /// Returns the integer square root of the number, rounded down.
+    ///
+    /// This function returns the **principal (non-negative) square root**.
+    /// For a given number `n`, although both `x` and `-x` satisfy x<sup>2</sup> = n,
+    /// this function always returns the non-negative value.
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if `self` is negative.
     fn isqrt(self) -> Self::Output;
 }
 
 pub trait CheckedIsqrt {
     type Output;
 
+    /// Returns the integer square root of the number, rounded down.
+    ///
+    /// This function returns the **principal (non-negative) square root**.
+    /// For a given number `n`, although both `x` and `-x` satisfy x<sup>2</sup> = n,
+    /// this function always returns the non-negative value.
+    ///
+    /// Returns `None` if `self` is negative, or if the result is not finite.
     fn checked_isqrt(self) -> Option<Self::Output>;
 }
 

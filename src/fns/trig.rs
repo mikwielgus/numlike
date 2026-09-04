@@ -5,84 +5,116 @@
 /*pub trait FullTrigFns<Rhs = Self>: TrigFns + InvTrigFns<Rhs> {}
 impl<Rhs, T: TrigFns + InvTrigFns<Rhs>> FullTrigFns<Rhs> for T {}*/
 
+/// Bundle of trigonometric functions.
 pub trait TrigFns: ClassicalTrigFns + SinCos {}
 impl<T: ClassicalTrigFns + SinCos> TrigFns for T {}
 
 pub trait SinCos {
     type Output;
 
+    /// Simultaneously computes the sine and cosine of the number, `x`. Returns
+    /// `(sin(x), cos(x))`.
     fn sin_cos(self) -> (Self::Output, Self::Output);
 }
 
+/// Bundle of classical trigonometric functions.
 pub trait ClassicalTrigFns: Sin + Cos + Tan {}
 impl<T: Sin + Cos + Tan> ClassicalTrigFns for T {}
 
 pub trait Sin {
     type Output;
 
+    /// Computes the sine of a number (in radians).
     fn sin(self) -> Self::Output;
 }
 
 pub trait Cos {
     type Output;
 
+    /// Computes the cosine of a number (in radians).
     fn cos(self) -> Self::Output;
 }
 
 pub trait Tan {
     type Output;
 
+    /// Computes the tangent of a number (in radians).
     fn tan(self) -> Self::Output;
 }
 
 pub trait CheckedTan {
     type Output;
 
+    /// Computes the tangent of a number (in radians).
+    ///
+    /// Returns `None` if the result is not finite.
     fn checked_tan(self) -> Option<Self::Output>;
 }
 
+/// Bundle of inverse trigonometric functions.
 pub trait InvTrigFns<Rhs = Self>: ClassicalInvTrigFns<Rhs> + Atan2<Rhs> {}
 impl<Rhs, T: ClassicalInvTrigFns<Rhs> + Atan2<Rhs>> InvTrigFns<Rhs> for T {}
 
 pub trait Atan2<Rhs> {
     type Output;
 
+    /// Computes the four quadrant arctangent of `self` (`y`) and `rhs` (`x`) in radians.
     fn atan2(self, rhs: Rhs) -> Self::Output;
 }
 
+/// Bundle of classical inverse trigonometric functions.
 pub trait ClassicalInvTrigFns<Rhs = Self>: Asin + Acos + Atan {}
 impl<Rhs, T: Asin + Acos + Atan> ClassicalInvTrigFns<Rhs> for T {}
 
 pub trait Asin {
     type Output;
 
+    /// Computes the arcsine of a number. Return value is in radians in
+    /// the range [-pi/2, pi/2] or NaN if the number is outside the range
+    /// [-1, 1].
     fn asin(self) -> Self::Output;
 }
 
 pub trait Acos {
     type Output;
 
+    /// Computes the arccosine of a number. Return value is in radians in
+    /// the range [0, pi] or NaN if the number is outside the range
+    /// [-1, 1].
     fn acos(self) -> Self::Output;
 }
 
 pub trait Atan {
     type Output;
 
+    /// Computes the arctangent of a number. Return value is in radians in the
+    /// range [-pi/2, pi/2];
     fn atan(self) -> Self::Output;
 }
 
+/// Bundle of checked classical inverse trigonometric functions.
 pub trait CheckedClassicalInvTrigFns<Rhs = Self>: CheckedAsin + CheckedAcos {}
 impl<Rhs, T: CheckedAsin + CheckedAcos> CheckedClassicalInvTrigFns<Rhs> for T {}
 
 pub trait CheckedAsin {
     type Output;
 
+    /// Computes the arcsine of a number. Return value is in radians in
+    /// the range [-pi/2, pi/2].
+    ///
+    /// Returns `None` if the number is outside the range [-1, 1], or if the
+    /// result is not finite.
     fn checked_asin(self) -> Option<Self::Output>;
 }
 
 pub trait CheckedAcos {
     type Output;
 
+    /// Computes the arccosine of a number. Return value is in radians in
+    /// the range [0, pi].
+    ///
+    /// Returns `None` if the number is outside the range [-1, 1], or if the
+    /// result is not finite.
     fn checked_acos(self) -> Option<Self::Output>;
 }
 

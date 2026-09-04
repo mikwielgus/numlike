@@ -2,10 +2,23 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+/// Defines a distinguished `0` value.
+///
+/// This is usually the additive identity, but it does not have to be so. It
+/// may also merely be the absorbing element (absorber) of multiplication, as
+/// it commonly is in definitions of absorption magmas and absorption monoids,
+/// or an element that maps to the classical real zero, as it sometimes is in
+/// descriptions of tropical semirings.
 pub trait Zero {
     const ZERO: Self;
 }
 
+/// Defines a distinguished `1` value.
+///
+/// This is usually the multiplicative identity, but it does not have to be
+/// so. It may also merely be the generating element (generator) of addition,
+/// or an element that maps to the classical real one, as it sometimes is in
+/// descriptions of tropical semirings.
 pub trait One {
     const ONE: Self;
 }
