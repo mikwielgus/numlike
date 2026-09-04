@@ -7,14 +7,17 @@ use core::ops::{
     ShrAssign,
 };
 
+/// Bundle of bitwise operations, including assign variants.
 pub trait FullBitOps<Rhs = Self>: BitOps<Rhs> + BitAssignOps<Rhs> {}
 
+/// Bundle of bitwise operations.
 pub trait BitOps<Rhs = Self>:
     BitAnd<Rhs> + BitOr<Rhs> + BitXor<Rhs> + Not + Shl<Rhs> + Shr<Rhs>
 {
 }
 impl<Rhs, T: BitAnd<Rhs> + BitOr<Rhs> + BitXor<Rhs> + Not + Shl<Rhs> + Shr<Rhs>> BitOps<Rhs> for T {}
 
+/// Bundle of bitwise assignment operations.
 pub trait BitAssignOps<Rhs = Self>:
     BitAndAssign<Rhs>
     + BitOrAssign<Rhs>
@@ -36,7 +39,9 @@ impl<
 {
 }
 
+/// Inverts all bits of `self` in place.
 pub trait NotAssign {
+    /// Inverts all bits of `self` in place.
     fn not_assign(&mut self);
 }
 

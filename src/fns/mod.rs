@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+//! Mathematical functions.
+
 mod exp;
 mod hyp;
 mod log;

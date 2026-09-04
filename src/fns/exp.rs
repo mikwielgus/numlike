@@ -6,21 +6,28 @@
 pub trait ExpFns: Exp + Exp2 + ExpM1 {}
 impl<T: Exp + Exp2 + ExpM1> ExpFns for T {}
 
+/// Returns `e^(self)`, (the exponential function).
 pub trait Exp {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns `e^(self)`, (the exponential function).
     fn exp(self) -> Self::Output;
 }
 
+/// Returns `2^(self)`.
 pub trait Exp2 {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns `2^(self)`.
     fn exp2(self) -> Self::Output;
 }
 
+/// Returns `e^(self) - 1` in a way that is accurate even if the
+/// number is close to zero.
 pub trait ExpM1 {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns `e^(self) - 1` in a way that is accurate even if the
@@ -32,31 +39,38 @@ pub trait ExpM1 {
 pub trait CheckedExpFns: CheckedExp + CheckedExp2 + CheckedExpM1 {}
 impl<T: CheckedExp + CheckedExp2 + CheckedExpM1> CheckedExpFns for T {}
 
+/// Returns `e^(self)`, (the exponential function).
+///
+/// Returns `None` if the result is not finite.
 pub trait CheckedExp {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns `e^(self)`, (the exponential function).
-    ///
-    /// Returns `None` if the result is not finite.
     fn checked_exp(self) -> Option<Self::Output>;
 }
 
+/// Returns `2^(self)`.
+///
+/// Returns `None` if the result is not finite.
 pub trait CheckedExp2 {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns `2^(self)`.
-    ///
-    /// Returns `None` if the result is not finite.
     fn checked_exp2(self) -> Option<Self::Output>;
 }
 
+/// Returns `e^(self) - 1` in a way that is accurate even if the
+/// number is close to zero.
+///
+/// Returns `None` if the result is not finite.
 pub trait CheckedExpM1 {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns `e^(self) - 1` in a way that is accurate even if the
     /// number is close to zero.
-    ///
-    /// Returns `None` if the result is not finite.
     fn checked_exp_m1(self) -> Option<Self::Output>;
 }
 

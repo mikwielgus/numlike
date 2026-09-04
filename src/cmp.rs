@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+//! Equality and ordering with defined NaN behavior.
+
 use core::cmp::Ordering;
 
 /// Trait for partial equality, identical to [`PartialEq`], except that `NaN` is

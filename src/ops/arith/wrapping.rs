@@ -2,20 +2,28 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+/// Bundle of wrapping arithmetic and fused arithmetic operations.
 pub trait FullWrappingArithOps<Rhs = Self>:
     WrappingArithOps<Rhs> + WrappingFusedArithOps<Rhs>
 {
 }
 
+/// Bundle of wrapping fused arithmetic operations.
 pub trait WrappingFusedArithOps<Rhs = Self>: WrappingMulAdd<Rhs, Rhs> {}
 impl<Rhs, T: WrappingMulAdd<Rhs, Rhs>> WrappingFusedArithOps<Rhs> for T {}
 
+/// Wrapping (modular) fused multiply-add. Computes `(self * a) + b`,
+/// wrapping around at the boundary of the type.
 pub trait WrappingMulAdd<A = Self, B = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping (modular) fused multiply-add. Computes `(self * a) + b`,
+    /// wrapping around at the boundary of the type.
     fn wrapping_mul_add(self, a: A, b: B) -> Self::Output;
 }
 
+/// Bundle of wrapping arithmetic operations.
 pub trait WrappingArithOps<Rhs = Self>:
     WrappingEuclidOps<Rhs>
     + WrappingFieldOps<Rhs>
@@ -33,18 +41,41 @@ impl<
 {
 }
 
+/// Wrapping (modular) remainder. Computes `self % other`, wrapping around at the
+/// boundary of the type.
+///
+/// Such wrap-around never actually occurs mathematically; implementation artifacts make `x % y`
+/// invalid for `MIN / -1` on a signed type (where `MIN` is the negative minimal value). In such a case,
+/// this function returns `0`.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait WrappingRem<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping (modular) remainder. Computes `self % other`, wrapping around at the
+    /// boundary of the type.
     fn wrapping_rem(self, other: Rhs) -> Self::Output;
 }
 
+/// Wrapping simultaneous quotient and remainder. Computes
+/// `(self / other, self % other)`, wrapping around at the boundary of the type.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait WrappingDivRem<Rhs> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping simultaneous quotient and remainder. Computes
+    /// `(self / other, self % other)`, wrapping around at the boundary of the type.
     fn wrapping_div_rem(self, other: Rhs) -> (Self::Output, Self::Output);
 }
 
+/// Bundle of wrapping Euclidean division operations.
 pub trait WrappingEuclidOps<Rhs>:
     WrappingDivEuclid<Rhs> + WrappingRemEuclid<Rhs> + WrappingDivRemEuclid<Rhs>
 {
@@ -54,36 +85,87 @@ impl<Rhs, T: WrappingDivEuclid<Rhs> + WrappingRemEuclid<Rhs> + WrappingDivRemEuc
 {
 }
 
+/// Wrapping Euclidean division. Computes `self.div_euclid(other)`,
+/// wrapping around at the boundary of the type.
+///
+/// Wrapping will only occur in `MIN / -1` on a signed type (where `MIN` is the negative minimal value
+/// for the type). This is equivalent to `-MIN`, a positive value that is too large to represent in the
+/// type. In this case, this method returns `MIN` itself.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait WrappingDivEuclid<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping Euclidean division. Computes `self.div_euclid(other)`,
+    /// wrapping around at the boundary of the type.
     fn wrapping_div_euclid(self, other: Rhs) -> Self::Output;
 }
 
+/// Wrapping Euclidean remainder. Computes `self.rem_euclid(other)`, wrapping around
+/// at the boundary of the type.
+///
+/// Wrapping will only occur in `MIN % -1` on a signed type (where `MIN` is the negative minimal value
+/// for the type). In this case, this method returns `0`.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait WrappingRemEuclid<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping Euclidean remainder. Computes `self.rem_euclid(other)`, wrapping around
+    /// at the boundary of the type.
     fn wrapping_rem_euclid(self, other: Rhs) -> Self::Output;
 }
 
+/// Wrapping simultaneous Euclidean quotient and remainder. Computes
+/// `(self.div_euclid(other), self.rem_euclid(other))`, wrapping around at the
+/// boundary of the type.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait WrappingDivRemEuclid<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping simultaneous Euclidean quotient and remainder. Computes
+    /// `(self.div_euclid(other), self.rem_euclid(other))`, wrapping around at the
+    /// boundary of the type.
     fn wrapping_div_rem_euclid(self, other: Rhs) -> (Self::Output, Self::Output);
 }
 
+/// Bundle of wrapping field operations.
 pub trait WrappingFieldOps<Rhs = Self>:
     WrappingRingOps<Rhs> + WrappingDiv<Rhs, Output = Self>
 {
 }
 impl<Rhs, T: WrappingRingOps<Rhs> + WrappingDiv<Rhs, Output = Self>> WrappingFieldOps<Rhs> for T {}
 
+/// Wrapping (modular) division. Computes `self / other`, wrapping around at the
+/// boundary of the type.
+///
+/// The only case where such wrapping can occur is when one divides `MIN / -1` on a signed type (where
+/// `MIN` is the negative minimal value for the type); this is equivalent to `-MIN`, a positive value
+/// that is too large to represent in the type. In such a case, this function returns `MIN` itself.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait WrappingDiv<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping (modular) division. Computes `self / other`, wrapping around at the
+    /// boundary of the type.
     fn wrapping_div(self, other: Rhs) -> Self::Output;
 }
 
+/// Bundle of wrapping ring operations.
 pub trait WrappingRingOps<Rhs = Self>:
     WrappingAdd<Rhs, Output = Self>
     + WrappingSub<Rhs, Output = Self>
@@ -101,27 +183,51 @@ impl<
 {
 }
 
+/// Wrapping (modular) addition. Computes `self + other`, wrapping around at the
+/// boundary of the type.
 pub trait WrappingAdd<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping (modular) addition. Computes `self + other`, wrapping around at the
+    /// boundary of the type.
     fn wrapping_add(self, other: Rhs) -> Self::Output;
 }
 
+/// Wrapping (modular) subtraction. Computes `self - other`, wrapping around at the
+/// boundary of the type.
 pub trait WrappingSub<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping (modular) subtraction. Computes `self - other`, wrapping around at the
+    /// boundary of the type.
     fn wrapping_sub(self, other: Rhs) -> Self::Output;
 }
 
+/// Wrapping (modular) multiplication. Computes `self * other`, wrapping around at
+/// the boundary of the type.
 pub trait WrappingMul<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping (modular) multiplication. Computes `self * other`, wrapping around at
+    /// the boundary of the type.
     fn wrapping_mul(self, other: Rhs) -> Self::Output;
 }
 
+/// Wrapping (modular) negation. Computes `-self`, wrapping around at the boundary
+/// of the type.
+///
+/// The only case where such wrapping can occur is when one negates `MIN` on a signed type (where `MIN`
+/// is the negative minimal value for the type); this is a positive value that is too large to represent
+/// in the type. In such a case, this function returns `MIN` itself.
 pub trait WrappingNeg {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Wrapping (modular) negation. Computes `-self`, wrapping around at the boundary
+    /// of the type.
     fn wrapping_neg(self) -> Self::Output;
 }
 

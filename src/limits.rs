@@ -2,22 +2,33 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+//! Finite and extended numeric limits.
+
+/// Smallest finite value.
 pub trait MinFinite {
+    /// Smallest finite value.
     const MIN_FINITE: Self;
 }
 
+/// Largest finite value.
 pub trait MaxFinite {
+    /// Largest finite value.
     const MAX_FINITE: Self;
 }
 
+/// Negative infinity if present in the type, otherwise smallest finite value.
 pub trait MinExtended {
+    /// Negative infinity if present in the type, otherwise smallest finite value.
     const MIN_EXTENDED: Self;
 }
 
+/// Positive infinity if present in the type, otherwise greatest finite value.
 pub trait MaxExtended {
+    /// Positive infinity if present in the type, otherwise greatest finite value.
     const MAX_EXTENDED: Self;
 }
 
+/// Bundle of limits for a numeric type.
 pub trait Limits: MinFinite + MaxFinite + MinExtended + MaxExtended {}
 impl<T: MinFinite + MaxFinite + MinExtended + MaxExtended> Limits for T {}
 

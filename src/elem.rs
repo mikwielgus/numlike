@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+//! Distinguished elements such as zero and one.
+
 /// Defines a distinguished `0` value.
 ///
 /// This is usually the additive identity, but it does not have to be so. It
@@ -10,6 +12,7 @@
 /// or an element that maps to the classical real zero, as it sometimes is in
 /// descriptions of tropical semirings.
 pub trait Zero {
+    /// A distinguished `0` value.
     const ZERO: Self;
 }
 
@@ -20,6 +23,7 @@ pub trait Zero {
 /// or an element that maps to the classical real one, as it sometimes is in
 /// descriptions of tropical semirings.
 pub trait One {
+    /// A distinguished `0` value.
     const ONE: Self;
 }
 

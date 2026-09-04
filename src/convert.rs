@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+//! Lossy conversions between numeric types.
+
 /// Convert a value from one type to another, possibly with lossy approximation.
 ///
 /// This trait is analogous to standard library's [`From`], but allows

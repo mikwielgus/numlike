@@ -2,20 +2,30 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+/// Bundle of overflowing arithmetic and fused arithmetic operations.
 pub trait FullOverflowingArithOps<Rhs = Self>:
     OverflowingArithOps<Rhs> + OverflowingFusedArithOps<Rhs>
 {
 }
 
+/// Bundle of overflowing fused arithmetic operations.
 pub trait OverflowingFusedArithOps<Rhs = Self>: OverflowingMulAdd<Rhs, Rhs> {}
 impl<Rhs, T: OverflowingMulAdd<Rhs, Rhs>> OverflowingFusedArithOps<Rhs> for T {}
 
+/// Overflowing fused multiply-add. Computes `(self * a) + b`.
+///
+/// Returns a tuple of the result along with a boolean indicating whether an
+/// arithmetic overflow would occur. If an overflow would have occurred then
+/// the wrapped value is returned.
 pub trait OverflowingMulAdd<A = Self, B = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Overflowing fused multiply-add. Computes `(self * a) + b`.
     fn overflowing_mul_add(self, a: A, b: B) -> (Self::Output, bool);
 }
 
+/// Bundle of overflowing arithmetic operations.
 pub trait OverflowingArithOps<Rhs = Self>:
     OverflowingEuclidOps<Rhs>
     + OverflowingFieldOps<Rhs>
@@ -33,18 +43,39 @@ impl<
 {
 }
 
+/// Calculates the remainder when `self` is divided by `other`.
+///
+/// Returns a tuple of the remainder after dividing along with a boolean indicating whether an
+/// arithmetic overflow would occur. If an overflow would occur then zero is returned.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait OverflowingRem<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Calculates the remainder when `self` is divided by `other`.
     fn overflowing_rem(self, other: Rhs) -> (Self::Output, bool);
 }
 
+/// Calculates the quotient and remainder when `self` is divided by `other`.
+///
+/// Returns a tuple of `(quotient, remainder)` along with a boolean indicating whether an
+/// arithmetic overflow would occur.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait OverflowingDivRem<Rhs> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Calculates the quotient and remainder when `self` is divided by `other`.
     fn overflowing_div_rem(self, other: Rhs) -> ((Self::Output, Self::Output), bool);
 }
 
+/// Bundle of overflowing Euclidean division operations.
 pub trait OverflowingEuclidOps<Rhs>:
     OverflowingDivEuclid<Rhs> + OverflowingRemEuclid<Rhs> + OverflowingDivRemEuclid<Rhs>
 {
@@ -54,24 +85,55 @@ impl<Rhs, T: OverflowingDivEuclid<Rhs> + OverflowingRemEuclid<Rhs> + Overflowing
 {
 }
 
+/// Calculates the quotient of Euclidean division `self.div_euclid(other)`.
+///
+/// Returns a tuple of the divisor along with a boolean indicating whether an arithmetic overflow would
+/// occur. If an overflow would occur then `self` is returned.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait OverflowingDivEuclid<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Calculates the quotient of Euclidean division `self.div_euclid(other)`.
     fn overflowing_div_euclid(self, other: Rhs) -> (Self::Output, bool);
 }
 
+/// Overflowing Euclidean remainder. Calculates `self.rem_euclid(other)`.
+///
+/// Returns a tuple of the remainder after dividing along with a boolean indicating whether an
+/// arithmetic overflow would occur. If an overflow would occur then 0 is returned.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait OverflowingRemEuclid<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Overflowing Euclidean remainder. Calculates `self.rem_euclid(other)`.
     fn overflowing_rem_euclid(self, other: Rhs) -> (Self::Output, bool);
 }
 
+/// Calculates the Euclidean quotient and remainder when `self` is divided by `other`.
+///
+/// Returns a tuple of `(quotient, remainder)` along with a boolean indicating whether an
+/// arithmetic overflow would occur.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait OverflowingDivRemEuclid<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Calculates the Euclidean quotient and remainder when `self` is divided by `other`.
     fn overflowing_div_rem_euclid(self, other: Rhs) -> ((Self::Output, Self::Output), bool);
 }
 
+/// Bundle of overflowing field operations.
 pub trait OverflowingFieldOps<Rhs = Self>:
     OverflowingRingOps<Rhs> + OverflowingDiv<Rhs, Output = Self>
 {
@@ -81,12 +143,23 @@ impl<Rhs, T: OverflowingRingOps<Rhs> + OverflowingDiv<Rhs, Output = Self>> Overf
 {
 }
 
+/// Calculates the divisor when `self` is divided by `other`.
+///
+/// Returns a tuple of the divisor along with a boolean indicating whether an arithmetic overflow would
+/// occur. If an overflow would occur then self is returned.
+///
+/// # Panics
+///
+/// This function will panic if `other` is zero.
 pub trait OverflowingDiv<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Calculates the divisor when `self` is divided by `other`.
     fn overflowing_div(self, other: Rhs) -> (Self::Output, bool);
 }
 
+/// Bundle of overflowing ring operations.
 pub trait OverflowingRingOps<Rhs = Self>:
     OverflowingAdd<Rhs, Output = Self>
     + OverflowingSub<Rhs, Output = Self>
@@ -104,27 +177,52 @@ impl<
 {
 }
 
+/// Returns a tuple of the addition along with a boolean indicating
+/// whether an arithmetic overflow would occur. If an overflow would have
+/// occurred then the wrapped value is returned.
 pub trait OverflowingAdd<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Returns a tuple of the addition along with a boolean indicating
+    /// whether an arithmetic overflow would occur. If an overflow would have
+    /// occurred then the wrapped value is returned.
     fn overflowing_add(self, other: Rhs) -> (Self::Output, bool);
 }
 
+/// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic overflow
+/// would occur. If an overflow would have occurred then the wrapped value is returned.
 pub trait OverflowingSub<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic overflow
+    /// would occur. If an overflow would have occurred then the wrapped value is returned.
     fn overflowing_sub(self, other: Rhs) -> (Self::Output, bool);
 }
 
+/// Calculates the multiplication of `self` and `other`.
+///
+/// Returns a tuple of the multiplication along with a boolean indicating whether an arithmetic overflow
+/// would occur. If an overflow would have occurred then the wrapped value is returned.
 pub trait OverflowingMul<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Calculates the multiplication of `self` and `other`.
     fn overflowing_mul(self, other: Rhs) -> (Self::Output, bool);
 }
 
+/// Returns a tuple of the negated version of self along with a boolean indicating whether an overflow
+/// happened. If `self` is the minimum value, then the minimum value will be returned again and `true`
+/// will be returned for an overflow happening.
 pub trait OverflowingNeg {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Returns a tuple of the negated version of self along with a boolean indicating whether an overflow
+    /// happened. If `self` is the minimum value, then the minimum value will be returned again and `true`
+    /// will be returned for an overflow happening.
     fn overflowing_neg(self) -> (Self::Output, bool);
 }
 

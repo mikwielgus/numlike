@@ -6,51 +6,64 @@
 pub trait RoundFns: Round + Trunc + RoundTiesEven + Floor + Ceil {}
 impl<T: Round + Trunc + RoundTiesEven + Floor + Ceil> RoundFns for T {}
 
+/// Returns the nearest integer to `self`. If a value is half-way between two
+/// integers, round away from `0.0`.
+///
+/// This function always returns the precise result.
 pub trait Round {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns the nearest integer to `self`. If a value is half-way between two
     /// integers, round away from `0.0`.
-    ///
-    /// This function always returns the precise result.
     fn round(self) -> Self::Output;
 }
 
+/// Returns the integer part of `self`.
+/// This means that non-integer numbers are always truncated towards zero.
+///
+/// This function always returns the precise result.
 pub trait Trunc {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns the integer part of `self`.
     /// This means that non-integer numbers are always truncated towards zero.
-    ///
-    /// This function always returns the precise result.
     fn trunc(self) -> Self::Output;
 }
 
+/// Returns the nearest integer to a number. Rounds half-way cases to the number
+/// with an even least significant digit.
+///
+/// This function always returns the precise result.
 pub trait RoundTiesEven {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns the nearest integer to a number. Rounds half-way cases to the number
     /// with an even least significant digit.
-    ///
-    /// This function always returns the precise result.
     fn round_ties_even(self) -> Self::Output;
 }
 
+/// Returns the largest integer that is less than or equal to `self`.
+///
+/// This function always returns the precise result.
 pub trait Floor {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns the largest integer that is less than or equal to `self`.
-    ///
-    /// This function always returns the precise result.
     fn floor(self) -> Self::Output;
 }
 
+/// Returns the smallest integer that is greater than or equal to `self`.
+///
+/// This function always returns the precise result.
 pub trait Ceil {
+    /// The resulting type after applying the operation.
     type Output;
 
     /// Returns the smallest integer that is greater than or equal to `self`.
-    ///
-    /// This function always returns the precise result.
     fn ceil(self) -> Self::Output;
 }
 

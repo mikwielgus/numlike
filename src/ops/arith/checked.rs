@@ -4,20 +4,28 @@
 
 use super::plain::MulAdd;
 
+/// Bundle of checked arithmetic and fused arithmetic operations.
 pub trait CheckedPlainArithOps<Rhs = Self>:
     CheckedArithOps<Rhs> + CheckedFusedArithOps<Rhs>
 {
 }
 
+/// Bundle of checked fused arithmetic operations.
 pub trait CheckedFusedArithOps<Rhs = Self>: CheckedMulAdd<Rhs, Rhs> {}
 impl<Rhs, T: CheckedMulAdd<Rhs, Rhs>> CheckedFusedArithOps<Rhs> for T {}
 
+/// Checked fused multiply-add. Computes `(self * a) + b`, returning `None` if
+/// overflow occurred or the result is not finite.
 pub trait CheckedMulAdd<A = Self, B = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked fused multiply-add. Computes `(self * a) + b`, returning `None`
+    /// if overflow occurred or the result is not finite.
     fn checked_mul_add(self, a: A, b: B) -> Option<Self::Output>;
 }
 
+/// Bundle of checked arithmetic operations.
 pub trait CheckedArithOps<Rhs = Self>:
     CheckedEuclidOps<Rhs>
     + CheckedFieldOps<Rhs>
@@ -35,18 +43,31 @@ impl<
 {
 }
 
+/// Checked remainder. Computes `self % other`, returning `None` if `other == 0`
+/// or the division results in overflow.
 pub trait CheckedRem<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked remainder. Computes `self % other`, returning `None` if `other
+    /// == 0` or the division results in overflow.
     fn checked_rem(self, other: Rhs) -> Option<Self::Output>;
 }
 
+/// Checked simultaneous quotient and remainder. Computes
+/// `(self / other, self % other)`, returning `None` if `other == 0` or the
+/// division results in overflow.
 pub trait CheckedDivRem<Rhs> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked simultaneous quotient and remainder. Computes
+    /// `(self / other, self % other)`, returning `None` if `other == 0` or the
+    /// division results in overflow.
     fn checked_div_rem(self, other: Rhs) -> Option<(Self::Output, Self::Output)>;
 }
 
+/// Bundle of checked Euclidean division operations.
 pub trait CheckedEuclidOps<Rhs>:
     CheckedDivEuclid<Rhs> + CheckedRemEuclid<Rhs> + CheckedDivRemEuclid<Rhs>
 {
@@ -56,36 +77,60 @@ impl<Rhs, T: CheckedDivEuclid<Rhs> + CheckedRemEuclid<Rhs> + CheckedDivRemEuclid
 {
 }
 
+/// Checked Euclidean division. Computes `self.div_euclid(other)`, returning
+/// `None` if `other == 0` or the division results in overflow.
 pub trait CheckedDivEuclid<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked Euclidean division. Computes `self.div_euclid(other)`,
+    /// returning `None` if `other == 0` or the division results in overflow.
     fn checked_div_euclid(self, other: Rhs) -> Option<Self::Output>;
 }
 
+/// Checked Euclidean remainder. Computes `self.rem_euclid(other)`, returning
+/// `None` if `other == 0` or the division results in overflow.
 pub trait CheckedRemEuclid<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked Euclidean remainder. Computes `self.rem_euclid(other)`,
+    /// returning `None` if `other == 0` or the division results in overflow.
     fn checked_rem_euclid(self, other: Rhs) -> Option<Self::Output>;
 }
 
+/// Checked simultaneous Euclidean quotient and remainder. Computes
+/// `(self.div_euclid(other), self.rem_euclid(other))`, returning `None` if
+/// `other == 0` or the division results in overflow.
 pub trait CheckedDivRemEuclid<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked simultaneous Euclidean quotient and remainder. Computes
+    /// `(self.div_euclid(other), self.rem_euclid(other))`, returning `None` if
+    /// `other == 0` or the division results in overflow.
     fn checked_div_rem_euclid(self, other: Rhs) -> Option<(Self::Output, Self::Output)>;
 }
 
+/// Bundle of checked field operations.
 pub trait CheckedFieldOps<Rhs = Self>:
     CheckedRingOps<Rhs> + CheckedDiv<Rhs, Output = Self>
 {
 }
 impl<Rhs, T: CheckedRingOps<Rhs> + CheckedDiv<Rhs, Output = Self>> CheckedFieldOps<Rhs> for T {}
 
+/// Checked division. Computes `self / other`, returning `None` if `other ==
+/// 0` or the division results in overflow.
 pub trait CheckedDiv<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked division. Computes `self / other`, returning `None` if `other ==
+    /// 0` or the division results in overflow.
     fn checked_div(self, other: Rhs) -> Option<Self::Output>;
 }
 
+/// Bundle of checked ring operations.
 pub trait CheckedRingOps<Rhs = Self>:
     CheckedAdd<Rhs, Output = Self>
     + CheckedSub<Rhs, Output = Self>
@@ -103,27 +148,45 @@ impl<
 {
 }
 
+/// Checked addition. Computes `self + other`, returning `None` if overflow
+/// or occurred.
 pub trait CheckedAdd<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked addition. Computes `self + other`, returning `None` if overflow
+    /// or occurred.
     fn checked_add(self, other: Rhs) -> Option<Self::Output>;
 }
 
+/// Checked subtraction. Computes `self - other`, returning `None` if
+/// overflow occurred.
 pub trait CheckedSub<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked subtraction. Computes `self - other`, returning `None` if
+    /// overflow occurred.
     fn checked_sub(self, other: Rhs) -> Option<Self::Output>;
 }
 
+/// Checked multiplication. Computes `self * other`, returning `None` if
+/// overflow occurred.
 pub trait CheckedMul<Rhs = Self> {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked multiplication. Computes `self * other`, returning `None` if
+    /// overflow occurred.
     fn checked_mul(self, other: Rhs) -> Option<Self::Output>;
 }
 
+/// Checked negation. Computes `-self`, returning `None` if `self == MIN`.
 pub trait CheckedNeg {
+    /// The resulting type after applying the operation.
     type Output;
 
+    /// Checked negation. Computes `-self`, returning `None` if `self == MIN`.
     fn checked_neg(self) -> Option<Self::Output>;
 }
 
