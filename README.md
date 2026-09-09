@@ -20,8 +20,9 @@ is `no_std`-compatible. Most of `no_std` operations on floating point numbers
 still have a dependency on [`libm`](https://docs.rs/libm/latest/libm/), which is
 gated behind `libm` feature flag.
 
-If you need abstract container traits instead of abstract number traits, check
-out another crate of ours, [`maplike`](https://github.com/mikwielgus/maplike).
+If you are looking for abstract container traits in addition to
+abstract number traits, also check out another crate of ours,
+[`maplike`](https://github.com/mikwielgus/maplike).
 
 ## Usage
 
@@ -48,9 +49,9 @@ decisions in the venerable `num-traits` crate.
 
   This makes it impossible to distinguish a *0* for algebraic
   structures that don't implement addition. For example, [absorption
-  magma](https://ncatlab.org/nlab/show/absorption+magma) (magma with zero)
+  magma](https://ncatlab.org/nlab/show/absorption+magma) (*magma with zero*)
   and [absorption monoid](https://ncatlab.org/nlab/show/absorption+monoid)
-  (monoid with zero) are usually described without addition,
+  (*monoid with zero*) are usually described without addition,
   yet still with an element denoted as as *0*, the [absorbing
   element](https://en.wikipedia.org/wiki/Absorbing_element) (or just
   *absorber*).
@@ -63,8 +64,8 @@ decisions in the venerable `num-traits` crate.
   - `num-traits` also requires `Output = Self` (closed operation) for `Add` and
     `Mul`, making it impossible to use `Zero` and `One` for statically-typed
     unit of measurement libraries like [`uom`](https://docs.rs/uom/latest/uom/),
-    where e.g. multiplying two lengths gives you area, which lies in a different
-    space.
+    where, for instance, multiplying two lengths gives you area, which is a
+    different dimension.
     - `numlike` does not have these problems because it does not have any
       supertraits for its `Zero` and `One`.
   - Moreover, `num-traits`'s `Zero` and `One` do not provide `ZERO` and `ONE`
@@ -76,7 +77,7 @@ decisions in the venerable `num-traits` crate.
 - `num-traits`'s
   [`Bounded`](https://docs.rs/num-traits/latest/num_traits/bounds/trait.Bounded.html)
   trait only returns **finite** minimum and maximum values. This makes no
-  difference for integers, but does for floats. For instance, for `f32`,
+  difference for integers, but matters for floats. For instance, for `f32`,
   `.max_value()` returns
   [`f32::MAX`](https://doc.rust-lang.org/std/primitive.f32.html#associatedconstant.MAX),
   which is actually the largest finite number, equal to `3.40282347e+38`, not
