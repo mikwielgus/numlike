@@ -81,4 +81,38 @@ macro_rules! impl_sign_traits_for_signeds {
 }
 
 impl_sign_traits_for_signeds!(i8, i16, i32, i64, i128, isize);
-// TODO: unsigned types, probably.
+
+macro_rules! impl_sign_traits_for_unsigneds {
+    ($($ty:ty),*) => {
+        $(
+            impl Signum for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn signum(self) -> Self::Output {
+                    (self > 0) as $ty
+                }
+            }
+
+            impl Abs for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn abs(self) -> Self::Output {
+                    self
+                }
+            }
+
+            impl CheckedAbs for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_abs(self) -> Option<Self::Output> {
+                    Some(self)
+                }
+            }
+        )*
+    };
+}
+
+impl_sign_traits_for_unsigneds!(u8, u16, u32, u64, u128, usize);
