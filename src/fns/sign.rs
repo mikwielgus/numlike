@@ -47,7 +47,7 @@ pub trait CheckedAbs {
     fn checked_abs(self) -> Option<Self::Output>;
 }
 
-macro_rules! impl_sign_traits_for_unsigned {
+macro_rules! impl_sign_traits_for_unsigned_int {
     ($ty:ty, $tests_mod:ident) => {
         impl Signum for $ty {
             type Output = $ty;
@@ -129,14 +129,14 @@ macro_rules! sign_traits_nonnegative_tests {
     };
 }
 
-impl_sign_traits_for_unsigned!(u8, u8_tests);
-impl_sign_traits_for_unsigned!(u16, u16_tests);
-impl_sign_traits_for_unsigned!(u32, u32_tests);
-impl_sign_traits_for_unsigned!(u64, u64_tests);
-impl_sign_traits_for_unsigned!(u128, u128_tests);
-impl_sign_traits_for_unsigned!(usize, usize_tests);
+impl_sign_traits_for_unsigned_int!(u8, u8_tests);
+impl_sign_traits_for_unsigned_int!(u16, u16_tests);
+impl_sign_traits_for_unsigned_int!(u32, u32_tests);
+impl_sign_traits_for_unsigned_int!(u64, u64_tests);
+impl_sign_traits_for_unsigned_int!(u128, u128_tests);
+impl_sign_traits_for_unsigned_int!(usize, usize_tests);
 
-macro_rules! impl_sign_traits_for_signed {
+macro_rules! impl_sign_traits_for_signed_int {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
         impl Signum for $ty {
             type Output = $ty;
@@ -215,9 +215,52 @@ macro_rules! sign_traits_negative_tests {
     };
 }
 
-impl_sign_traits_for_signed!(i8, i8_nonnegative_tests, i8_negative_tests);
-impl_sign_traits_for_signed!(i16, i16_nonnegative_tests, i16_negative_tests);
-impl_sign_traits_for_signed!(i32, i32_nonnegative_tests, i32_negative_tests);
-impl_sign_traits_for_signed!(i64, i64_nonnegative_tests, i64_negative_tests);
-impl_sign_traits_for_signed!(i128, i128_nonnegative_tests, i128_negative_tests);
-impl_sign_traits_for_signed!(isize, isize_nonnegative_tests, isize_negative_tests);
+impl_sign_traits_for_signed_int!(i8, i8_nonnegative_tests, i8_negative_tests);
+impl_sign_traits_for_signed_int!(i16, i16_nonnegative_tests, i16_negative_tests);
+impl_sign_traits_for_signed_int!(i32, i32_nonnegative_tests, i32_negative_tests);
+impl_sign_traits_for_signed_int!(i64, i64_nonnegative_tests, i64_negative_tests);
+impl_sign_traits_for_signed_int!(i128, i128_nonnegative_tests, i128_negative_tests);
+impl_sign_traits_for_signed_int!(isize, isize_nonnegative_tests, isize_negative_tests);
+
+macro_rules! impl_sign_traits_for_float {
+    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl Signum for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn signum(self) -> Self::Output {
+                // Rust's built-in signum on floats is unalgebraic, so we force
+                // zero to return zero here.
+                if self == 0.0 {
+                    0.0
+                } else {
+                    <$ty>::signum(self)
+                }
+            }
+        }
+
+        impl Abs for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn abs(self) -> Self::Output {
+                <$ty>::abs(self)
+            }
+        }
+
+        impl CheckedAbs for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn checked_abs(self) -> Option<Self::Output> {
+                Some(<$ty>::abs(self))
+            }
+        }
+
+        sign_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+        sign_traits_negative_tests!($ty, $negative_tests_mod);
+    };
+}
+
+impl_sign_traits_for_float!(f32, f32_nonnegative_tests, f32_negative_tests);
+impl_sign_traits_for_float!(f64, f64_nonnegative_tests, f64_negative_tests);
