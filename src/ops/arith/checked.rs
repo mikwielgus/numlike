@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use super::plain::MulAdd;
+use crate::ops::MulAdd;
 #[cfg(any(feature = "std", feature = "libm"))]
-use super::plain::{DivEuclid, RemEuclid};
+use crate::ops::{DivEuclid, RemEuclid};
 
 /// Bundle of checked arithmetic and fused arithmetic operations.
 pub trait CheckedPlainArithOps<Rhs = Self>:

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 #[cfg(any(feature = "std", feature = "libm"))]
-use super::round::Floor;
+use crate::fns::round::Floor;
 
 /// Bundle of root-finding functions.
 pub trait RootFns: Sqrt + Cbrt {}
