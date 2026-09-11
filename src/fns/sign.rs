@@ -3,20 +3,20 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 /// Bundle of sign-related functions.
-pub trait SignFns: Signum + Abs {}
-impl<T: Signum + Abs> SignFns for T {}
+pub trait SignFns: Sgn + Abs {}
+impl<T: Sgn + Abs> SignFns for T {}
 
 /// Returns a number representing sign of `self`.
 ///
 ///  - `0` if the number is zero
 ///  - `1` if the number is positive
 ///  - `-1` if the number is negative
-pub trait Signum {
+pub trait Sgn {
     /// The resulting type after applying the operation.
     type Output;
 
     /// Returns a number representing sign of `self`.
-    fn signum(self) -> Self::Output;
+    fn sgn(self) -> Self::Output;
 }
 
 /// Computes the absolute value of `self`.
@@ -49,11 +49,11 @@ pub trait CheckedAbs {
 
 macro_rules! impl_sign_traits_for_unsigned_int {
     ($ty:ty, $tests_mod:ident) => {
-        impl Signum for $ty {
+        impl Sgn for $ty {
             type Output = $ty;
 
             #[inline]
-            fn signum(self) -> Self::Output {
+            fn sgn(self) -> Self::Output {
                 (self > 0) as $ty
             }
         }
@@ -88,16 +88,16 @@ macro_rules! sign_traits_nonnegative_tests {
             use crate::fns::*;
 
             #[test]
-            fn test_nonnegative_signum() {
+            fn test_nonnegative_sgn() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
 
-                assert_eq!(Signum::signum(zero), zero);
-                assert_eq!(Signum::signum(one), one);
-                assert_eq!(Signum::signum(two), one);
-                assert_eq!(Signum::signum(four), one);
+                assert_eq!(Sgn::sgn(zero), zero);
+                assert_eq!(Sgn::sgn(one), one);
+                assert_eq!(Sgn::sgn(two), one);
+                assert_eq!(Sgn::sgn(four), one);
             }
 
             #[test]
@@ -138,11 +138,11 @@ impl_sign_traits_for_unsigned_int!(usize, usize_tests);
 
 macro_rules! impl_sign_traits_for_signed_int {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
-        impl Signum for $ty {
+        impl Sgn for $ty {
             type Output = $ty;
 
             #[inline]
-            fn signum(self) -> Self::Output {
+            fn sgn(self) -> Self::Output {
                 <$ty>::signum(self)
             }
         }
@@ -178,14 +178,14 @@ macro_rules! sign_traits_negative_tests {
             use crate::fns::*;
 
             #[test]
-            fn test_negative_signum() {
+            fn test_negative_sgn() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
 
-                assert_eq!(Signum::signum(-one), -one);
-                assert_eq!(Signum::signum(-two), -one);
-                assert_eq!(Signum::signum(-four), -one);
+                assert_eq!(Sgn::sgn(-one), -one);
+                assert_eq!(Sgn::sgn(-two), -one);
+                assert_eq!(Sgn::sgn(-four), -one);
             }
 
             #[test]
@@ -224,13 +224,13 @@ impl_sign_traits_for_signed_int!(isize, isize_nonnegative_tests, isize_negative_
 
 macro_rules! impl_sign_traits_for_float {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
-        impl Signum for $ty {
+        impl Sgn for $ty {
             type Output = $ty;
 
             #[inline]
-            fn signum(self) -> Self::Output {
-                // Rust's built-in signum on floats is unalgebraic, so we force
-                // zero to return zero here.
+            fn sgn(self) -> Self::Output {
+                // Rust's built-in `signum()` on floats is unalgebraic, so we
+                // force zero to return zero here.
                 if self == 0.0 {
                     0.0
                 } else {
