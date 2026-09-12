@@ -15,13 +15,13 @@ use core::cmp::Ordering;
 pub trait NanfixPartialEq<Rhs: ?Sized = Self> {
     /// Test whether self and the other value are equal, treating NaN as equal
     /// to itself.
-    fn eq(&self, other: &Rhs) -> bool;
+    fn nanfix_eq(&self, other: &Rhs) -> bool;
 
     /// Test whether self and the other value not equal, treating NaN as equal
     /// to itself.
     #[inline]
-    fn ne(&self, other: &Rhs) -> bool {
-        !self.eq(other)
+    fn nanfix_ne(&self, other: &Rhs) -> bool {
+        !self.nanfix_eq(other)
     }
 }
 
@@ -32,41 +32,6 @@ pub trait NanfixPartialEq<Rhs: ?Sized = Self> {
 /// exists to mirror Rust standard library's [`PartialEq`] and [`Eq`].
 pub trait NanfixEq<Rhs: ?Sized = Self>: NanfixPartialEq {}
 
-/*macro_rules! def_cmp_traits {
-    ($partial_ord:ident, $ord:ident) => {
-        pub trait $partial_ord<Rhs: ?Sized = Self>: NanfixPartialEq {
-            fn partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
-
-            #[inline]
-            fn lt(&self, other: &Rhs) -> bool {
-                self.partial_cmp(other).is_some_and(Ordering::is_lt)
-            }
-
-            #[inline]
-            fn le(&self, other: &Rhs) -> bool {
-                self.partial_cmp(other).is_some_and(Ordering::is_le)
-            }
-
-            #[inline]
-            fn gt(&self, other: &Rhs) -> bool {
-                self.partial_cmp(other).is_some_and(Ordering::is_gt)
-            }
-
-            #[inline]
-            fn ge(&self, other: &Rhs) -> bool {
-                self.partial_cmp(other).is_some_and(Ordering::is_ge)
-            }
-        }
-
-        pub trait $ord<Rhs: ?Sized = Self>: NanfixEq + $partial_ord {
-            fn cmp(&self, other: &Rhs) -> Ordering;
-        }
-    };
-}*/
-
-/*def_cmp_traits!(NanminPartialOrd, NanminOrd);
-def_cmp_traits!(NanmaxPartialOrd, NanmaxOrd);*/
-
 /// Trait for partial order where NaNs are fixed to be the smallest element in
 /// the set, smaller even than the negative infinity.
 ///
@@ -75,30 +40,30 @@ def_cmp_traits!(NanmaxPartialOrd, NanmaxOrd);*/
 pub trait NanminPartialOrd<Rhs: ?Sized = Self>: NanfixPartialEq {
     /// This method returns an (NaN-min) ordering between self and other values
     /// if one exists.
-    fn partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
+    fn nanmin_partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
 
     /// Checks if `self` is (NaN-min) less than `other`.
     #[inline]
-    fn lt(&self, other: &Rhs) -> bool {
-        self.partial_cmp(other).is_some_and(Ordering::is_lt)
+    fn nanmin_lt(&self, other: &Rhs) -> bool {
+        self.nanmin_partial_cmp(other).is_some_and(Ordering::is_lt)
     }
 
     /// Checks if `self` is (NaN-min) less or equal to `other`.
     #[inline]
-    fn le(&self, other: &Rhs) -> bool {
-        self.partial_cmp(other).is_some_and(Ordering::is_le)
+    fn nanmin_le(&self, other: &Rhs) -> bool {
+        self.nanmin_partial_cmp(other).is_some_and(Ordering::is_le)
     }
 
     /// Checks if `self` is (NaN-min) greater than `other`.
     #[inline]
-    fn gt(&self, other: &Rhs) -> bool {
-        self.partial_cmp(other).is_some_and(Ordering::is_gt)
+    fn nanmin_gt(&self, other: &Rhs) -> bool {
+        self.nanmin_partial_cmp(other).is_some_and(Ordering::is_gt)
     }
 
     /// Checks if `self` is (NaN-min) greater or equal to `other`.
     #[inline]
-    fn ge(&self, other: &Rhs) -> bool {
-        self.partial_cmp(other).is_some_and(Ordering::is_ge)
+    fn nanmin_ge(&self, other: &Rhs) -> bool {
+        self.nanmin_partial_cmp(other).is_some_and(Ordering::is_ge)
     }
 }
 
@@ -111,9 +76,9 @@ pub trait NanminPartialOrd<Rhs: ?Sized = Self>: NanfixPartialEq {
 pub trait NanminOrd<Rhs: ?Sized = Self>: NanfixEq + NanminPartialOrd {
     /// This method returns an (NaN-min) `Ordering` between `self` and `other`.
     ///
-    /// By convention, `self.cmp(&other)` returns the ordering matching the
-    /// expression `self <operator> other` if true.
-    fn cmp(&self, other: &Rhs) -> Ordering;
+    /// By convention, `self.nanmin_cmp(&other)` returns the ordering matching
+    /// the expression `self <operator> other` if true.
+    fn nanmin_cmp(&self, other: &Rhs) -> Ordering;
 }
 
 /// Trait for partial order where NaNs are fixed to be the greatest element in
@@ -124,30 +89,30 @@ pub trait NanminOrd<Rhs: ?Sized = Self>: NanfixEq + NanminPartialOrd {
 pub trait NanmaxPartialOrd<Rhs: ?Sized = Self>: NanfixPartialEq {
     /// This method returns an (NaN-max) ordering between self and other values
     /// if one exists.
-    fn partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
+    fn nanmax_partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
 
     /// Checks if `self` is (NaN-max) less than `other`.
     #[inline]
-    fn lt(&self, other: &Rhs) -> bool {
-        self.partial_cmp(other).is_some_and(Ordering::is_lt)
+    fn nanmax_lt(&self, other: &Rhs) -> bool {
+        self.nanmax_partial_cmp(other).is_some_and(Ordering::is_lt)
     }
 
     /// Checks if `self` is (NaN-max) less or equal to `other`.
     #[inline]
-    fn le(&self, other: &Rhs) -> bool {
-        self.partial_cmp(other).is_some_and(Ordering::is_le)
+    fn nanmax_le(&self, other: &Rhs) -> bool {
+        self.nanmax_partial_cmp(other).is_some_and(Ordering::is_le)
     }
 
     /// Checks if `self` is (NaN-max) greater than `other`.
     #[inline]
-    fn gt(&self, other: &Rhs) -> bool {
-        self.partial_cmp(other).is_some_and(Ordering::is_gt)
+    fn nanmax_gt(&self, other: &Rhs) -> bool {
+        self.nanmax_partial_cmp(other).is_some_and(Ordering::is_gt)
     }
 
     /// Checks if `self` is (NaN-max) greater or equal to `other`.
     #[inline]
-    fn ge(&self, other: &Rhs) -> bool {
-        self.partial_cmp(other).is_some_and(Ordering::is_ge)
+    fn nanmax_ge(&self, other: &Rhs) -> bool {
+        self.nanmax_partial_cmp(other).is_some_and(Ordering::is_ge)
     }
 }
 
@@ -159,10 +124,10 @@ pub trait NanmaxPartialOrd<Rhs: ?Sized = Self>: NanfixPartialEq {
 /// standard library's [`PartialOrd`] and [`Ord`].
 pub trait NanmaxOrd<Rhs: ?Sized = Self>: NanfixEq + NanmaxPartialOrd {
     /// This method returns an (NaN-max) `Ordering` between `self` and `other`.
-
-    /// By convention, `self.cmp(&other)` returns the ordering matching the
-    /// expression `self <operator> other` if true.
-    fn cmp(&self, other: &Rhs) -> Ordering;
+    ///
+    /// By convention, `self.nanmax_cmp(&other)` returns the ordering matching
+    /// the expression `self <operator> other` if true.
+    fn nanmax_cmp(&self, other: &Rhs) -> Ordering;
 }
 
 macro_rules! impl_nanfix_eq_traits_for_ords {
@@ -170,7 +135,7 @@ macro_rules! impl_nanfix_eq_traits_for_ords {
         $(
             impl NanfixPartialEq<$ty> for $ty {
                 #[inline]
-                fn eq(&self, other: &$ty) -> bool {
+                fn nanfix_eq(&self, other: &$ty) -> bool {
                     PartialEq::eq(self, other)
                 }
             }
@@ -185,28 +150,28 @@ macro_rules! impl_nanmin_nanmax_ord_traits_for_ords {
         $(
             impl NanminPartialOrd<$ty> for $ty {
                 #[inline]
-                fn partial_cmp(&self, other: &$ty) -> Option<Ordering> {
+                fn nanmin_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
                     PartialOrd::partial_cmp(self, other)
                 }
             }
 
             impl NanminOrd<$ty> for $ty {
                 #[inline]
-                fn cmp(&self, other: &$ty) -> Ordering {
+                fn nanmin_cmp(&self, other: &$ty) -> Ordering {
                     Ord::cmp(self, other)
                 }
             }
 
             impl NanmaxPartialOrd<$ty> for $ty {
                 #[inline]
-                fn partial_cmp(&self, other: &$ty) -> Option<Ordering> {
+                fn nanmax_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
                     PartialOrd::partial_cmp(self, other)
                 }
             }
 
             impl NanmaxOrd<$ty> for $ty {
                 #[inline]
-                fn cmp(&self, other: &$ty) -> Ordering {
+                fn nanmax_cmp(&self, other: &$ty) -> Ordering {
                     Ord::cmp(self, other)
                 }
             }
@@ -227,7 +192,7 @@ macro_rules! impl_cmp_traits_for_floats {
         $(
             impl NanfixPartialEq<$ty> for $ty {
                 #[inline]
-                fn eq(&self, other: &$ty) -> bool {
+                fn nanfix_eq(&self, other: &$ty) -> bool {
                     (self.is_nan() && other.is_nan()) || PartialEq::eq(self, other)
                 }
             }
@@ -236,22 +201,22 @@ macro_rules! impl_cmp_traits_for_floats {
 
             impl NanmaxPartialOrd<$ty> for $ty {
                 #[inline]
-                fn partial_cmp(&self, other: &$ty) -> Option<Ordering> {
-                    Some(NanmaxOrd::cmp(self, other))
+                fn nanmax_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
+                    Some(NanmaxOrd::nanmax_cmp(self, other))
                 }
 
                 #[inline]
-                fn ge(&self, other: &$ty) -> bool {
+                fn nanmax_ge(&self, other: &$ty) -> bool {
                     self.is_nan() | PartialOrd::ge(self, other)
                 }
             }
 
             impl NanmaxOrd<$ty> for $ty {
                 #[inline]
-                fn cmp(&self, other: &$ty) -> Ordering {
-                    if NanmaxPartialOrd::lt(self, other) {
+                fn nanmax_cmp(&self, other: &$ty) -> Ordering {
+                    if NanmaxPartialOrd::nanmax_lt(self, other) {
                         Ordering::Less
-                    } else if NanmaxPartialOrd::gt(other, self) {
+                    } else if NanmaxPartialOrd::nanmax_gt(other, self) {
                         Ordering::Greater
                     } else {
                         Ordering::Equal
@@ -261,22 +226,22 @@ macro_rules! impl_cmp_traits_for_floats {
 
             impl NanminPartialOrd<$ty> for $ty {
                 #[inline]
-                fn partial_cmp(&self, other: &$ty) -> Option<Ordering> {
-                    Some(NanminOrd::cmp(self, other))
+                fn nanmin_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
+                    Some(NanminOrd::nanmin_cmp(self, other))
                 }
 
                 #[inline]
-                fn ge(&self, other: &$ty) -> bool {
+                fn nanmin_ge(&self, other: &$ty) -> bool {
                     self.is_nan() | PartialOrd::ge(self, other)
                 }
             }
 
             impl NanminOrd<$ty> for $ty {
                 #[inline]
-                fn cmp(&self, other: &$ty) -> Ordering {
-                    if NanminPartialOrd::lt(self, other) {
+                fn nanmin_cmp(&self, other: &$ty) -> Ordering {
+                    if NanminPartialOrd::nanmin_lt(self, other) {
                         Ordering::Less
-                    } else if NanminPartialOrd::gt(other, self) {
+                    } else if NanminPartialOrd::nanmin_gt(other, self) {
                         Ordering::Greater
                     } else {
                         Ordering::Equal
