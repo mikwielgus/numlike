@@ -144,16 +144,16 @@ macro_rules! impl_nanfix_eq_traits_for_ord {
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_nanfix_eq_traits_for_ord!($ty);
 
-        nanfix_eq_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+        test_nanfix_eq_traits_nonnegative!($ty, $nonnegative_tests_mod);
     };
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
         impl_nanfix_eq_traits_for_ord!($ty, $nonnegative_tests_mod);
 
-        nanfix_eq_traits_negative_tests!($ty, $negative_tests_mod);
+        test_nanfix_eq_traits_negative!($ty, $negative_tests_mod);
     };
 }
 
-macro_rules! nanfix_eq_traits_nonnegative_tests {
+macro_rules! test_nanfix_eq_traits_nonnegative {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
@@ -197,7 +197,7 @@ macro_rules! nanfix_eq_traits_nonnegative_tests {
     };
 }
 
-macro_rules! nanfix_eq_traits_negative_tests {
+macro_rules! test_nanfix_eq_traits_negative {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
@@ -288,16 +288,16 @@ macro_rules! impl_nanmin_nanmax_ord_traits_for_ord {
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_nanmin_nanmax_ord_traits_for_ord!($ty);
 
-        nanmin_nanmax_ord_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+        test_nanmin_nanmax_ord_traits_nonnegative!($ty, $nonnegative_tests_mod);
     };
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
         impl_nanmin_nanmax_ord_traits_for_ord!($ty, $nonnegative_tests_mod);
 
-        nanmin_nanmax_ord_traits_negative_tests!($ty, $negative_tests_mod);
+        test_nanmin_nanmax_ord_traits_negative!($ty, $negative_tests_mod);
     };
 }
 
-macro_rules! nanmin_nanmax_ord_traits_nonnegative_tests {
+macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
@@ -427,7 +427,7 @@ macro_rules! nanmin_nanmax_ord_traits_nonnegative_tests {
     };
 }
 
-macro_rules! nanmin_nanmax_ord_traits_negative_tests {
+macro_rules! test_nanmin_nanmax_ord_traits_negative {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
@@ -546,8 +546,8 @@ macro_rules! impl_nanfix_eq_traits_for_float {
 
         impl NanfixEq<$ty> for $ty {}
 
-        nanfix_eq_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
-        nanfix_eq_traits_negative_tests!($ty, $negative_tests_mod);
+        test_nanfix_eq_traits_nonnegative!($ty, $nonnegative_tests_mod);
+        test_nanfix_eq_traits_negative!($ty, $negative_tests_mod);
         nanfix_eq_traits_nan_tests!($ty, $nan_tests_mod);
     };
 }
@@ -637,13 +637,13 @@ macro_rules! impl_nanmin_nanmax_ord_traits_for_float {
             }
         }
 
-        nanmin_nanmax_ord_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
-        nanmin_nanmax_ord_traits_negative_tests!($ty, $negative_tests_mod);
-        nanmin_nanmax_ord_traits_nan_tests!($ty, $nan_tests_mod);
+        test_nanmin_nanmax_ord_traits_nonnegative!($ty, $nonnegative_tests_mod);
+        test_nanmin_nanmax_ord_traits_negative!($ty, $negative_tests_mod);
+        test_nan_for_nanmin_nanmax_ord_traits!($ty, $nan_tests_mod);
     };
 }
 
-macro_rules! nanmin_nanmax_ord_traits_nan_tests {
+macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {

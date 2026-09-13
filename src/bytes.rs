@@ -140,16 +140,16 @@ macro_rules! impl_bytes_traits {
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_bytes_traits!($ty);
 
-        bytes_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+        test_bytes_traits_nonnegative!($ty, $nonnegative_tests_mod);
     };
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
         impl_bytes_traits!($ty, $nonnegative_tests_mod);
 
-        bytes_traits_negative_tests!($ty, $negative_tests_mod);
+        test_bytes_traits_negative!($ty, $negative_tests_mod);
     };
 }
 
-macro_rules! bytes_traits_nonnegative_tests {
+macro_rules! test_bytes_traits_nonnegative {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
@@ -237,7 +237,7 @@ macro_rules! bytes_traits_nonnegative_tests {
     };
 }
 
-macro_rules! bytes_traits_negative_tests {
+macro_rules! test_bytes_traits_negative {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {

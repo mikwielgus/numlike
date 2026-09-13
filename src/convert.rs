@@ -79,3 +79,182 @@ macro_rules! impl_cast_from_for_primitives {
 impl_cast_from_for_primitives!(
     u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize, f32, f64
 );
+
+macro_rules! convert_traits_nonnegative_tests {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::convert::*;
+            use crate::elem::*;
+
+            #[test]
+            fn test_nonnegative_cast_into_self() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CastInto::<$ty>::cast_into(zero), zero);
+                assert_eq!(CastInto::<$ty>::cast_into(one), one);
+                assert_eq!(CastInto::<$ty>::cast_into(two), two);
+                assert_eq!(CastInto::<$ty>::cast_into(four), four);
+            }
+
+            #[test]
+            fn test_nonnegative_cast_from_self() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(<$ty as CastFrom<$ty>>::cast_from(zero), zero);
+                assert_eq!(<$ty as CastFrom<$ty>>::cast_from(one), one);
+                assert_eq!(<$ty as CastFrom<$ty>>::cast_from(two), two);
+                assert_eq!(<$ty as CastFrom<$ty>>::cast_from(four), four);
+            }
+
+            #[test]
+            fn test_nonnegative_cast_into_other() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CastInto::<u8>::cast_into(zero), 0);
+                assert_eq!(CastInto::<u8>::cast_into(one), 1);
+                assert_eq!(CastInto::<u8>::cast_into(two), 2);
+                assert_eq!(CastInto::<u8>::cast_into(four), 4);
+
+                assert_eq!(CastInto::<i32>::cast_into(zero), 0);
+                assert_eq!(CastInto::<i32>::cast_into(one), 1);
+                assert_eq!(CastInto::<i32>::cast_into(two), 2);
+                assert_eq!(CastInto::<i32>::cast_into(four), 4);
+
+                assert_eq!(CastInto::<f64>::cast_into(zero), 0.0);
+                assert_eq!(CastInto::<f64>::cast_into(one), 1.0);
+                assert_eq!(CastInto::<f64>::cast_into(two), 2.0);
+                assert_eq!(CastInto::<f64>::cast_into(four), 4.0);
+            }
+
+            #[test]
+            fn test_nonnegative_cast_from_other() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(<u8 as CastFrom<$ty>>::cast_from(zero), 0);
+                assert_eq!(<u8 as CastFrom<$ty>>::cast_from(one), 1);
+                assert_eq!(<u8 as CastFrom<$ty>>::cast_from(two), 2);
+                assert_eq!(<u8 as CastFrom<$ty>>::cast_from(four), 4);
+
+                assert_eq!(<i32 as CastFrom<$ty>>::cast_from(zero), 0);
+                assert_eq!(<i32 as CastFrom<$ty>>::cast_from(one), 1);
+                assert_eq!(<i32 as CastFrom<$ty>>::cast_from(two), 2);
+                assert_eq!(<i32 as CastFrom<$ty>>::cast_from(four), 4);
+
+                assert_eq!(<f64 as CastFrom<$ty>>::cast_from(zero), 0.0);
+                assert_eq!(<f64 as CastFrom<$ty>>::cast_from(one), 1.0);
+                assert_eq!(<f64 as CastFrom<$ty>>::cast_from(two), 2.0);
+                assert_eq!(<f64 as CastFrom<$ty>>::cast_from(four), 4.0);
+            }
+        }
+    };
+}
+
+macro_rules! convert_traits_negative_tests {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::convert::*;
+            use crate::elem::*;
+
+            #[test]
+            fn test_negative_cast_into_self() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CastInto::<$ty>::cast_into(-one), -one);
+                assert_eq!(CastInto::<$ty>::cast_into(-two), -two);
+                assert_eq!(CastInto::<$ty>::cast_into(-four), -four);
+            }
+
+            #[test]
+            fn test_negative_cast_from_self() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(<$ty as CastFrom<$ty>>::cast_from(-one), -one);
+                assert_eq!(<$ty as CastFrom<$ty>>::cast_from(-two), -two);
+                assert_eq!(<$ty as CastFrom<$ty>>::cast_from(-four), -four);
+            }
+
+            #[test]
+            fn test_negative_cast_into_other() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CastInto::<i32>::cast_into(-one), -1);
+                assert_eq!(CastInto::<i32>::cast_into(-two), -2);
+                assert_eq!(CastInto::<i32>::cast_into(-four), -4);
+
+                assert_eq!(CastInto::<f64>::cast_into(-one), -1.0);
+                assert_eq!(CastInto::<f64>::cast_into(-two), -2.0);
+                assert_eq!(CastInto::<f64>::cast_into(-four), -4.0);
+
+                assert_eq!(CastInto::<u8>::cast_into(-one), (-one) as u8);
+                assert_eq!(CastInto::<u8>::cast_into(-two), (-two) as u8);
+                assert_eq!(CastInto::<u8>::cast_into(-four), (-four) as u8);
+            }
+
+            #[test]
+            fn test_negative_cast_from_other() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(<i32 as CastFrom<$ty>>::cast_from(-one), -1);
+                assert_eq!(<i32 as CastFrom<$ty>>::cast_from(-two), -2);
+                assert_eq!(<i32 as CastFrom<$ty>>::cast_from(-four), -4);
+
+                assert_eq!(<f64 as CastFrom<$ty>>::cast_from(-one), -1.0);
+                assert_eq!(<f64 as CastFrom<$ty>>::cast_from(-two), -2.0);
+                assert_eq!(<f64 as CastFrom<$ty>>::cast_from(-four), -4.0);
+
+                assert_eq!(<u8 as CastFrom<$ty>>::cast_from(-one), (-one) as u8);
+                assert_eq!(<u8 as CastFrom<$ty>>::cast_from(-two), (-two) as u8);
+                assert_eq!(<u8 as CastFrom<$ty>>::cast_from(-four), (-four) as u8);
+            }
+        }
+    };
+}
+
+macro_rules! test_convert_traits {
+    ($ty:ty, $nonnegative_tests_mod:ident) => {
+        convert_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        convert_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+        convert_traits_negative_tests!($ty, $negative_tests_mod);
+    };
+}
+
+test_convert_traits!(i8, i8_nonnegative_tests, i8_negative_tests);
+test_convert_traits!(i16, i16_nonnegative_tests, i16_negative_tests);
+test_convert_traits!(i32, i32_nonnegative_tests, i32_negative_tests);
+test_convert_traits!(i64, i64_nonnegative_tests, i64_negative_tests);
+test_convert_traits!(i128, i128_nonnegative_tests, i128_negative_tests);
+test_convert_traits!(isize, isize_nonnegative_tests, isize_negative_tests);
+
+test_convert_traits!(u8, u8_tests);
+test_convert_traits!(u16, u16_tests);
+test_convert_traits!(u32, u32_tests);
+test_convert_traits!(u64, u64_tests);
+test_convert_traits!(u128, u128_tests);
+test_convert_traits!(usize, usize_tests);
+
+test_convert_traits!(f32, f32_nonnegative_tests, f32_negative_tests);
+test_convert_traits!(f64, f64_nonnegative_tests, f64_negative_tests);

@@ -40,16 +40,16 @@ macro_rules! impl_elem_traits_for_int {
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_elem_traits_for_int!($ty);
 
-        elem_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+        test_elem_traits_nonnegative!($ty, $nonnegative_tests_mod);
     };
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
         impl_elem_traits_for_int!($ty, $nonnegative_tests_mod);
 
-        elem_traits_negative_tests!($ty, $negative_tests_mod);
+        test_elem_traits_negative!($ty, $negative_tests_mod);
     };
 }
 
-macro_rules! elem_traits_nonnegative_tests {
+macro_rules! test_elem_traits_nonnegative {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
@@ -72,7 +72,7 @@ macro_rules! elem_traits_nonnegative_tests {
     };
 }
 
-macro_rules! elem_traits_negative_tests {
+macro_rules! test_elem_traits_negative {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
@@ -117,8 +117,8 @@ macro_rules! impl_elem_traits_for_float {
             const ONE: Self = 1.0;
         }
 
-        elem_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
-        elem_traits_negative_tests!($ty, $negative_tests_mod);
+        test_elem_traits_nonnegative!($ty, $nonnegative_tests_mod);
+        test_elem_traits_negative!($ty, $negative_tests_mod);
     };
 }
 
