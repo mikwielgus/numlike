@@ -130,126 +130,296 @@ pub trait NanmaxOrd<Rhs: ?Sized = Self>: NanfixEq + NanmaxPartialOrd {
     fn nanmax_cmp(&self, other: &Rhs) -> Ordering;
 }
 
-macro_rules! impl_nanfix_eq_traits_for_ords {
-    ($($ty:ty),*) => {
-        $(
-            impl NanfixPartialEq<$ty> for $ty {
-                #[inline]
-                fn nanfix_eq(&self, other: &$ty) -> bool {
-                    PartialEq::eq(self, other)
-                }
+macro_rules! impl_nanfix_eq_traits_for_ord {
+    ($ty:ty) => {
+        impl NanfixPartialEq<$ty> for $ty {
+            #[inline]
+            fn nanfix_eq(&self, other: &$ty) -> bool {
+                PartialEq::eq(self, other)
             }
+        }
 
-            impl NanfixEq<$ty> for $ty {}
-        )*
+        impl NanfixEq<$ty> for $ty {}
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident) => {
+        impl_nanfix_eq_traits_for_ord!($ty);
+
+        nanfix_eq_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl_nanfix_eq_traits_for_ord!($ty, $nonnegative_tests_mod);
+
+        nanfix_eq_traits_negative_tests!($ty, $negative_tests_mod);
     };
 }
 
-macro_rules! impl_nanmin_nanmax_ord_traits_for_ords {
-    ($($ty:ty),*) => {
-        $(
-            impl NanminPartialOrd<$ty> for $ty {
-                #[inline]
-                fn nanmin_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
-                    PartialOrd::partial_cmp(self, other)
-                }
+macro_rules! nanfix_eq_traits_nonnegative_tests {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::cmp::*;
+            use crate::elem::*;
+
+            #[test]
+            fn test_nonnegative_nanfix_eq() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert!(NanfixPartialEq::nanfix_eq(&zero, &zero));
+                assert!(NanfixPartialEq::nanfix_eq(&one, &one));
+                assert!(NanfixPartialEq::nanfix_eq(&two, &two));
+                assert!(NanfixPartialEq::nanfix_eq(&four, &four));
+
+                assert!(!NanfixPartialEq::nanfix_eq(&zero, &one));
+                assert!(!NanfixPartialEq::nanfix_eq(&one, &two));
+                assert!(!NanfixPartialEq::nanfix_eq(&two, &four));
             }
 
-            impl NanminOrd<$ty> for $ty {
-                #[inline]
-                fn nanmin_cmp(&self, other: &$ty) -> Ordering {
-                    Ord::cmp(self, other)
-                }
-            }
+            #[test]
+            fn test_nonnegative_nanfix_ne() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
 
-            impl NanmaxPartialOrd<$ty> for $ty {
-                #[inline]
-                fn nanmax_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
-                    PartialOrd::partial_cmp(self, other)
-                }
-            }
+                assert!(!NanfixPartialEq::nanfix_ne(&zero, &zero));
+                assert!(!NanfixPartialEq::nanfix_ne(&one, &one));
+                assert!(!NanfixPartialEq::nanfix_ne(&two, &two));
+                assert!(!NanfixPartialEq::nanfix_ne(&four, &four));
 
-            impl NanmaxOrd<$ty> for $ty {
-                #[inline]
-                fn nanmax_cmp(&self, other: &$ty) -> Ordering {
-                    Ord::cmp(self, other)
-                }
+                assert!(NanfixPartialEq::nanfix_ne(&zero, &one));
+                assert!(NanfixPartialEq::nanfix_ne(&one, &two));
+                assert!(NanfixPartialEq::nanfix_ne(&two, &four));
             }
-        )*
+        }
     };
 }
 
-impl_nanfix_eq_traits_for_ords!(i8, i16, i32, i64, i128, isize);
-impl_nanfix_eq_traits_for_ords!(u8, u16, u32, u64, u128, usize);
-impl_nanfix_eq_traits_for_ords!(char, bool, ());
+macro_rules! nanfix_eq_traits_negative_tests {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::cmp::*;
+            use crate::elem::*;
 
-impl_nanmin_nanmax_ord_traits_for_ords!(i8, i16, i32, i64, i128, isize);
-impl_nanmin_nanmax_ord_traits_for_ords!(u8, u16, u32, u64, u128, usize);
-impl_nanmin_nanmax_ord_traits_for_ords!(char, bool, ());
+            #[test]
+            fn test_negative_nanfix_eq() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
 
-macro_rules! impl_cmp_traits_for_floats {
-    ($($ty:ty),*) => {
-        $(
-            impl NanfixPartialEq<$ty> for $ty {
-                #[inline]
-                fn nanfix_eq(&self, other: &$ty) -> bool {
-                    (self.is_nan() && other.is_nan()) || PartialEq::eq(self, other)
-                }
+                assert!(NanfixPartialEq::nanfix_eq(&(-one), &(-one)));
+                assert!(NanfixPartialEq::nanfix_eq(&(-two), &(-two)));
+                assert!(NanfixPartialEq::nanfix_eq(&(-four), &(-four)));
+
+                assert!(!NanfixPartialEq::nanfix_eq(&(-one), &(-two)));
+                assert!(!NanfixPartialEq::nanfix_eq(&(-two), &(-four)));
+                assert!(!NanfixPartialEq::nanfix_eq(&(-one), &one));
             }
 
-            impl NanfixEq<$ty> for $ty {}
+            #[test]
+            fn test_negative_nanfix_ne() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
 
-            impl NanmaxPartialOrd<$ty> for $ty {
-                #[inline]
-                fn nanmax_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
-                    Some(NanmaxOrd::nanmax_cmp(self, other))
-                }
+                assert!(!NanfixPartialEq::nanfix_ne(&(-one), &(-one)));
+                assert!(!NanfixPartialEq::nanfix_ne(&(-two), &(-two)));
+                assert!(!NanfixPartialEq::nanfix_ne(&(-four), &(-four)));
 
-                #[inline]
-                fn nanmax_ge(&self, other: &$ty) -> bool {
-                    self.is_nan() | PartialOrd::ge(self, other)
-                }
+                assert!(NanfixPartialEq::nanfix_ne(&(-one), &(-two)));
+                assert!(NanfixPartialEq::nanfix_ne(&(-two), &(-four)));
+                assert!(NanfixPartialEq::nanfix_ne(&(-one), &one));
             }
-
-            impl NanmaxOrd<$ty> for $ty {
-                #[inline]
-                fn nanmax_cmp(&self, other: &$ty) -> Ordering {
-                    if NanmaxPartialOrd::nanmax_lt(self, other) {
-                        Ordering::Less
-                    } else if NanmaxPartialOrd::nanmax_gt(other, self) {
-                        Ordering::Greater
-                    } else {
-                        Ordering::Equal
-                    }
-                }
-            }
-
-            impl NanminPartialOrd<$ty> for $ty {
-                #[inline]
-                fn nanmin_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
-                    Some(NanminOrd::nanmin_cmp(self, other))
-                }
-
-                #[inline]
-                fn nanmin_ge(&self, other: &$ty) -> bool {
-                    self.is_nan() | PartialOrd::ge(self, other)
-                }
-            }
-
-            impl NanminOrd<$ty> for $ty {
-                #[inline]
-                fn nanmin_cmp(&self, other: &$ty) -> Ordering {
-                    if NanminPartialOrd::nanmin_lt(self, other) {
-                        Ordering::Less
-                    } else if NanminPartialOrd::nanmin_gt(other, self) {
-                        Ordering::Greater
-                    } else {
-                        Ordering::Equal
-                    }
-                }
-            }
-        )*
+        }
     };
 }
 
-impl_cmp_traits_for_floats!(f32, f64);
+impl_nanfix_eq_traits_for_ord!(i8, i8_nonnegative_tests, i8_negative_tests);
+impl_nanfix_eq_traits_for_ord!(i16, i16_nonnegative_tests, i16_negative_tests);
+impl_nanfix_eq_traits_for_ord!(i32, i32_nonnegative_tests, i32_negative_tests);
+impl_nanfix_eq_traits_for_ord!(i64, i64_nonnegative_tests, i64_negative_tests);
+impl_nanfix_eq_traits_for_ord!(i128, i128_nonnegative_tests, i128_negative_tests);
+impl_nanfix_eq_traits_for_ord!(isize, isize_nonnegative_tests, isize_negative_tests);
+
+impl_nanfix_eq_traits_for_ord!(u8, u8_tests);
+impl_nanfix_eq_traits_for_ord!(u16, u16_tests);
+impl_nanfix_eq_traits_for_ord!(u32, u32_tests);
+impl_nanfix_eq_traits_for_ord!(u64, u64_tests);
+impl_nanfix_eq_traits_for_ord!(u128, u128_tests);
+impl_nanfix_eq_traits_for_ord!(usize, usize_tests);
+
+impl_nanfix_eq_traits_for_ord!(char);
+impl_nanfix_eq_traits_for_ord!(bool);
+impl_nanfix_eq_traits_for_ord!(());
+
+macro_rules! impl_nanmin_nanmax_ord_traits_for_ord {
+    ($ty:ty) => {
+        impl NanminPartialOrd<$ty> for $ty {
+            #[inline]
+            fn nanmin_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
+                PartialOrd::partial_cmp(self, other)
+            }
+        }
+
+        impl NanminOrd<$ty> for $ty {
+            #[inline]
+            fn nanmin_cmp(&self, other: &$ty) -> Ordering {
+                Ord::cmp(self, other)
+            }
+        }
+
+        impl NanmaxPartialOrd<$ty> for $ty {
+            #[inline]
+            fn nanmax_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
+                PartialOrd::partial_cmp(self, other)
+            }
+        }
+
+        impl NanmaxOrd<$ty> for $ty {
+            #[inline]
+            fn nanmax_cmp(&self, other: &$ty) -> Ordering {
+                Ord::cmp(self, other)
+            }
+        }
+    };
+}
+
+impl_nanmin_nanmax_ord_traits_for_ord!(i8);
+impl_nanmin_nanmax_ord_traits_for_ord!(i16);
+impl_nanmin_nanmax_ord_traits_for_ord!(i32);
+impl_nanmin_nanmax_ord_traits_for_ord!(i64);
+impl_nanmin_nanmax_ord_traits_for_ord!(i128);
+impl_nanmin_nanmax_ord_traits_for_ord!(isize);
+
+impl_nanmin_nanmax_ord_traits_for_ord!(u8);
+impl_nanmin_nanmax_ord_traits_for_ord!(u16);
+impl_nanmin_nanmax_ord_traits_for_ord!(u32);
+impl_nanmin_nanmax_ord_traits_for_ord!(u64);
+impl_nanmin_nanmax_ord_traits_for_ord!(u128);
+impl_nanmin_nanmax_ord_traits_for_ord!(usize);
+
+impl_nanmin_nanmax_ord_traits_for_ord!(char);
+impl_nanmin_nanmax_ord_traits_for_ord!(bool);
+impl_nanmin_nanmax_ord_traits_for_ord!(());
+
+macro_rules! impl_nanfix_eq_traits_for_float {
+    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident, $nan_tests_mod:ident) => {
+        impl NanfixPartialEq<$ty> for $ty {
+            #[inline]
+            fn nanfix_eq(&self, other: &$ty) -> bool {
+                (self.is_nan() && other.is_nan()) || PartialEq::eq(self, other)
+            }
+        }
+
+        impl NanfixEq<$ty> for $ty {}
+
+        nanfix_eq_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+        nanfix_eq_traits_negative_tests!($ty, $negative_tests_mod);
+        nanfix_eq_traits_nan_tests!($ty, $nan_tests_mod);
+    };
+}
+
+macro_rules! nanfix_eq_traits_nan_tests {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::cmp::*;
+            use crate::elem::*;
+
+            #[test]
+            fn test_nan_nanfix_eq() {
+                let zero = <$ty as Zero>::ZERO;
+                let nan = <$ty>::NAN;
+
+                assert!(NanfixPartialEq::nanfix_eq(&nan, &nan));
+
+                assert!(!NanfixPartialEq::nanfix_eq(&nan, &zero));
+                assert!(!NanfixPartialEq::nanfix_eq(&zero, &nan));
+            }
+
+            #[test]
+            fn test_nan_nanfix_ne() {
+                let zero = <$ty as Zero>::ZERO;
+                let nan = <$ty>::NAN;
+
+                assert!(!NanfixPartialEq::nanfix_ne(&nan, &nan));
+
+                assert!(NanfixPartialEq::nanfix_ne(&nan, &zero));
+                assert!(NanfixPartialEq::nanfix_ne(&zero, &nan));
+            }
+        }
+    };
+}
+
+impl_nanfix_eq_traits_for_float!(
+    f32,
+    f32_nonnegative_tests,
+    f32_negative_tests,
+    f32_nan_tests
+);
+impl_nanfix_eq_traits_for_float!(
+    f64,
+    f64_nonnegative_tests,
+    f64_negative_tests,
+    f64_nan_tests
+);
+
+macro_rules! impl_nanmin_nanmax_ord_traits_for_float {
+    ($ty:ty) => {
+        impl NanmaxPartialOrd<$ty> for $ty {
+            #[inline]
+            fn nanmax_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
+                Some(NanmaxOrd::nanmax_cmp(self, other))
+            }
+
+            #[inline]
+            fn nanmax_ge(&self, other: &$ty) -> bool {
+                self.is_nan() | PartialOrd::ge(self, other)
+            }
+        }
+
+        impl NanmaxOrd<$ty> for $ty {
+            #[inline]
+            fn nanmax_cmp(&self, other: &$ty) -> Ordering {
+                if NanmaxPartialOrd::nanmax_lt(self, other) {
+                    Ordering::Less
+                } else if NanmaxPartialOrd::nanmax_gt(other, self) {
+                    Ordering::Greater
+                } else {
+                    Ordering::Equal
+                }
+            }
+        }
+
+        impl NanminPartialOrd<$ty> for $ty {
+            #[inline]
+            fn nanmin_partial_cmp(&self, other: &$ty) -> Option<Ordering> {
+                Some(NanminOrd::nanmin_cmp(self, other))
+            }
+
+            #[inline]
+            fn nanmin_ge(&self, other: &$ty) -> bool {
+                self.is_nan() | PartialOrd::ge(self, other)
+            }
+        }
+
+        impl NanminOrd<$ty> for $ty {
+            #[inline]
+            fn nanmin_cmp(&self, other: &$ty) -> Ordering {
+                if NanminPartialOrd::nanmin_lt(self, other) {
+                    Ordering::Less
+                } else if NanminPartialOrd::nanmin_gt(other, self) {
+                    Ordering::Greater
+                } else {
+                    Ordering::Equal
+                }
+            }
+        }
+    };
+}
+
+impl_nanmin_nanmax_ord_traits_for_float!(f32);
+impl_nanmin_nanmax_ord_traits_for_float!(f64);
