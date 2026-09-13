@@ -27,34 +27,100 @@ pub trait One {
     const ONE: Self;
 }
 
-macro_rules! impl_elem_traits_for_ints {
-    ($($ty:ty),*) => {
-        $(
-            impl Zero for $ty {
-                const ZERO: Self = 0;
-            }
+macro_rules! impl_elem_traits_for_int {
+    ($ty:ty) => {
+        impl Zero for $ty {
+            const ZERO: Self = 0;
+        }
 
-            impl One for $ty {
-                const ONE: Self = 1;
-            }
-        )*
+        impl One for $ty {
+            const ONE: Self = 1;
+        }
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident) => {
+        impl_elem_traits_for_int!($ty);
+
+        elem_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl_elem_traits_for_int!($ty, $nonnegative_tests_mod);
+
+        elem_traits_negative_tests!($ty, $negative_tests_mod);
     };
 }
 
-macro_rules! impl_elem_traits_for_floats {
-    ($($ty:ty),*) => {
-        $(
-            impl Zero for $ty {
-                const ZERO: Self = 0.0;
-            }
+macro_rules! elem_traits_nonnegative_tests {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
 
-            impl One for $ty {
-                const ONE: Self = 1.0;
+            #[test]
+            fn test_nonnegative_zero_one() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+
+                assert_eq!(one - one, zero);
+                assert_eq!(one + zero, one);
+                assert_eq!(zero + one, one);
+                assert_eq!(zero + zero, zero);
+                assert_eq!(one * zero, zero);
+                assert_eq!(zero * one, zero);
+                assert_eq!(one * one, one);
             }
-        )*
+        }
     };
 }
 
-impl_elem_traits_for_ints!(i8, i16, i32, i64, i128, isize);
-impl_elem_traits_for_ints!(u8, u16, u32, u64, u128, usize);
-impl_elem_traits_for_floats!(f32, f64);
+macro_rules! elem_traits_negative_tests {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+
+            #[test]
+            fn test_negative_zero_one() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+
+                assert_eq!(-zero, zero);
+                assert_eq!(-(-one), one);
+                assert_eq!(-one + one, zero);
+                assert_eq!(one + (-one), zero);
+                assert_eq!(one - (-one), one + one);
+            }
+        }
+    };
+}
+
+impl_elem_traits_for_int!(i8, i8_nonnegative_tests, i8_negative_tests);
+impl_elem_traits_for_int!(i16, i16_nonnegative_tests, i16_negative_tests);
+impl_elem_traits_for_int!(i32, i32_nonnegative_tests, i32_negative_tests);
+impl_elem_traits_for_int!(i64, i64_nonnegative_tests, i64_negative_tests);
+impl_elem_traits_for_int!(i128, i128_nonnegative_tests, i128_negative_tests);
+impl_elem_traits_for_int!(isize, isize_nonnegative_tests, isize_negative_tests);
+
+impl_elem_traits_for_int!(u8, u8_tests);
+impl_elem_traits_for_int!(u16, u16_tests);
+impl_elem_traits_for_int!(u32, u32_tests);
+impl_elem_traits_for_int!(u64, u64_tests);
+impl_elem_traits_for_int!(u128, u128_tests);
+impl_elem_traits_for_int!(usize, usize_tests);
+
+macro_rules! impl_elem_traits_for_float {
+    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl Zero for $ty {
+            const ZERO: Self = 0.0;
+        }
+
+        impl One for $ty {
+            const ONE: Self = 1.0;
+        }
+
+        elem_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+        elem_traits_negative_tests!($ty, $negative_tests_mod);
+    };
+}
+
+impl_elem_traits_for_float!(f32, f32_nonnegative_tests, f32_negative_tests);
+impl_elem_traits_for_float!(f64, f64_nonnegative_tests, f64_negative_tests);
