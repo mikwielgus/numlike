@@ -82,65 +82,249 @@ pub trait FromNeBytes {
 }
 
 macro_rules! impl_bytes_traits {
-    ($($ty:ty),*) => {
-        $(
-            impl ToBeBytes for $ty {
-                type Output = [u8; size_of::<$ty>()];
+    ($ty:ty) => {
+        impl ToBeBytes for $ty {
+            type Output = [u8; size_of::<$ty>()];
 
-                #[inline]
-                fn to_be_bytes(self) -> Self::Output {
-                    <$ty>::to_be_bytes(self)
-                }
+            #[inline]
+            fn to_be_bytes(self) -> Self::Output {
+                <$ty>::to_be_bytes(self)
             }
+        }
 
-            impl ToLeBytes for $ty {
-                type Output = [u8; size_of::<$ty>()];
+        impl ToLeBytes for $ty {
+            type Output = [u8; size_of::<$ty>()];
 
-                #[inline]
-                fn to_le_bytes(self) -> Self::Output {
-                    <$ty>::to_le_bytes(self)
-                }
+            #[inline]
+            fn to_le_bytes(self) -> Self::Output {
+                <$ty>::to_le_bytes(self)
             }
+        }
 
-            impl ToNeBytes for $ty {
-                type Output = [u8; size_of::<$ty>()];
+        impl ToNeBytes for $ty {
+            type Output = [u8; size_of::<$ty>()];
 
-                #[inline]
-                fn to_ne_bytes(self) -> Self::Output {
-                    <$ty>::to_ne_bytes(self)
-                }
+            #[inline]
+            fn to_ne_bytes(self) -> Self::Output {
+                <$ty>::to_ne_bytes(self)
             }
+        }
 
-            impl FromBeBytes for $ty {
-                type Output = [u8; size_of::<$ty>()];
+        impl FromBeBytes for $ty {
+            type Output = [u8; size_of::<$ty>()];
 
-                #[inline]
-                fn from_be_bytes(bytes: Self::Output) -> Self {
-                    <$ty>::from_be_bytes(bytes)
-                }
+            #[inline]
+            fn from_be_bytes(bytes: Self::Output) -> Self {
+                <$ty>::from_be_bytes(bytes)
             }
+        }
 
-            impl FromLeBytes for $ty {
-                type Output = [u8; size_of::<$ty>()];
+        impl FromLeBytes for $ty {
+            type Output = [u8; size_of::<$ty>()];
 
-                #[inline]
-                fn from_le_bytes(bytes: Self::Output) -> Self {
-                    <$ty>::from_le_bytes(bytes)
-                }
+            #[inline]
+            fn from_le_bytes(bytes: Self::Output) -> Self {
+                <$ty>::from_le_bytes(bytes)
             }
+        }
 
-            impl FromNeBytes for $ty {
-                type Output = [u8; size_of::<$ty>()];
+        impl FromNeBytes for $ty {
+            type Output = [u8; size_of::<$ty>()];
 
-                #[inline]
-                fn from_ne_bytes(bytes: Self::Output) -> Self {
-                    <$ty>::from_ne_bytes(bytes)
-                }
+            #[inline]
+            fn from_ne_bytes(bytes: Self::Output) -> Self {
+                <$ty>::from_ne_bytes(bytes)
             }
-        )*
+        }
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident) => {
+        impl_bytes_traits!($ty);
+
+        bytes_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl_bytes_traits!($ty, $nonnegative_tests_mod);
+
+        bytes_traits_negative_tests!($ty, $negative_tests_mod);
     };
 }
 
-impl_bytes_traits!(i8, i16, i32, i64, i128, isize);
-impl_bytes_traits!(u8, u16, u32, u64, u128, usize);
-impl_bytes_traits!(f32, f64);
+macro_rules! bytes_traits_nonnegative_tests {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::bytes::*;
+            use crate::elem::*;
+
+            #[test]
+            fn test_nonnegative_roundtrip() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(
+                    <$ty as FromBeBytes>::from_be_bytes(<$ty as ToBeBytes>::to_be_bytes(zero)),
+                    zero
+                );
+                assert_eq!(
+                    <$ty as FromBeBytes>::from_be_bytes(<$ty as ToBeBytes>::to_be_bytes(one)),
+                    one
+                );
+                assert_eq!(
+                    <$ty as FromBeBytes>::from_be_bytes(<$ty as ToBeBytes>::to_be_bytes(two)),
+                    two
+                );
+                assert_eq!(
+                    <$ty as FromBeBytes>::from_be_bytes(<$ty as ToBeBytes>::to_be_bytes(four)),
+                    four
+                );
+
+                assert_eq!(
+                    <$ty as FromLeBytes>::from_le_bytes(<$ty as ToLeBytes>::to_le_bytes(zero)),
+                    zero
+                );
+                assert_eq!(
+                    <$ty as FromLeBytes>::from_le_bytes(<$ty as ToLeBytes>::to_le_bytes(one)),
+                    one
+                );
+                assert_eq!(
+                    <$ty as FromLeBytes>::from_le_bytes(<$ty as ToLeBytes>::to_le_bytes(two)),
+                    two
+                );
+                assert_eq!(
+                    <$ty as FromLeBytes>::from_le_bytes(<$ty as ToLeBytes>::to_le_bytes(four)),
+                    four
+                );
+
+                assert_eq!(
+                    <$ty as FromNeBytes>::from_ne_bytes(<$ty as ToNeBytes>::to_ne_bytes(zero)),
+                    zero
+                );
+                assert_eq!(
+                    <$ty as FromNeBytes>::from_ne_bytes(<$ty as ToNeBytes>::to_ne_bytes(one)),
+                    one
+                );
+                assert_eq!(
+                    <$ty as FromNeBytes>::from_ne_bytes(<$ty as ToNeBytes>::to_ne_bytes(two)),
+                    two
+                );
+                assert_eq!(
+                    <$ty as FromNeBytes>::from_ne_bytes(<$ty as ToNeBytes>::to_ne_bytes(four)),
+                    four
+                );
+            }
+
+            #[test]
+            fn test_nonnegative_be_to_le() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                let mut be_one = <$ty as ToBeBytes>::to_be_bytes(one);
+                let mut be_two = <$ty as ToBeBytes>::to_be_bytes(two);
+                let mut be_four = <$ty as ToBeBytes>::to_be_bytes(four);
+
+                be_one.reverse();
+                be_two.reverse();
+                be_four.reverse();
+
+                assert_eq!(be_one, <$ty as ToLeBytes>::to_le_bytes(one));
+                assert_eq!(be_two, <$ty as ToLeBytes>::to_le_bytes(two));
+                assert_eq!(be_four, <$ty as ToLeBytes>::to_le_bytes(four));
+            }
+        }
+    };
+}
+
+macro_rules! bytes_traits_negative_tests {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::bytes::*;
+            use crate::elem::*;
+
+            #[test]
+            fn test_negative_roundtrip() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(
+                    <$ty as FromBeBytes>::from_be_bytes(<$ty as ToBeBytes>::to_be_bytes(-one)),
+                    -one
+                );
+                assert_eq!(
+                    <$ty as FromBeBytes>::from_be_bytes(<$ty as ToBeBytes>::to_be_bytes(-two)),
+                    -two
+                );
+                assert_eq!(
+                    <$ty as FromBeBytes>::from_be_bytes(<$ty as ToBeBytes>::to_be_bytes(-four)),
+                    -four
+                );
+
+                assert_eq!(
+                    <$ty as FromLeBytes>::from_le_bytes(<$ty as ToLeBytes>::to_le_bytes(-one)),
+                    -one
+                );
+                assert_eq!(
+                    <$ty as FromLeBytes>::from_le_bytes(<$ty as ToLeBytes>::to_le_bytes(-two)),
+                    -two
+                );
+                assert_eq!(
+                    <$ty as FromLeBytes>::from_le_bytes(<$ty as ToLeBytes>::to_le_bytes(-four)),
+                    -four
+                );
+
+                assert_eq!(
+                    <$ty as FromNeBytes>::from_ne_bytes(<$ty as ToNeBytes>::to_ne_bytes(-one)),
+                    -one
+                );
+                assert_eq!(
+                    <$ty as FromNeBytes>::from_ne_bytes(<$ty as ToNeBytes>::to_ne_bytes(-two)),
+                    -two
+                );
+                assert_eq!(
+                    <$ty as FromNeBytes>::from_ne_bytes(<$ty as ToNeBytes>::to_ne_bytes(-four)),
+                    -four
+                );
+            }
+
+            #[test]
+            fn test_negative_be_to_le() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                let mut be_one = <$ty as ToBeBytes>::to_be_bytes(-one);
+                let mut be_two = <$ty as ToBeBytes>::to_be_bytes(-two);
+                let mut be_four = <$ty as ToBeBytes>::to_be_bytes(-four);
+
+                be_one.reverse();
+                be_two.reverse();
+                be_four.reverse();
+
+                assert_eq!(be_one, <$ty as ToLeBytes>::to_le_bytes(-one));
+                assert_eq!(be_two, <$ty as ToLeBytes>::to_le_bytes(-two));
+                assert_eq!(be_four, <$ty as ToLeBytes>::to_le_bytes(-four));
+            }
+        }
+    };
+}
+
+impl_bytes_traits!(i8, i8_nonnegative_tests, i8_negative_tests);
+impl_bytes_traits!(i16, i16_nonnegative_tests, i16_negative_tests);
+impl_bytes_traits!(i32, i32_nonnegative_tests, i32_negative_tests);
+impl_bytes_traits!(i64, i64_nonnegative_tests, i64_negative_tests);
+impl_bytes_traits!(i128, i128_nonnegative_tests, i128_negative_tests);
+impl_bytes_traits!(isize, isize_nonnegative_tests, isize_negative_tests);
+
+impl_bytes_traits!(u8, u8_tests);
+impl_bytes_traits!(u16, u16_tests);
+impl_bytes_traits!(u32, u32_tests);
+impl_bytes_traits!(u64, u64_tests);
+impl_bytes_traits!(u128, u128_tests);
+impl_bytes_traits!(usize, usize_tests);
+
+impl_bytes_traits!(f32, f32_nonnegative_tests, f32_negative_tests);
+impl_bytes_traits!(f64, f64_nonnegative_tests, f64_negative_tests);
