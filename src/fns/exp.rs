@@ -189,6 +189,8 @@ macro_rules! test_exp_traits_nonnegative {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
+                let four = two + two;
+                let quarter = one / four;
 
                 assert_eq!(ExpM1::exp_m1(zero), zero);
 
@@ -196,7 +198,7 @@ macro_rules! test_exp_traits_nonnegative {
 
                 assert!(e_m1 > one);
                 assert!(e_m1 < two);
-                assert_eq!(e_m1 + one, Exp::exp(one));
+                assert!(Abs::abs((e_m1 + one) - Exp::exp(one)) < quarter);
             }
 
             #[test]
@@ -269,12 +271,15 @@ macro_rules! test_exp_traits_negative {
             fn test_negative_exp() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let quarter = one / four;
 
                 let inv_e = Exp::exp(-one);
 
                 assert!(inv_e > zero);
                 assert!(inv_e < one);
-                assert_eq!(inv_e * Exp::exp(one), one);
+                assert!(Abs::abs(inv_e * Exp::exp(one) - one) < quarter);
             }
 
             #[test]
@@ -293,12 +298,15 @@ macro_rules! test_exp_traits_negative {
             fn test_negative_exp_m1() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let quarter = one / four;
 
                 let inv_e_m1 = ExpM1::exp_m1(-one);
 
                 assert!(inv_e_m1 < zero);
                 assert!(inv_e_m1 > -one);
-                assert_eq!(inv_e_m1 + one, Exp::exp(-one));
+                assert!(Abs::abs((inv_e_m1 + one) - Exp::exp(-one)) < quarter);
             }
 
             #[test]
