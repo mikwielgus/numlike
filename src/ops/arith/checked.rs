@@ -504,3 +504,371 @@ impl_checked_arith_traits_for_unsigned_ints!(u8, u16, u32, u64, u128, usize);
 impl_checked_arith_traits_for_floats!(f32, f64);
 
 impl_checked_mul_add_trait_for_floats!(f32, f64);
+
+macro_rules! test_checked_arith_traits_int_nonnegative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::ops::*;
+
+            #[test]
+            fn test_div_rem() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(CheckedDivRem::checked_div_rem(four, two), Some((two, zero)));
+                assert_eq!(CheckedDivRem::checked_div_rem(five, two), Some((two, one)));
+                assert_eq!(CheckedDivRem::checked_div_rem(three, two), Some((one, one)));
+                assert_eq!(CheckedDivRem::checked_div_rem(one, zero), None);
+            }
+
+            #[test]
+            fn test_div_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(CheckedDivEuclid::checked_div_euclid(four, two), Some(two));
+                assert_eq!(CheckedDivEuclid::checked_div_euclid(five, two), Some(two));
+                assert_eq!(CheckedDivEuclid::checked_div_euclid(three, two), Some(one));
+                assert_eq!(CheckedDivEuclid::checked_div_euclid(one, zero), None);
+            }
+
+            #[test]
+            fn test_rem_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(four, two), Some(zero));
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(five, two), Some(one));
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(three, two), Some(one));
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(one, zero), None);
+            }
+
+            #[test]
+            fn test_div_rem_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(
+                    CheckedDivRemEuclid::checked_div_rem_euclid(five, two),
+                    Some((two, one))
+                );
+                assert_eq!(
+                    CheckedDivRemEuclid::checked_div_rem_euclid(four, two),
+                    Some((two, zero))
+                );
+                assert_eq!(CheckedDivRemEuclid::checked_div_rem_euclid(one, zero), None);
+            }
+
+            #[test]
+            fn test_mul_add() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CheckedMulAdd::checked_mul_add(two, two, zero), Some(four));
+                assert_eq!(CheckedMulAdd::checked_mul_add(one, one, one), Some(two));
+                assert_eq!(CheckedMulAdd::checked_mul_add(two, one, two), Some(four));
+            }
+        }
+    };
+}
+
+macro_rules! test_checked_arith_traits_int_negative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::limits::*;
+            use crate::ops::*;
+
+            #[test]
+            fn test_div_rem() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(
+                    CheckedDivRem::checked_div_rem(-five, two),
+                    Some((-two, -one))
+                );
+                assert_eq!(
+                    CheckedDivRem::checked_div_rem(-four, two),
+                    Some((-two, zero))
+                );
+                assert_eq!(
+                    CheckedDivRem::checked_div_rem(<$ty as MinFinite>::MIN_FINITE, -one),
+                    None
+                );
+            }
+
+            #[test]
+            fn test_div_euclid() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let five = two + two + one;
+
+                assert_eq!(
+                    CheckedDivEuclid::checked_div_euclid(-five, two),
+                    Some(-three)
+                );
+                assert_eq!(
+                    CheckedDivEuclid::checked_div_euclid(-five, -two),
+                    Some(three)
+                );
+            }
+
+            #[test]
+            fn test_rem_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(-five, two), Some(one));
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(-four, two), Some(zero));
+            }
+
+            #[test]
+            fn test_div_rem_euclid() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let five = two + two + one;
+
+                assert_eq!(
+                    CheckedDivRemEuclid::checked_div_rem_euclid(-five, two),
+                    Some((-three, one))
+                );
+            }
+
+            #[test]
+            fn test_neg() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+
+                assert_eq!(CheckedNeg::checked_neg(one), Some(-one));
+                assert_eq!(CheckedNeg::checked_neg(-one), Some(one));
+                assert_eq!(CheckedNeg::checked_neg(zero), Some(zero));
+                assert_eq!(
+                    CheckedNeg::checked_neg(<$ty as MinFinite>::MIN_FINITE),
+                    None
+                );
+            }
+        }
+    };
+}
+
+macro_rules! test_checked_arith_traits_float_nonnegative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::ops::*;
+
+            #[test]
+            fn test_div_rem() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CheckedDivRem::checked_div_rem(four, two), Some((two, zero)));
+                assert_eq!(CheckedDivRem::checked_div_rem(two, one), Some((two, zero)));
+                assert_eq!(CheckedDivRem::checked_div_rem(one, zero), None);
+            }
+
+            #[cfg(any(feature = "std", feature = "libm"))]
+            #[test]
+            fn test_div_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(CheckedDivEuclid::checked_div_euclid(four, two), Some(two));
+                assert_eq!(CheckedDivEuclid::checked_div_euclid(five, two), Some(two));
+                assert_eq!(CheckedDivEuclid::checked_div_euclid(three, two), Some(one));
+                assert_eq!(CheckedDivEuclid::checked_div_euclid(one, zero), None);
+            }
+
+            #[cfg(any(feature = "std", feature = "libm"))]
+            #[test]
+            fn test_rem_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(four, two), Some(zero));
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(five, two), Some(one));
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(three, two), Some(one));
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(one, zero), None);
+            }
+
+            #[cfg(any(feature = "std", feature = "libm"))]
+            #[test]
+            fn test_div_rem_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(
+                    CheckedDivRemEuclid::checked_div_rem_euclid(five, two),
+                    Some((two, one))
+                );
+                assert_eq!(
+                    CheckedDivRemEuclid::checked_div_rem_euclid(four, two),
+                    Some((two, zero))
+                );
+                assert_eq!(CheckedDivRemEuclid::checked_div_rem_euclid(one, zero), None);
+            }
+
+            #[test]
+            fn test_mul_add() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CheckedMulAdd::checked_mul_add(two, two, zero), Some(four));
+                assert_eq!(CheckedMulAdd::checked_mul_add(one, one, one), Some(two));
+                assert_eq!(CheckedMulAdd::checked_mul_add(two, one, two), Some(four));
+            }
+        }
+    };
+}
+
+macro_rules! test_checked_arith_traits_float_negative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::ops::*;
+
+            #[test]
+            fn test_div_rem() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(
+                    CheckedDivRem::checked_div_rem(-four, two),
+                    Some((-two, zero))
+                );
+                assert_eq!(
+                    CheckedDivRem::checked_div_rem(-two, one),
+                    Some((-two, zero))
+                );
+            }
+
+            #[cfg(any(feature = "std", feature = "libm"))]
+            #[test]
+            fn test_div_euclid() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let five = two + two + one;
+
+                assert_eq!(
+                    CheckedDivEuclid::checked_div_euclid(-five, two),
+                    Some(-three)
+                );
+                assert_eq!(
+                    CheckedDivEuclid::checked_div_euclid(-five, -two),
+                    Some(three)
+                );
+            }
+
+            #[cfg(any(feature = "std", feature = "libm"))]
+            #[test]
+            fn test_rem_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(-five, two), Some(one));
+                assert_eq!(CheckedRemEuclid::checked_rem_euclid(-four, two), Some(zero));
+            }
+
+            #[cfg(any(feature = "std", feature = "libm"))]
+            #[test]
+            fn test_div_rem_euclid() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let five = two + two + one;
+
+                assert_eq!(
+                    CheckedDivRemEuclid::checked_div_rem_euclid(-five, two),
+                    Some((-three, one))
+                );
+            }
+
+            #[test]
+            fn test_neg() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+
+                assert_eq!(CheckedNeg::checked_neg(one), Some(-one));
+                assert_eq!(CheckedNeg::checked_neg(-one), Some(one));
+                assert_eq!(CheckedNeg::checked_neg(zero), Some(zero));
+            }
+        }
+    };
+}
+
+test_checked_arith_traits_int_nonnegative!(i8, i8_nonnegative_tests);
+test_checked_arith_traits_int_negative!(i8, i8_negative_tests);
+test_checked_arith_traits_int_nonnegative!(i16, i16_nonnegative_tests);
+test_checked_arith_traits_int_negative!(i16, i16_negative_tests);
+test_checked_arith_traits_int_nonnegative!(i32, i32_nonnegative_tests);
+test_checked_arith_traits_int_negative!(i32, i32_negative_tests);
+test_checked_arith_traits_int_nonnegative!(i64, i64_nonnegative_tests);
+test_checked_arith_traits_int_negative!(i64, i64_negative_tests);
+test_checked_arith_traits_int_nonnegative!(i128, i128_nonnegative_tests);
+test_checked_arith_traits_int_negative!(i128, i128_negative_tests);
+test_checked_arith_traits_int_nonnegative!(isize, isize_nonnegative_tests);
+test_checked_arith_traits_int_negative!(isize, isize_negative_tests);
+
+test_checked_arith_traits_int_nonnegative!(u8, u8_tests);
+test_checked_arith_traits_int_nonnegative!(u16, u16_tests);
+test_checked_arith_traits_int_nonnegative!(u32, u32_tests);
+test_checked_arith_traits_int_nonnegative!(u64, u64_tests);
+test_checked_arith_traits_int_nonnegative!(u128, u128_tests);
+test_checked_arith_traits_int_nonnegative!(usize, usize_tests);
+
+test_checked_arith_traits_float_nonnegative!(f32, f32_nonnegative_tests);
+test_checked_arith_traits_float_negative!(f32, f32_negative_tests);
+test_checked_arith_traits_float_nonnegative!(f64, f64_nonnegative_tests);
+test_checked_arith_traits_float_negative!(f64, f64_negative_tests);

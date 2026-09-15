@@ -517,3 +517,235 @@ impl_overflowing_arith_traits_for_unsigned_ints!(u8, u16, u32, u64, u128, usize)
 //impl_overflowing_arith_traits_for_floats!(f32, f64);
 
 //impl_overflowing_mul_add_trait_for_floats!(f32, f64);
+
+macro_rules! test_overflowing_arith_traits_int_nonnegative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::ops::*;
+
+            #[test]
+            fn test_div_rem() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(
+                    OverflowingDivRem::overflowing_div_rem(four, two),
+                    ((two, zero), false)
+                );
+                assert_eq!(
+                    OverflowingDivRem::overflowing_div_rem(five, two),
+                    ((two, one), false)
+                );
+                assert_eq!(
+                    OverflowingDivRem::overflowing_div_rem(three, two),
+                    ((one, one), false)
+                );
+            }
+
+            #[test]
+            fn test_div_euclid() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(
+                    OverflowingDivEuclid::overflowing_div_euclid(four, two),
+                    (two, false)
+                );
+                assert_eq!(
+                    OverflowingDivEuclid::overflowing_div_euclid(five, two),
+                    (two, false)
+                );
+                assert_eq!(
+                    OverflowingDivEuclid::overflowing_div_euclid(three, two),
+                    (one, false)
+                );
+            }
+
+            #[test]
+            fn test_rem_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(
+                    OverflowingRemEuclid::overflowing_rem_euclid(four, two),
+                    (zero, false)
+                );
+                assert_eq!(
+                    OverflowingRemEuclid::overflowing_rem_euclid(five, two),
+                    (one, false)
+                );
+                assert_eq!(
+                    OverflowingRemEuclid::overflowing_rem_euclid(three, two),
+                    (one, false)
+                );
+            }
+
+            #[test]
+            fn test_div_rem_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(
+                    OverflowingDivRemEuclid::overflowing_div_rem_euclid(five, two),
+                    ((two, one), false)
+                );
+                assert_eq!(
+                    OverflowingDivRemEuclid::overflowing_div_rem_euclid(four, two),
+                    ((two, zero), false)
+                );
+            }
+
+            #[test]
+            fn test_mul_add() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(
+                    OverflowingMulAdd::overflowing_mul_add(two, two, zero),
+                    (four, false)
+                );
+                assert_eq!(
+                    OverflowingMulAdd::overflowing_mul_add(one, one, one),
+                    (two, false)
+                );
+                assert_eq!(
+                    OverflowingMulAdd::overflowing_mul_add(two, one, two),
+                    (four, false)
+                );
+            }
+        }
+    };
+}
+
+macro_rules! test_overflowing_arith_traits_int_negative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::limits::*;
+            use crate::ops::*;
+
+            #[test]
+            fn test_div_rem() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(
+                    OverflowingDivRem::overflowing_div_rem(-five, two),
+                    ((-two, -one), false)
+                );
+                assert_eq!(
+                    OverflowingDivRem::overflowing_div_rem(-four, two),
+                    ((-two, zero), false)
+                );
+                assert_eq!(
+                    OverflowingDivRem::overflowing_div_rem(<$ty as MinFinite>::MIN_FINITE, -one),
+                    ((<$ty as MinFinite>::MIN_FINITE, zero), true)
+                );
+            }
+
+            #[test]
+            fn test_div_euclid() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let five = two + two + one;
+
+                assert_eq!(
+                    OverflowingDivEuclid::overflowing_div_euclid(-five, two),
+                    (-three, false)
+                );
+                assert_eq!(
+                    OverflowingDivEuclid::overflowing_div_euclid(-five, -two),
+                    (three, false)
+                );
+            }
+
+            #[test]
+            fn test_rem_euclid() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let five = four + one;
+
+                assert_eq!(
+                    OverflowingRemEuclid::overflowing_rem_euclid(-five, two),
+                    (one, false)
+                );
+                assert_eq!(
+                    OverflowingRemEuclid::overflowing_rem_euclid(-four, two),
+                    (zero, false)
+                );
+            }
+
+            #[test]
+            fn test_div_rem_euclid() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let five = two + two + one;
+
+                assert_eq!(
+                    OverflowingDivRemEuclid::overflowing_div_rem_euclid(-five, two),
+                    ((-three, one), false)
+                );
+            }
+
+            #[test]
+            fn test_neg() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+
+                assert_eq!(OverflowingNeg::overflowing_neg(one), (-one, false));
+                assert_eq!(OverflowingNeg::overflowing_neg(-one), (one, false));
+                assert_eq!(OverflowingNeg::overflowing_neg(zero), (zero, false));
+                assert_eq!(
+                    OverflowingNeg::overflowing_neg(<$ty as MinFinite>::MIN_FINITE),
+                    (<$ty as MinFinite>::MIN_FINITE, true)
+                );
+            }
+        }
+    };
+}
+
+test_overflowing_arith_traits_int_nonnegative!(i8, i8_nonnegative_tests);
+test_overflowing_arith_traits_int_negative!(i8, i8_negative_tests);
+test_overflowing_arith_traits_int_nonnegative!(i16, i16_nonnegative_tests);
+test_overflowing_arith_traits_int_negative!(i16, i16_negative_tests);
+test_overflowing_arith_traits_int_nonnegative!(i32, i32_nonnegative_tests);
+test_overflowing_arith_traits_int_negative!(i32, i32_negative_tests);
+test_overflowing_arith_traits_int_nonnegative!(i64, i64_nonnegative_tests);
+test_overflowing_arith_traits_int_negative!(i64, i64_negative_tests);
+test_overflowing_arith_traits_int_nonnegative!(i128, i128_nonnegative_tests);
+test_overflowing_arith_traits_int_negative!(i128, i128_negative_tests);
+test_overflowing_arith_traits_int_nonnegative!(isize, isize_nonnegative_tests);
+test_overflowing_arith_traits_int_negative!(isize, isize_negative_tests);
+
+test_overflowing_arith_traits_int_nonnegative!(u8, u8_tests);
+test_overflowing_arith_traits_int_nonnegative!(u16, u16_tests);
+test_overflowing_arith_traits_int_nonnegative!(u32, u32_tests);
+test_overflowing_arith_traits_int_nonnegative!(u64, u64_tests);
+test_overflowing_arith_traits_int_nonnegative!(u128, u128_tests);
+test_overflowing_arith_traits_int_nonnegative!(usize, usize_tests);
