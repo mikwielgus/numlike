@@ -101,7 +101,7 @@ macro_rules! test_pow_traits_int_nonnegative {
             use crate::fns::*;
 
             #[test]
-            fn test_nonnegative_pow() {
+            fn test_pow() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -122,7 +122,7 @@ macro_rules! test_pow_traits_int_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_pow() {
+            fn test_checked_pow() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -152,7 +152,7 @@ macro_rules! test_pow_traits_int_negative {
             use crate::fns::*;
 
             #[test]
-            fn test_negative_pow() {
+            fn test_pow() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -169,7 +169,7 @@ macro_rules! test_pow_traits_int_negative {
             }
 
             #[test]
-            fn test_negative_checked_pow() {
+            fn test_checked_pow() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -273,7 +273,7 @@ macro_rules! test_pow_traits_float_nonnegative {
             use crate::limits::*;
 
             #[test]
-            fn test_nonnegative_pow() {
+            fn test_pow() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -295,7 +295,7 @@ macro_rules! test_pow_traits_float_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_pow() {
+            fn test_checked_pow() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -325,7 +325,7 @@ macro_rules! test_pow_traits_float_negative {
             use crate::fns::*;
 
             #[test]
-            fn test_negative_pow() {
+            fn test_pow() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -346,7 +346,7 @@ macro_rules! test_pow_traits_float_negative {
             }
 
             #[test]
-            fn test_negative_checked_pow() {
+            fn test_checked_pow() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;

@@ -159,7 +159,7 @@ macro_rules! test_exp_traits_nonnegative {
             use crate::limits::*;
 
             #[test]
-            fn test_nonnegative_exp() {
+            fn test_exp() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -173,7 +173,7 @@ macro_rules! test_exp_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_exp2() {
+            fn test_exp2() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -185,12 +185,13 @@ macro_rules! test_exp_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_exp_m1() {
+            fn test_exp_m1() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
-                let quarter = one / four;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
 
                 assert_eq!(ExpM1::exp_m1(zero), zero);
 
@@ -198,11 +199,11 @@ macro_rules! test_exp_traits_nonnegative {
 
                 assert!(e_m1 > one);
                 assert!(e_m1 < two);
-                assert!(Abs::abs((e_m1 + one) - Exp::exp(one)) < quarter);
+                assert!(Abs::abs((e_m1 + one) - Exp::exp(one)) < sixteenth);
             }
 
             #[test]
-            fn test_nonnegative_checked_exp() {
+            fn test_checked_exp() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -221,7 +222,7 @@ macro_rules! test_exp_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_exp2() {
+            fn test_checked_exp2() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -238,7 +239,7 @@ macro_rules! test_exp_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_exp_m1() {
+            fn test_checked_exp_m1() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -268,22 +269,23 @@ macro_rules! test_exp_traits_negative {
             use crate::fns::*;
 
             #[test]
-            fn test_negative_exp() {
+            fn test_exp() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
-                let quarter = one / four;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
 
                 let inv_e = Exp::exp(-one);
 
                 assert!(inv_e > zero);
                 assert!(inv_e < one);
-                assert!(Abs::abs(inv_e * Exp::exp(one) - one) < quarter);
+                assert!(Abs::abs(inv_e * Exp::exp(one) - one) < sixteenth);
             }
 
             #[test]
-            fn test_negative_exp2() {
+            fn test_exp2() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -295,22 +297,23 @@ macro_rules! test_exp_traits_negative {
             }
 
             #[test]
-            fn test_negative_exp_m1() {
+            fn test_exp_m1() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
-                let quarter = one / four;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
 
                 let inv_e_m1 = ExpM1::exp_m1(-one);
 
                 assert!(inv_e_m1 < zero);
                 assert!(inv_e_m1 > -one);
-                assert!(Abs::abs((inv_e_m1 + one) - Exp::exp(-one)) < quarter);
+                assert!(Abs::abs((inv_e_m1 + one) - Exp::exp(-one)) < sixteenth);
             }
 
             #[test]
-            fn test_negative_checked_exp() {
+            fn test_checked_exp() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
 
@@ -321,7 +324,7 @@ macro_rules! test_exp_traits_negative {
             }
 
             #[test]
-            fn test_negative_checked_exp2() {
+            fn test_checked_exp2() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -333,7 +336,7 @@ macro_rules! test_exp_traits_negative {
             }
 
             #[test]
-            fn test_negative_checked_exp_m1() {
+            fn test_checked_exp_m1() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
 

@@ -138,7 +138,7 @@ macro_rules! test_round_traits_nonnegative {
             use crate::fns::*;
 
             #[test]
-            fn test_nonnegative_round() {
+            fn test_round() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -157,7 +157,7 @@ macro_rules! test_round_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_trunc() {
+            fn test_trunc() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -176,7 +176,7 @@ macro_rules! test_round_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_round_ties_even() {
+            fn test_round_ties_even() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -195,7 +195,7 @@ macro_rules! test_round_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_floor() {
+            fn test_floor() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -214,7 +214,7 @@ macro_rules! test_round_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_ceil() {
+            fn test_ceil() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -244,7 +244,7 @@ macro_rules! test_round_traits_negative {
             use crate::fns::*;
 
             #[test]
-            fn test_negative_round() {
+            fn test_round() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let half = one / two;
@@ -259,7 +259,7 @@ macro_rules! test_round_traits_negative {
             }
 
             #[test]
-            fn test_negative_trunc() {
+            fn test_trunc() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let half = one / two;
@@ -274,7 +274,7 @@ macro_rules! test_round_traits_negative {
             }
 
             #[test]
-            fn test_negative_round_ties_even() {
+            fn test_round_ties_even() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let half = one / two;
@@ -289,7 +289,7 @@ macro_rules! test_round_traits_negative {
             }
 
             #[test]
-            fn test_negative_floor() {
+            fn test_floor() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let half = one / two;
@@ -304,7 +304,7 @@ macro_rules! test_round_traits_negative {
             }
 
             #[test]
-            fn test_negative_ceil() {
+            fn test_ceil() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let half = one / two;

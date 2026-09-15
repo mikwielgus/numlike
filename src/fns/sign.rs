@@ -88,7 +88,7 @@ macro_rules! sign_traits_nonnegative_tests {
             use crate::fns::*;
 
             #[test]
-            fn test_nonnegative_sgn() {
+            fn test_sgn() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -101,7 +101,7 @@ macro_rules! sign_traits_nonnegative_tests {
             }
 
             #[test]
-            fn test_nonnegative_abs() {
+            fn test_abs() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -114,7 +114,7 @@ macro_rules! sign_traits_nonnegative_tests {
             }
 
             #[test]
-            fn test_nonnegative_checked_abs() {
+            fn test_checked_abs() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -178,7 +178,7 @@ macro_rules! sign_traits_negative_tests {
             use crate::fns::*;
 
             #[test]
-            fn test_negative_sgn() {
+            fn test_sgn() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -189,7 +189,7 @@ macro_rules! sign_traits_negative_tests {
             }
 
             #[test]
-            fn test_negative_abs() {
+            fn test_abs() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -200,7 +200,7 @@ macro_rules! sign_traits_negative_tests {
             }
 
             #[test]
-            fn test_negative_checked_abs() {
+            fn test_checked_abs() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;

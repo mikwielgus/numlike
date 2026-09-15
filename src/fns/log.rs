@@ -359,21 +359,22 @@ macro_rules! test_log_traits_float_nonnegative {
             use crate::fns::*;
 
             #[test]
-            fn test_nonnegative_ln() {
+            fn test_ln() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
-                let quarter = one / four;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
 
                 assert_eq!(Ln::ln(one), zero);
 
                 let ln_e = Ln::ln(Exp::exp(one));
-                assert!(Abs::abs(ln_e - one) < quarter);
+                assert!(Abs::abs(ln_e - one) < sixteenth);
             }
 
             #[test]
-            fn test_nonnegative_log2() {
+            fn test_log2() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -387,7 +388,7 @@ macro_rules! test_log_traits_float_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_log10() {
+            fn test_log10() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let ten = 10 as $ty;
@@ -398,7 +399,7 @@ macro_rules! test_log_traits_float_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_log() {
+            fn test_log() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -412,12 +413,13 @@ macro_rules! test_log_traits_float_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_ln_1p() {
+            fn test_ln_1p() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
-                let quarter = one / four;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
 
                 assert_eq!(Ln1p::ln_1p(zero), zero);
 
@@ -425,11 +427,11 @@ macro_rules! test_log_traits_float_nonnegative {
 
                 assert!(ln_2 > zero);
                 assert!(ln_2 < one);
-                assert!(Abs::abs(ln_2 - Ln::ln(two)) < quarter);
+                assert!(Abs::abs(ln_2 - Ln::ln(two)) < sixteenth);
             }
 
             #[test]
-            fn test_nonnegative_checked_ln() {
+            fn test_checked_ln() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
 
@@ -438,7 +440,7 @@ macro_rules! test_log_traits_float_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_log2() {
+            fn test_checked_log2() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -451,7 +453,7 @@ macro_rules! test_log_traits_float_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_log10() {
+            fn test_checked_log10() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let ten = 10 as $ty;
@@ -462,7 +464,7 @@ macro_rules! test_log_traits_float_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_log() {
+            fn test_checked_log() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -473,7 +475,7 @@ macro_rules! test_log_traits_float_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_ln_1p() {
+            fn test_checked_ln_1p() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
 
@@ -494,20 +496,23 @@ macro_rules! test_log_traits_float_negative {
             use crate::fns::*;
 
             #[test]
-            fn test_negative_ln() {
+            fn test_ln() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
+                let four = two + two;
                 let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
 
                 let ln_half = Ln::ln(half);
 
                 assert!(ln_half < zero);
-                assert!(Abs::abs(ln_half + Ln::ln(two)) < one);
+                assert!(Abs::abs(ln_half + Ln::ln(two)) < sixteenth);
             }
 
             #[test]
-            fn test_negative_log2() {
+            fn test_log2() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -519,7 +524,7 @@ macro_rules! test_log_traits_float_negative {
             }
 
             #[test]
-            fn test_negative_log10() {
+            fn test_log10() {
                 let one = <$ty as One>::ONE;
                 let ten = 10 as $ty;
                 let tenth = one / ten;
@@ -528,7 +533,7 @@ macro_rules! test_log_traits_float_negative {
             }
 
             #[test]
-            fn test_negative_log() {
+            fn test_log() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -541,27 +546,30 @@ macro_rules! test_log_traits_float_negative {
             }
 
             #[test]
-            fn test_negative_ln_1p() {
+            fn test_ln_1p() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
+                let four = two + two;
                 let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
 
                 let ln_1p = Ln1p::ln_1p(-half);
 
                 assert!(ln_1p < zero);
-                assert!(Abs::abs(ln_1p - Ln::ln(half)) < one);
+                assert!(Abs::abs(ln_1p - Ln::ln(half)) < sixteenth);
             }
 
             #[test]
-            fn test_negative_checked_ln() {
+            fn test_checked_ln() {
                 let one = <$ty as One>::ONE;
 
                 assert_eq!(CheckedLn::checked_ln(-one), None);
             }
 
             #[test]
-            fn test_negative_checked_log2() {
+            fn test_checked_log2() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let half = one / two;
@@ -571,7 +579,7 @@ macro_rules! test_log_traits_float_negative {
             }
 
             #[test]
-            fn test_negative_checked_log10() {
+            fn test_checked_log10() {
                 let one = <$ty as One>::ONE;
                 let ten = 10 as $ty;
                 let tenth = one / ten;
@@ -581,7 +589,7 @@ macro_rules! test_log_traits_float_negative {
             }
 
             #[test]
-            fn test_negative_checked_log() {
+            fn test_checked_log() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let half = one / two;
@@ -591,7 +599,7 @@ macro_rules! test_log_traits_float_negative {
             }
 
             #[test]
-            fn test_negative_checked_ln_1p() {
+            fn test_checked_ln_1p() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -721,7 +729,7 @@ macro_rules! test_ilog_traits_nonnegative {
             use crate::fns::*;
 
             #[test]
-            fn test_nonnegative_ilog2() {
+            fn test_ilog2() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let three = two + one;
@@ -736,7 +744,7 @@ macro_rules! test_ilog_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_ilog10() {
+            fn test_ilog10() {
                 let one = <$ty as One>::ONE;
                 let ten = 10 as $ty;
                 let hundred = ten * ten;
@@ -747,7 +755,7 @@ macro_rules! test_ilog_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_ilog() {
+            fn test_ilog() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let three = two + one;
@@ -763,7 +771,7 @@ macro_rules! test_ilog_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_ilog2() {
+            fn test_checked_ilog2() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -776,7 +784,7 @@ macro_rules! test_ilog_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_ilog10() {
+            fn test_checked_ilog10() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let ten = 10 as $ty;
@@ -787,7 +795,7 @@ macro_rules! test_ilog_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_checked_ilog() {
+            fn test_checked_ilog() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -809,21 +817,21 @@ macro_rules! test_ilog_traits_negative {
             use crate::fns::*;
 
             #[test]
-            fn test_negative_checked_ilog2() {
+            fn test_checked_ilog2() {
                 let one = <$ty as One>::ONE;
 
                 assert_eq!(CheckedIlog2::checked_ilog2(-one), None);
             }
 
             #[test]
-            fn test_negative_checked_ilog10() {
+            fn test_checked_ilog10() {
                 let one = <$ty as One>::ONE;
 
                 assert_eq!(CheckedIlog10::checked_ilog10(-one), None);
             }
 
             #[test]
-            fn test_negative_checked_ilog() {
+            fn test_checked_ilog() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
 

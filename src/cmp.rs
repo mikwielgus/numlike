@@ -161,7 +161,7 @@ macro_rules! test_nanfix_eq_traits_nonnegative {
             use crate::elem::*;
 
             #[test]
-            fn test_nonnegative_nanfix_eq() {
+            fn test_nanfix_eq() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -178,7 +178,7 @@ macro_rules! test_nanfix_eq_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_nanfix_ne() {
+            fn test_nanfix_ne() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -205,7 +205,7 @@ macro_rules! test_nanfix_eq_traits_negative {
             use crate::elem::*;
 
             #[test]
-            fn test_negative_nanfix_eq() {
+            fn test_nanfix_eq() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -220,7 +220,7 @@ macro_rules! test_nanfix_eq_traits_negative {
             }
 
             #[test]
-            fn test_negative_nanfix_ne() {
+            fn test_nanfix_ne() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -307,7 +307,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
             use crate::elem::*;
 
             #[test]
-            fn test_nonnegative_nanmin_cmp() {
+            fn test_nanmin_cmp() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -328,7 +328,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_nanmax_cmp() {
+            fn test_nanmax_cmp() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -349,7 +349,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_nanmin_lt_le_gt_ge() {
+            fn test_nanmin_lt_le_gt_ge() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -368,7 +368,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_nanmax_lt_le_gt_ge() {
+            fn test_nanmax_lt_le_gt_ge() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -387,7 +387,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_nanmin_partial_cmp() {
+            fn test_nanmin_partial_cmp() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
 
@@ -406,7 +406,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_nanmax_partial_cmp() {
+            fn test_nanmax_partial_cmp() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
 
@@ -437,7 +437,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
             use crate::elem::*;
 
             #[test]
-            fn test_negative_nanmin_cmp() {
+            fn test_nanmin_cmp() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -456,7 +456,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
             }
 
             #[test]
-            fn test_negative_nanmax_cmp() {
+            fn test_nanmax_cmp() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -475,7 +475,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
             }
 
             #[test]
-            fn test_negative_nanmin_lt_le_gt_ge() {
+            fn test_nanmin_lt_le_gt_ge() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
 
@@ -493,7 +493,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
             }
 
             #[test]
-            fn test_negative_nanmax_lt_le_gt_ge() {
+            fn test_nanmax_lt_le_gt_ge() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
 

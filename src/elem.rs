@@ -56,7 +56,7 @@ macro_rules! test_elem_traits_nonnegative {
             use crate::elem::*;
 
             #[test]
-            fn test_nonnegative_zero_one() {
+            fn test_zero_one() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
 
@@ -79,7 +79,7 @@ macro_rules! test_elem_traits_negative {
             use crate::elem::*;
 
             #[test]
-            fn test_negative_zero_one() {
+            fn test_zero_one() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
 

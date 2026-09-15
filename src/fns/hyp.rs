@@ -99,6 +99,8 @@ pub trait Atanh {
 pub trait CheckedInvHypFns<Rhs = Self>: /*CheckedAsinh +*/ CheckedAcosh + CheckedAtanh {}
 impl<Rhs, T: CheckedAcosh + CheckedAtanh> CheckedInvHypFns<Rhs> for T {}
 
+// No need for checked asinh, since it's defined for all reals.
+
 /*pub trait CheckedAsinh {
     /// The resulting type after applying the operation.
     type Output;
@@ -248,6 +250,299 @@ macro_rules! impl_hyp_traits_for_float {
             }
         }
     };
+    (
+        $ty:ty,
+        $sinh:path,
+        $cosh:path,
+        $tanh:path,
+        $asinh:path,
+        $acosh:path,
+        $atanh:path,
+        $nonnegative_tests_mod:ident,
+        $negative_tests_mod:ident
+    ) => {
+        impl_hyp_traits_for_float!($ty, $sinh, $cosh, $tanh, $asinh, $acosh, $atanh);
+
+        test_hyp_traits_nonnegative!($ty, $nonnegative_tests_mod);
+        test_hyp_traits_negative!($ty, $negative_tests_mod);
+    };
+}
+
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! test_hyp_traits_nonnegative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::fns::*;
+            use crate::limits::*;
+
+            #[test]
+            fn test_sinh() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Sinh::sinh(zero), zero);
+
+                let sinh_one = Sinh::sinh(one);
+
+                assert!(sinh_one > one);
+                assert!(sinh_one < two);
+                assert!(Abs::abs(Asinh::asinh(sinh_one) - one) < sixteenth);
+            }
+
+            #[test]
+            fn test_cosh() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Cosh::cosh(zero), one);
+
+                let cosh_one = Cosh::cosh(one);
+
+                assert!(cosh_one > one);
+                assert!(cosh_one < two);
+                assert!(Abs::abs(Acosh::acosh(cosh_one) - one) < sixteenth);
+            }
+
+            #[test]
+            fn test_tanh() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Tanh::tanh(zero), zero);
+
+                let tanh_one = Tanh::tanh(one);
+
+                assert!(tanh_one > zero);
+                assert!(tanh_one < one);
+                assert!(Abs::abs(Atanh::atanh(tanh_one) - one) < sixteenth);
+            }
+
+            #[test]
+            fn test_asinh() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Asinh::asinh(zero), zero);
+
+                let asinh_one = Asinh::asinh(one);
+
+                assert!(asinh_one > zero);
+                assert!(asinh_one < one);
+                assert!(Abs::abs(Sinh::sinh(asinh_one) - one) < sixteenth);
+            }
+
+            #[test]
+            fn test_acosh() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Acosh::acosh(one), zero);
+
+                let acosh_two = Acosh::acosh(two);
+
+                assert!(acosh_two > one);
+                assert!(acosh_two < two);
+                assert!(Abs::abs(Cosh::cosh(acosh_two) - two) < sixteenth);
+            }
+
+            #[test]
+            fn test_atanh() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Atanh::atanh(zero), zero);
+
+                let atanh_half = Atanh::atanh(half);
+
+                assert!(atanh_half > zero);
+                assert!(atanh_half < one);
+                assert!(Abs::abs(Tanh::tanh(atanh_half) - half) < sixteenth);
+            }
+
+            #[test]
+            fn test_checked_sinh() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+
+                assert_eq!(CheckedSinh::checked_sinh(zero), Some(zero));
+                assert!(CheckedSinh::checked_sinh(one).unwrap() > one);
+                assert_eq!(
+                    CheckedSinh::checked_sinh(<$ty as MaxFinite>::MAX_FINITE),
+                    None
+                );
+            }
+
+            #[test]
+            fn test_checked_cosh() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+
+                assert_eq!(CheckedCosh::checked_cosh(zero), Some(one));
+                assert!(CheckedCosh::checked_cosh(one).unwrap() > one);
+                assert_eq!(
+                    CheckedCosh::checked_cosh(<$ty as MaxFinite>::MAX_FINITE),
+                    None
+                );
+            }
+
+            #[test]
+            fn test_checked_acosh() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+
+                assert_eq!(CheckedAcosh::checked_acosh(one), Some(zero));
+                assert!(CheckedAcosh::checked_acosh(two).unwrap() > one);
+                assert_eq!(CheckedAcosh::checked_acosh(zero), None);
+            }
+
+            #[test]
+            fn test_checked_atanh() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let half = one / two;
+
+                assert_eq!(CheckedAtanh::checked_atanh(zero), Some(zero));
+                assert!(CheckedAtanh::checked_atanh(half).unwrap() > zero);
+                assert_eq!(CheckedAtanh::checked_atanh(one), None);
+            }
+        }
+    };
+}
+
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! test_hyp_traits_negative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::fns::*;
+            use crate::limits::*;
+
+            #[test]
+            fn test_sinh() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(Abs::abs(Sinh::sinh(-one) + Sinh::sinh(one)) < sixteenth);
+            }
+
+            #[test]
+            fn test_cosh() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(Abs::abs(Cosh::cosh(-one) - Cosh::cosh(one)) < sixteenth);
+            }
+
+            #[test]
+            fn test_tanh() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(Abs::abs(Tanh::tanh(-one) + Tanh::tanh(one)) < sixteenth);
+            }
+
+            #[test]
+            fn test_asinh() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(Abs::abs(Asinh::asinh(-one) + Asinh::asinh(one)) < sixteenth);
+            }
+
+            #[test]
+            fn test_atanh() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(Abs::abs(Atanh::atanh(-half) + Atanh::atanh(half)) < sixteenth);
+            }
+
+            #[test]
+            fn test_checked_sinh() {
+                let one = <$ty as One>::ONE;
+
+                assert!(CheckedSinh::checked_sinh(-one).unwrap() < -one);
+                assert_eq!(
+                    CheckedSinh::checked_sinh(-<$ty as MaxFinite>::MAX_FINITE),
+                    None
+                );
+            }
+
+            #[test]
+            fn test_checked_cosh() {
+                let one = <$ty as One>::ONE;
+
+                assert!(CheckedCosh::checked_cosh(-one).unwrap() > one);
+                assert_eq!(
+                    CheckedCosh::checked_cosh(-<$ty as MaxFinite>::MAX_FINITE),
+                    None
+                );
+            }
+
+            #[test]
+            fn test_checked_acosh() {
+                let one = <$ty as One>::ONE;
+
+                assert_eq!(CheckedAcosh::checked_acosh(-one), None);
+            }
+
+            #[test]
+            fn test_checked_atanh() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let half = one / two;
+
+                assert!(CheckedAtanh::checked_atanh(-half).unwrap() < <$ty as Zero>::ZERO);
+                assert_eq!(CheckedAtanh::checked_atanh(-one), None);
+            }
+        }
+    };
 }
 
 #[cfg(feature = "std")]
@@ -258,7 +553,9 @@ impl_hyp_traits_for_float!(
     f32::tanh,
     f32::asinh,
     f32::acosh,
-    f32::atanh
+    f32::atanh,
+    f32_nonnegative_tests,
+    f32_negative_tests
 );
 #[cfg(feature = "std")]
 impl_hyp_traits_for_float!(
@@ -268,7 +565,9 @@ impl_hyp_traits_for_float!(
     f64::tanh,
     f64::asinh,
     f64::acosh,
-    f64::atanh
+    f64::atanh,
+    f64_nonnegative_tests,
+    f64_negative_tests
 );
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 impl_hyp_traits_for_float!(
@@ -278,7 +577,9 @@ impl_hyp_traits_for_float!(
     libm::tanhf,
     libm::asinhf,
     libm::acoshf,
-    libm::atanhf
+    libm::atanhf,
+    f32_nonnegative_tests,
+    f32_negative_tests
 );
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 impl_hyp_traits_for_float!(
@@ -288,5 +589,7 @@ impl_hyp_traits_for_float!(
     libm::tanh,
     libm::asinh,
     libm::acosh,
-    libm::atanh
+    libm::atanh,
+    f64_nonnegative_tests,
+    f64_negative_tests
 );

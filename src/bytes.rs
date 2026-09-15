@@ -157,7 +157,7 @@ macro_rules! test_bytes_traits_nonnegative {
             use crate::elem::*;
 
             #[test]
-            fn test_nonnegative_roundtrip() {
+            fn test_roundtrip() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
@@ -216,7 +216,7 @@ macro_rules! test_bytes_traits_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_be_to_le() {
+            fn test_be_to_le() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -245,7 +245,7 @@ macro_rules! test_bytes_traits_negative {
             use crate::elem::*;
 
             #[test]
-            fn test_negative_roundtrip() {
+            fn test_roundtrip() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
@@ -291,7 +291,7 @@ macro_rules! test_bytes_traits_negative {
             }
 
             #[test]
-            fn test_negative_be_to_le() {
+            fn test_be_to_le() {
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;

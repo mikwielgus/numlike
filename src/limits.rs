@@ -118,7 +118,7 @@ macro_rules! test_limits_traits_int_nonnegative {
             use crate::limits::*;
 
             #[test]
-            fn test_nonnegative_limits() {
+            fn test_limits() {
                 assert_eq!(<$ty as MinFinite>::MIN_FINITE, <$ty>::MIN);
                 assert_eq!(<$ty as MinExtended>::MIN_EXTENDED, <$ty>::MIN);
                 assert_eq!(<$ty as MinExactInteger>::MIN_EXACT_INTEGER, <$ty>::MIN);
@@ -147,7 +147,7 @@ macro_rules! test_limits_traits_int_negative {
             use crate::limits::*;
 
             #[test]
-            fn test_negative_limits() {
+            fn test_limits() {
                 assert_eq!(<$ty as MinFinite>::MIN_FINITE, <$ty>::MIN);
                 assert_eq!(<$ty as MinExtended>::MIN_EXTENDED, <$ty>::MIN);
                 assert_eq!(<$ty as MinExactInteger>::MIN_EXACT_INTEGER, <$ty>::MIN);
@@ -220,7 +220,7 @@ macro_rules! test_limits_traits_float_nonnegative {
             use crate::limits::*;
 
             #[test]
-            fn test_nonnegative_limits() {
+            fn test_limits() {
                 assert_eq!(<$ty as MaxFinite>::MAX_FINITE, <$ty>::MAX);
                 assert_eq!(<$ty as MaxExtended>::MAX_EXTENDED, <$ty>::INFINITY);
                 assert_eq!(
@@ -239,7 +239,7 @@ macro_rules! test_limits_traits_float_nonnegative {
             }
 
             #[test]
-            fn test_nonnegative_exact_integer() {
+            fn test_exact_integer() {
                 let max = <$ty as MaxExactInteger>::MAX_EXACT_INTEGER;
                 let max_int = max as i128;
 
@@ -263,7 +263,7 @@ macro_rules! test_limits_traits_float_negative {
             use crate::limits::*;
 
             #[test]
-            fn test_negative_limits() {
+            fn test_limits() {
                 assert_eq!(<$ty as MinFinite>::MIN_FINITE, <$ty>::MIN);
                 assert_eq!(<$ty as MinExtended>::MIN_EXTENDED, <$ty>::NEG_INFINITY);
                 assert_eq!(
@@ -282,7 +282,7 @@ macro_rules! test_limits_traits_float_negative {
             }
 
             #[test]
-            fn test_negative_exact_integer() {
+            fn test_exact_integer() {
                 let min = <$ty as MinExactInteger>::MIN_EXACT_INTEGER;
                 let min_int = min as i128;
 
