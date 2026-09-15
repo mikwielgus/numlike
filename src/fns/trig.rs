@@ -266,6 +266,391 @@ macro_rules! impl_trig_traits_for_float {
             }
         }
     };
+    (
+        $ty:ty,
+        $sin_cos:path,
+        $sin:path,
+        $cos:path,
+        $tan:path,
+        $atan2:path,
+        $asin:path,
+        $acos:path,
+        $atan:path,
+        $nonnegative_tests_mod:ident,
+        $negative_tests_mod:ident
+    ) => {
+        impl_trig_traits_for_float!($ty, $sin_cos, $sin, $cos, $tan, $atan2, $asin, $acos, $atan);
+
+        test_trig_traits_nonnegative!($ty, $nonnegative_tests_mod);
+        test_trig_traits_negative!($ty, $negative_tests_mod);
+    };
+}
+
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! test_trig_traits_nonnegative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::fns::*;
+            use crate::limits::*;
+
+            #[test]
+            fn test_sin() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Sin::sin(zero), zero);
+
+                let sin_half = Sin::sin(half);
+
+                assert!(sin_half > zero);
+                assert!(sin_half < one);
+                assert!(Abs::abs(Asin::asin(sin_half) - half) < sixteenth);
+            }
+
+            #[test]
+            fn test_cos() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Cos::cos(zero), one);
+
+                let cos_half = Cos::cos(half);
+
+                assert!(cos_half > zero);
+                assert!(cos_half < one);
+                assert!(Abs::abs(Acos::acos(cos_half) - half) < sixteenth);
+            }
+
+            #[test]
+            fn test_tan() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Tan::tan(zero), zero);
+
+                let tan_half = Tan::tan(half);
+
+                assert!(tan_half > zero);
+                assert!(Abs::abs(Atan::atan(tan_half) - half) < sixteenth);
+            }
+
+            #[test]
+            fn test_sin_cos() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(SinCos::sin_cos(zero), (zero, one));
+
+                let (sin_half, cos_half) = SinCos::sin_cos(half);
+
+                assert!(Abs::abs(sin_half - Sin::sin(half)) < sixteenth);
+                assert!(Abs::abs(cos_half - Cos::cos(half)) < sixteenth);
+            }
+
+            #[test]
+            fn test_asin() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Asin::asin(zero), zero);
+
+                let asin_half = Asin::asin(half);
+
+                assert!(asin_half > zero);
+                assert!(asin_half < one);
+                assert!(Abs::abs(Sin::sin(asin_half) - half) < sixteenth);
+            }
+
+            #[test]
+            fn test_acos() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Acos::acos(one), zero);
+
+                let acos_half = Acos::acos(half);
+
+                assert!(acos_half > one);
+                assert!(acos_half < two);
+                assert!(Abs::abs(Cos::cos(acos_half) - half) < sixteenth);
+            }
+
+            #[test]
+            fn test_atan() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Atan::atan(zero), zero);
+
+                let atan_half = Atan::atan(half);
+
+                assert!(atan_half > zero);
+                assert!(atan_half < one);
+                assert!(Abs::abs(Tan::tan(atan_half) - half) < sixteenth);
+            }
+
+            #[test]
+            fn test_atan2() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(Atan2::atan2(zero, one), zero);
+
+                let atan2_one_zero = Atan2::atan2(one, zero);
+
+                assert!(atan2_one_zero > one);
+                assert!(atan2_one_zero < two);
+                assert!(Abs::abs(atan2_one_zero - Asin::asin(one)) < sixteenth);
+                assert!(Abs::abs(Atan2::atan2(one, one) - Atan::atan(one)) < sixteenth);
+            }
+
+            #[test]
+            fn test_checked_tan() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert_eq!(CheckedTan::checked_tan(zero), Some(zero));
+
+                let tan_half = CheckedTan::checked_tan(half).unwrap();
+
+                assert!(tan_half > zero);
+                assert!(Abs::abs(Atan::atan(tan_half) - half) < sixteenth);
+                assert_eq!(
+                    CheckedTan::checked_tan(<$ty as MaxExtended>::MAX_EXTENDED),
+                    None
+                );
+            }
+
+            #[test]
+            fn test_checked_asin() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let half = one / two;
+
+                assert_eq!(CheckedAsin::checked_asin(zero), Some(zero));
+                assert!(CheckedAsin::checked_asin(half).unwrap() > zero);
+                assert_eq!(CheckedAsin::checked_asin(two), None);
+            }
+
+            #[test]
+            fn test_checked_acos() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let half = one / two;
+
+                assert_eq!(CheckedAcos::checked_acos(one), Some(zero));
+                assert!(CheckedAcos::checked_acos(half).unwrap() > one);
+                assert_eq!(CheckedAcos::checked_acos(two), None);
+            }
+        }
+    };
+}
+
+#[cfg(any(feature = "std", feature = "libm"))]
+macro_rules! test_trig_traits_negative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::fns::*;
+            use crate::limits::*;
+
+            #[test]
+            fn test_sin() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(Abs::abs(Sin::sin(-half) + Sin::sin(half)) < sixteenth);
+            }
+
+            #[test]
+            fn test_cos() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(Abs::abs(Cos::cos(-half) - Cos::cos(half)) < sixteenth);
+            }
+
+            #[test]
+            fn test_tan() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(Abs::abs(Tan::tan(-half) + Tan::tan(half)) < sixteenth);
+            }
+
+            #[test]
+            fn test_sin_cos() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                let (sin_neg_half, cos_neg_half) = SinCos::sin_cos(-half);
+
+                assert!(Abs::abs(sin_neg_half + Sin::sin(half)) < sixteenth);
+                assert!(Abs::abs(cos_neg_half - Cos::cos(half)) < sixteenth);
+            }
+
+            #[test]
+            fn test_asin() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(Abs::abs(Asin::asin(-half) + Asin::asin(half)) < sixteenth);
+            }
+
+            #[test]
+            fn test_acos() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                let acos_neg_half = Acos::acos(-half);
+
+                assert!(acos_neg_half > one);
+                assert!(
+                    Abs::abs((Acos::acos(half) + acos_neg_half) - Acos::acos(-one)) < sixteenth
+                );
+                assert!(Abs::abs(Acos::acos(-one) - two * Acos::acos(zero)) < sixteenth);
+            }
+
+            #[test]
+            fn test_atan() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(Abs::abs(Atan::atan(-half) + Atan::atan(half)) < sixteenth);
+            }
+
+            #[test]
+            fn test_atan2() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                let atan2_neg_half = Atan2::atan2(-one, zero);
+
+                assert!(atan2_neg_half < zero);
+                assert!(Abs::abs(atan2_neg_half + Asin::asin(one)) < sixteenth);
+                assert!(Abs::abs(Atan2::atan2(-one, one) + Atan::atan(one)) < sixteenth);
+            }
+
+            #[test]
+            fn test_checked_tan() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+                let half = one / two;
+                let sixteen = four * four;
+                let sixteenth = one / sixteen;
+
+                assert!(
+                    Abs::abs(CheckedTan::checked_tan(-half).unwrap() + Tan::tan(half)) < sixteenth
+                );
+                assert_eq!(
+                    CheckedTan::checked_tan(<$ty as MinExtended>::MIN_EXTENDED),
+                    None
+                );
+            }
+
+            #[test]
+            fn test_checked_asin() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let half = one / two;
+
+                assert!(CheckedAsin::checked_asin(-half).unwrap() < <$ty as Zero>::ZERO);
+                assert_eq!(CheckedAsin::checked_asin(-two), None);
+            }
+
+            #[test]
+            fn test_checked_acos() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+
+                assert!(CheckedAcos::checked_acos(-one).unwrap() > one);
+                assert_eq!(CheckedAcos::checked_acos(-two), None);
+            }
+        }
+    };
 }
 
 #[cfg(feature = "std")]
@@ -278,7 +663,9 @@ impl_trig_traits_for_float!(
     f32::atan2,
     f32::asin,
     f32::acos,
-    f32::atan
+    f32::atan,
+    f32_nonnegative_tests,
+    f32_negative_tests
 );
 #[cfg(feature = "std")]
 impl_trig_traits_for_float!(
@@ -290,7 +677,9 @@ impl_trig_traits_for_float!(
     f64::atan2,
     f64::asin,
     f64::acos,
-    f64::atan
+    f64::atan,
+    f64_nonnegative_tests,
+    f64_negative_tests
 );
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 impl_trig_traits_for_float!(
@@ -302,7 +691,9 @@ impl_trig_traits_for_float!(
     libm::atan2f,
     libm::asinf,
     libm::acosf,
-    libm::atanf
+    libm::atanf,
+    f32_nonnegative_tests,
+    f32_negative_tests
 );
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 impl_trig_traits_for_float!(
@@ -314,5 +705,7 @@ impl_trig_traits_for_float!(
     libm::atan2,
     libm::asin,
     libm::acos,
-    libm::atan
+    libm::atan,
+    f64_nonnegative_tests,
+    f64_negative_tests
 );
