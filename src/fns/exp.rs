@@ -306,7 +306,6 @@ macro_rules! test_exp_traits_negative {
                 let sixteenth = one / sixteen;
 
                 let inv_e_m1 = ExpM1::exp_m1(-one);
-
                 assert!(inv_e_m1 < zero);
                 assert!(inv_e_m1 > -one);
                 assert!(Abs::abs((inv_e_m1 + one) - Exp::exp(-one)) < sixteenth);
@@ -318,7 +317,6 @@ macro_rules! test_exp_traits_negative {
                 let one = <$ty as One>::ONE;
 
                 let inv_e = CheckedExp::checked_exp(-one).unwrap();
-
                 assert!(inv_e > zero);
                 assert!(inv_e < one);
             }
@@ -341,7 +339,6 @@ macro_rules! test_exp_traits_negative {
                 let one = <$ty as One>::ONE;
 
                 let inv_e_m1 = CheckedExpM1::checked_exp_m1(-one).unwrap();
-
                 assert!(inv_e_m1 < zero);
                 assert!(inv_e_m1 > -one);
             }

@@ -229,14 +229,12 @@ macro_rules! test_root_traits_float_negative {
             #[test]
             fn test_checked_sqrt() {
                 let one = <$ty as One>::ONE;
-
                 assert_eq!(CheckedSqrt::checked_sqrt(-one), None);
             }
 
             #[test]
             fn test_checked_isqrt() {
                 let one = <$ty as One>::ONE;
-
                 assert_eq!(CheckedIsqrt::checked_isqrt(-one), None);
             }
         }
@@ -357,7 +355,7 @@ macro_rules! test_isqrt_traits_nonnegative {
                 assert_eq!(Isqrt::isqrt(three), one);
                 assert_eq!(Isqrt::isqrt(four), two);
                 assert_eq!(Isqrt::isqrt(eight), two);
-                assert_eq!(Isqrt::isqrt(nine), two + one);
+                assert_eq!(Isqrt::isqrt(nine), three);
             }
 
             #[test]
@@ -365,6 +363,7 @@ macro_rules! test_isqrt_traits_nonnegative {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
+                let three = two + one;
                 let four = two + two;
                 let nine = four + four + one;
 
@@ -372,7 +371,7 @@ macro_rules! test_isqrt_traits_nonnegative {
                 assert_eq!(CheckedIsqrt::checked_isqrt(one), Some(one));
                 assert_eq!(CheckedIsqrt::checked_isqrt(two), Some(one));
                 assert_eq!(CheckedIsqrt::checked_isqrt(four), Some(two));
-                assert_eq!(CheckedIsqrt::checked_isqrt(nine), Some(two + one));
+                assert_eq!(CheckedIsqrt::checked_isqrt(nine), Some(three));
             }
         }
     };
@@ -388,7 +387,6 @@ macro_rules! test_isqrt_traits_negative {
             #[test]
             fn test_checked_isqrt() {
                 let one = <$ty as One>::ONE;
-
                 assert_eq!(CheckedIsqrt::checked_isqrt(-one), None);
             }
         }
