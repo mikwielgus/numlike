@@ -54,3 +54,95 @@ macro_rules! impl_checked_shift_traits_for_ints {
 
 impl_checked_shift_traits_for_ints!(i8, i16, i32, i64, i128, isize);
 impl_checked_shift_traits_for_ints!(u8, u16, u32, u64, u128, usize);
+
+macro_rules! test_checked_bitshift_traits_int_nonnegative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::ops::*;
+
+            #[test]
+            fn test_shl() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CheckedShl::checked_shl(zero, 1), Some(zero));
+                assert_eq!(CheckedShl::checked_shl(one, 1), Some(two));
+                assert_eq!(CheckedShl::checked_shl(two, 1), Some(four));
+                assert_eq!(CheckedShl::checked_shl(one, 2), Some(four));
+                assert_eq!(CheckedShl::checked_shl(one, <$ty>::BITS), None);
+            }
+
+            #[test]
+            fn test_shr() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CheckedShr::checked_shr(zero, 1), Some(zero));
+                assert_eq!(CheckedShr::checked_shr(one, 1), Some(zero));
+                assert_eq!(CheckedShr::checked_shr(two, 1), Some(one));
+                assert_eq!(CheckedShr::checked_shr(four, 1), Some(two));
+                assert_eq!(CheckedShr::checked_shr(four, 2), Some(one));
+                assert_eq!(CheckedShr::checked_shr(one, <$ty>::BITS), None);
+            }
+        }
+    };
+}
+
+macro_rules! test_checked_bitshift_traits_int_negative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::ops::*;
+
+            #[test]
+            fn test_shl() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CheckedShl::checked_shl(-one, 1), Some(-two));
+                assert_eq!(CheckedShl::checked_shl(-two, 1), Some(-four));
+                assert_eq!(CheckedShl::checked_shl(-one, <$ty>::BITS), None);
+            }
+
+            #[test]
+            fn test_shr() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert_eq!(CheckedShr::checked_shr(-two, 1), Some(-one));
+                assert_eq!(CheckedShr::checked_shr(-four, 1), Some(-two));
+                assert_eq!(CheckedShr::checked_shr(-four, 2), Some(-one));
+                assert_eq!(CheckedShr::checked_shr(-one, <$ty>::BITS), None);
+            }
+        }
+    };
+}
+
+test_checked_bitshift_traits_int_nonnegative!(i8, i8_nonnegative_tests);
+test_checked_bitshift_traits_int_negative!(i8, i8_negative_tests);
+test_checked_bitshift_traits_int_nonnegative!(i16, i16_nonnegative_tests);
+test_checked_bitshift_traits_int_negative!(i16, i16_negative_tests);
+test_checked_bitshift_traits_int_nonnegative!(i32, i32_nonnegative_tests);
+test_checked_bitshift_traits_int_negative!(i32, i32_negative_tests);
+test_checked_bitshift_traits_int_nonnegative!(i64, i64_nonnegative_tests);
+test_checked_bitshift_traits_int_negative!(i64, i64_negative_tests);
+test_checked_bitshift_traits_int_nonnegative!(i128, i128_nonnegative_tests);
+test_checked_bitshift_traits_int_negative!(i128, i128_negative_tests);
+test_checked_bitshift_traits_int_nonnegative!(isize, isize_nonnegative_tests);
+test_checked_bitshift_traits_int_negative!(isize, isize_negative_tests);
+
+test_checked_bitshift_traits_int_nonnegative!(u8, u8_tests);
+test_checked_bitshift_traits_int_nonnegative!(u16, u16_tests);
+test_checked_bitshift_traits_int_nonnegative!(u32, u32_tests);
+test_checked_bitshift_traits_int_nonnegative!(u64, u64_tests);
+test_checked_bitshift_traits_int_nonnegative!(u128, u128_tests);
+test_checked_bitshift_traits_int_nonnegative!(usize, usize_tests);
