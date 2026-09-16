@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 [![Repository](https://img.shields.io/badge/repository-GitHub-0FBF3E)](https://github.com/mikwielgus/numlike)
 [![Docs](https://docs.rs/numlike/badge.svg)](https://docs.rs/numlike/)
 [![Crates.io](https://img.shields.io/crates/v/numlike.svg)](https://crates.io/crates/numlike)
+[![MSRV](https://img.shields.io/crates/msrv/numlike.svg)](https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/)
 [![MIT OR Apache 2.0](https://img.shields.io/crates/l/numlike.svg)](#licence)
 
 # numlike

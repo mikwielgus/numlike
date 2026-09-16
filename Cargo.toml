@@ -13,6 +13,7 @@ license = "MIT OR Apache-2.0"
 keywords = ["mathematics", "numerics", "no_std"]
 categories = ["algorithms", "science", "no-std"]
 edition = "2024"
+rust-version = "1.85"
 
 [features]
 default = ["std"]
