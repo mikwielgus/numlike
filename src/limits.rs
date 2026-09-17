@@ -63,13 +63,20 @@ pub trait MaxExactInteger {
     const MAX_EXACT_INTEGER: Self;
 }
 
+/// The size of this type in bits.
+pub trait Bits {
+    /// The size of this type in bits.
+    const BITS: u32;
+}
+
 /// Bundle of limits for a numeric type.
 pub trait Limits:
-    MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger
+    MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger + Bits
 {
 }
-impl<T: MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger>
-    Limits for T
+impl<
+    T: MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger + Bits,
+> Limits for T
 {
 }
 
@@ -97,6 +104,10 @@ macro_rules! impl_limits_traits_for_int {
 
         impl MaxExactInteger for $ty {
             const MAX_EXACT_INTEGER: Self = <$ty>::MAX;
+        }
+
+        impl Bits for $ty {
+            const BITS: u32 = <$ty>::BITS;
         }
     };
     ($ty:ty, $nonnegative_tests_mod:ident) => {
@@ -199,13 +210,17 @@ macro_rules! impl_limits_traits_for_float {
             const MAX_EXTENDED: Self = <$ty>::INFINITY;
         }
 
+        impl MinExactInteger for $ty {
+            const MIN_EXACT_INTEGER: Self = -<$ty as MaxExactInteger>::MAX_EXACT_INTEGER;
+        }
+
         impl MaxExactInteger for $ty {
             const MAX_EXACT_INTEGER: Self =
                 ((1i128 << (<$ty>::MANTISSA_DIGITS as u32)) - 1) as Self;
         }
 
-        impl MinExactInteger for $ty {
-            const MIN_EXACT_INTEGER: Self = -<$ty as MaxExactInteger>::MAX_EXACT_INTEGER;
+        impl Bits for $ty {
+            const BITS: u32 = core::mem::size_of::<$ty>() as u32 * 8;
         }
 
         test_limits_traits_float_nonnegative!($ty, $nonnegative_tests_mod);
@@ -236,6 +251,8 @@ macro_rules! test_limits_traits_float_nonnegative {
                 assert!(
                     <$ty as MaxExactInteger>::MAX_EXACT_INTEGER < <$ty as MaxFinite>::MAX_FINITE
                 );
+
+                assert_eq!(<$ty as Bits>::BITS, core::mem::size_of::<$ty>() as u32 * 8);
             }
 
             #[test]
