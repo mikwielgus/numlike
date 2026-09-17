@@ -99,17 +99,25 @@ decisions in the venerable `num-traits` crate.
     consistent with established mathematical terminology, but we don't want to
     [give programmers any
     surprises](https://en.wikipedia.org/wiki/Principle_of_least_astonishment).
-- `num-traits` provides `.signum()` and
-  `.abs()` methods only for types implementing
-  [`Signed`](https://docs.rs/num-traits/latest/num_traits/sign/trait.Signed.html)
-  trait, which excludes unsigned integer types.
+- In `num-traits`, if you want to calculate absolute value (`.abs()`),
+  the signum function (`.signum()` or `.sgn()`), or to check whether
+  a number is positive or negative, you need to have a bound of
+  [`Signed`](https://docs.rs/num/latest/num/traits/trait.Signed.html) trait,
+  which is not implemented on unsigned integer types.
+
+  What's even worse, that trait requires your type to implement all the field
+  operation traits (`Add`, `Sub`, `Mul`, `Div`), and also `Rem`, `Zero`,
+  and `One`, and some more, thus precluding its use on more abstract (e.g.
+  group-like) mathematical structures.
   - But having these methods generically for both signed and unsigned types
     can be useful for finding canonical denominators, reducing fractions,
     combining and simplifying radicals, so `numlike` provides these methods
-    through two decoupled traits,
-    [`Signum`](https://docs.rs/numlike/latest/numlike/ops/trait.Signum.html)
+    through two fine-grained, decoupled traits,
+    [`Sgn`](https://docs.rs/numlike/latest/numlike/ops/trait.Sgn.html)
     and [`Abs`](https://docs.rs/numlike/latest/numlike/ops/trait.Abs.html),
-    implemented for all numeric primitives.
+    implemented for all numeric primitives, not only signeds. These traits
+    do not have any other bounds, so they can be easily implemented for any
+    algebraic structure without the need for any additional assumptions.
 - `num-traits` does not provide checked mathematical operation traits,
   [`CheckedAdd`](https://docs.rs/num-traits/latest/num_traits/ops/checked/trait.CheckedAdd.html),
   [`CheckedSub`](https://docs.rs/num-traits/latest/num_traits/ops/checked/trait.CheckedSub.html),
