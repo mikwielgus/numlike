@@ -85,13 +85,20 @@ decisions in the venerable `num-traits` crate.
   the positive infinity. `num-traits` has no interface to generically obtain
   negative or positive infinity as the min. or max. value.
   - `numlike` solves that by providing
-    [`MinExtended`](https://docs.rs/numlike/latest/numlike/limits/trait.MinExtended.html)/
-    [`MaxExtended`](https://docs.rs/numlike/latest/numlike/limits/trait.MaxExtended.html)
-    traits that result in negative and positive infinities for floats, and
-    [`MinFinite`](https://docs.rs/numlike/latest/numlike/limits/trait.MinFinite.html)/
-    [`MaxFinite`](https://docs.rs/numlike/latest/numlike/limits/trait.MaxFinite.html)
-    traits that give only finite values just as above `num-traits`'s `Bounded`
-    does.
+    [`MinExtended::MIN_EXTENDED`](https://docs.rs/numlike/latest/numlike/limits/trait.MinExtended.html)/
+    [`MaxExtended::MAX_EXTENDED`](https://docs.rs/numlike/latest/numlike/limits/trait.MaxExtended.html)
+    trait constants that are negative and positive infinities for floats, and
+    [`MinFinite::MIN_FINITE`](https://docs.rs/numlike/latest/numlike/limits/trait.MinFinite.html)/
+    [`MaxFinite::MAX_FINITE`](https://docs.rs/numlike/latest/numlike/limits/trait.MaxFinite.html)
+    trait constants that are always finite values just as above `num-traits`'s
+    `Bounded` does.
+
+    `MIN` and `MAX` names, without suffixes, are intentionally not used
+    because we would have made them equal to `MinFinite::MIN_EXTENDED` and
+    `MaxFinite::MAX_EXTENDED`, as we prefer these because they are more
+    consistent with established mathematical terminology, but we don't want to
+    [give programmers any
+    surprises](https://en.wikipedia.org/wiki/Principle_of_least_astonishment).
 - `num-traits` provides `.signum()` and
   `.abs()` methods only for types implementing
   [`Signed`](https://docs.rs/num-traits/latest/num_traits/sign/trait.Signed.html)
