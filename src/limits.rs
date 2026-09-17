@@ -69,6 +69,21 @@ pub trait Bits {
     const BITS: u32;
 }
 
+/// Approximate number of significant digits in base 10 of a floating-point type.
+///
+/// This is the maximum `x` such that any decimal number with `x` significant
+/// digits can be converted to `f32` and back without loss.
+///
+/// Equal to `floor(log10(2^(MANTISSA_DIGITS − 1)))`.
+///
+/// This trait is only available for floating-point types. It would make no
+/// sense for integer types, since their accuracy is the same for any number
+/// of digits.
+pub trait Digits {
+    /// Approximate number of significant digits in base 10 of a floating-point type.
+    const DIGITS: u32;
+}
+
 /// Bundle of limits for a numeric type.
 pub trait Limits:
     MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger + Bits
@@ -109,6 +124,11 @@ macro_rules! impl_limits_traits_for_int {
         impl Bits for $ty {
             const BITS: u32 = <$ty>::BITS;
         }
+
+        // No `DIGITS` for ints.
+        /*impl Digits for $ty {
+            const DIGITS: u32 = <$ty>::DIGITS;
+        }*/
     };
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_limits_traits_for_int!($ty);
@@ -220,7 +240,13 @@ macro_rules! impl_limits_traits_for_float {
         }
 
         impl Bits for $ty {
+            // `BITS` for floats hasn't been stabilized yet, so we calculate it
+            // from `size_of`.
             const BITS: u32 = core::mem::size_of::<$ty>() as u32 * 8;
+        }
+
+        impl Digits for $ty {
+            const DIGITS: u32 = <$ty>::DIGITS;
         }
 
         test_limits_traits_float_nonnegative!($ty, $nonnegative_tests_mod);
@@ -252,7 +278,10 @@ macro_rules! test_limits_traits_float_nonnegative {
                     <$ty as MaxExactInteger>::MAX_EXACT_INTEGER < <$ty as MaxFinite>::MAX_FINITE
                 );
 
+                // These constants are always non-negative, so they are only
+                // tested in nonnegative tests, not in negative tests.
                 assert_eq!(<$ty as Bits>::BITS, core::mem::size_of::<$ty>() as u32 * 8);
+                assert_eq!(<$ty as Digits>::DIGITS, <$ty>::DIGITS);
             }
 
             #[test]
