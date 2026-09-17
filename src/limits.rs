@@ -84,6 +84,15 @@ pub trait Digits {
     const DIGITS: u32;
 }
 
+/// Number of significant digits in base 2.
+///
+/// Note that the size of the mantissa in the bitwise representation is one
+/// smaller than this since the leading 1 is not stored explicitly.
+pub trait MantissaDigits {
+    /// Number of significant digits in base 2.
+    const MANTISSA_DIGITS: u32;
+}
+
 /// Bundle of limits for a numeric type.
 pub trait Limits:
     MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger + Bits
@@ -128,6 +137,11 @@ macro_rules! impl_limits_traits_for_int {
         // No `DIGITS` for ints.
         /*impl Digits for $ty {
             const DIGITS: u32 = <$ty>::DIGITS;
+        }*/
+
+        // No `MANTISSA_DIGITS` for ints.
+        /*impl Digits for $ty {
+            const MANTISSA_DIGITS: u32 = <$ty>::MANTISSA_DIGITS;
         }*/
     };
     ($ty:ty, $nonnegative_tests_mod:ident) => {
@@ -249,6 +263,10 @@ macro_rules! impl_limits_traits_for_float {
             const DIGITS: u32 = <$ty>::DIGITS;
         }
 
+        impl MantissaDigits for $ty {
+            const MANTISSA_DIGITS: u32 = <$ty>::MANTISSA_DIGITS;
+        }
+
         test_limits_traits_float_nonnegative!($ty, $nonnegative_tests_mod);
         test_limits_traits_float_negative!($ty, $negative_tests_mod);
     };
@@ -282,6 +300,10 @@ macro_rules! test_limits_traits_float_nonnegative {
                 // tested in nonnegative tests, not in negative tests.
                 assert_eq!(<$ty as Bits>::BITS, core::mem::size_of::<$ty>() as u32 * 8);
                 assert_eq!(<$ty as Digits>::DIGITS, <$ty>::DIGITS);
+                assert_eq!(
+                    <$ty as MantissaDigits>::MANTISSA_DIGITS,
+                    <$ty>::MANTISSA_DIGITS
+                );
             }
 
             #[test]
