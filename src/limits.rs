@@ -4,6 +4,45 @@
 
 //! Finite and extended numeric limits.
 
+/// Bundle of limits for a floating-point numeric type.
+pub trait FloatLimits: Limits + Digits + MantissaDigits {}
+impl<T: Limits + Digits + MantissaDigits> FloatLimits for T {}
+
+/// Approximate number of significant digits in base 10 of a floating-point type.
+///
+/// This is the maximum `x` such that any decimal number with `x` significant
+/// digits can be converted to `f32` and back without loss.
+///
+/// Equal to `floor(log10(2^(MANTISSA_DIGITS − 1)))`.
+///
+/// This trait is only available for floating-point types. It would make no
+/// sense for integer types, since their accuracy is the same for any number
+/// of digits.
+pub trait Digits {
+    /// Approximate number of significant digits in base 10 of a floating-point type.
+    const DIGITS: u32;
+}
+
+/// Number of significant digits in base 2.
+///
+/// Note that the size of the mantissa in the bitwise representation is one
+/// smaller than this since the leading 1 is not stored explicitly.
+pub trait MantissaDigits {
+    /// Number of significant digits in base 2.
+    const MANTISSA_DIGITS: u32;
+}
+
+/// Bundle of limits for a numeric type.
+pub trait Limits:
+    MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger + Bits
+{
+}
+impl<
+    T: MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger + Bits,
+> Limits for T
+{
+}
+
 /// Smallest finite value.
 pub trait MinFinite {
     /// Smallest finite value.
@@ -67,41 +106,6 @@ pub trait MaxExactInteger {
 pub trait Bits {
     /// The size of this type in bits.
     const BITS: u32;
-}
-
-/// Approximate number of significant digits in base 10 of a floating-point type.
-///
-/// This is the maximum `x` such that any decimal number with `x` significant
-/// digits can be converted to `f32` and back without loss.
-///
-/// Equal to `floor(log10(2^(MANTISSA_DIGITS − 1)))`.
-///
-/// This trait is only available for floating-point types. It would make no
-/// sense for integer types, since their accuracy is the same for any number
-/// of digits.
-pub trait Digits {
-    /// Approximate number of significant digits in base 10 of a floating-point type.
-    const DIGITS: u32;
-}
-
-/// Number of significant digits in base 2.
-///
-/// Note that the size of the mantissa in the bitwise representation is one
-/// smaller than this since the leading 1 is not stored explicitly.
-pub trait MantissaDigits {
-    /// Number of significant digits in base 2.
-    const MANTISSA_DIGITS: u32;
-}
-
-/// Bundle of limits for a numeric type.
-pub trait Limits:
-    MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger + Bits
-{
-}
-impl<
-    T: MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger + Bits,
-> Limits for T
-{
 }
 
 macro_rules! impl_limits_traits_for_int {
