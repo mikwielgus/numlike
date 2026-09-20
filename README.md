@@ -61,7 +61,7 @@ decisions in the venerable `num-traits` crate.
   is no multiplication. For example, a complete multiplication
   implementation for all elements could be inefficient, or *1* may
   be supposed to designate merely the generating element (aka. the
-  [*generator*](https://en.wikipedia.org/wiki/Generator_(mathematics)))).
+  [*generator*](https://en.wikipedia.org/wiki/Generator_(mathematics))).
   - `num-traits` also requires `Output = Self` (closed operation) for `Add` and
     `Mul`, making it impossible to use `Zero` and `One` for statically-typed
     unit of measurement libraries like [`uom`](https://docs.rs/uom/latest/uom/),
@@ -93,12 +93,13 @@ decisions in the venerable `num-traits` crate.
     trait constants that are always finite values just as above `num-traits`'s
     `Bounded` does.
 
-    `MIN` and `MAX` names, without suffixes, are intentionally not used
-    because we would have made them equal to `MinFinite::MIN_EXTENDED` and
-    `MaxFinite::MAX_EXTENDED`, as we prefer these because they are more
-    consistent with established mathematical terminology, but we don't want to
-    [give programmers any
-    surprises](https://en.wikipedia.org/wiki/Principle_of_least_astonishment).
+    `MIN` and `MAX` names, without suffixes, are intentionally not used because
+    floats do not have minimum and maximum values in the strict mathematical
+    sense due to the presence of NaN values, which are unordered. And Rust uses
+    the terms `MIN` and `MAX` to actually mean `MIN_FINITE` and `MAX_FINITE`,
+    which mixes up things even more. We prefer to use terms in their strict
+    mathematical sense to avoid confusion, so it was better to just omit these
+    names.
 - In `num-traits`, if you want to calculate absolute value (`.abs()`),
   the signum function (`.signum()` or `.sgn()`), or to check whether
   a number is positive or negative, you need to have a bound of
