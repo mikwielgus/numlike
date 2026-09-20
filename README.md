@@ -19,7 +19,7 @@ less restrictive and less conservative alternative to
 This crate has no `unsafe` code and no mandatory third-party dependencies, and
 is `no_std`-compatible. Most of `no_std` operations on floating point numbers
 still have a dependency on [`libm`](https://docs.rs/libm/latest/libm/), which is
-gated behind `libm` feature flag.
+gated behind `libm` feature flag. MSRV is 1.85.
 
 If you are looking for abstract container traits in addition to
 abstract number traits, also check out another crate of ours,

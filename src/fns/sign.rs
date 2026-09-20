@@ -179,9 +179,13 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_sgn() {
+                let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
                 let two = one + one;
                 let four = two + two;
+
+                // Check if zero's sign is preserved for floats.
+                assert_eq!(Sgn::sgn(-zero), -zero);
 
                 assert_eq!(Sgn::sgn(-one), -one);
                 assert_eq!(Sgn::sgn(-two), -one);
@@ -229,10 +233,12 @@ macro_rules! impl_sign_traits_for_float {
 
             #[inline]
             fn sgn(self) -> Self::Output {
-                // Rust's built-in `signum()` on floats is unalgebraic, so we
-                // force zero to return zero here.
+                // Rust's built-in `signum()` on floats returns 1 for +0 and
+                // -1 for -0, which is unalgebraic, so we force +-0 to return
+                // +-0 here (zero's sign is preserved).
                 if self == 0.0 {
-                    0.0
+                    // Preserve the zero sign.
+                    self
                 } else {
                     <$ty>::signum(self)
                 }
