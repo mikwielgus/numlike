@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-//! Distinguished elements such as zero and one.
+//! Distinguished elements such as zero, one, NaN, infinities.
 
 /// Defines a distinguished `0` value.
 ///
@@ -33,6 +33,26 @@ pub trait Nan {
     const NAN: Self;
 }
 
+/// Positive infinity (+∞).
+///
+/// This is an infinity going in the positive direction. This trait is not
+/// for a directionless infinity, such as the one present in Riemann sphere and in
+/// projectively extended reals.
+pub trait PlusInfinity {
+    /// Positive infinity (+∞).
+    const PLUS_INFINITY: Self;
+}
+
+/// Negative infinity (-∞).
+///
+/// This is an infinity going in the negative direction. This trait is not for
+/// a directionless infinity, such as the one present in Riemann sphere and in
+/// projectively extended reals.
+pub trait MinusInfinity {
+    /// Negative infinity (-∞).
+    const MINUS_INFINITY: Self;
+}
+
 macro_rules! impl_elem_traits_for_int {
     ($ty:ty) => {
         impl Zero for $ty {
@@ -42,6 +62,9 @@ macro_rules! impl_elem_traits_for_int {
         impl One for $ty {
             const ONE: Self = 1;
         }
+
+        // No implementations of NaN, +infinity, -infinity, obviously, since
+        // these values don't exist for integers.
     };
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_elem_traits_for_int!($ty);
@@ -61,7 +84,8 @@ macro_rules! test_elem_traits_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
 
-            /// TODO: Perhaps test `NAN` somehow.
+            // TODO: Perhaps test `NAN`, `PLUS_INFINITY`, `MINUS_INFINITY`
+            // somehow.
 
             #[test]
             fn test_zero_one() {
@@ -127,6 +151,14 @@ macro_rules! impl_elem_traits_for_float {
 
         impl Nan for $ty {
             const NAN: Self = <$ty>::NAN;
+        }
+
+        impl PlusInfinity for $ty {
+            const PLUS_INFINITY: Self = <$ty>::INFINITY;
+        }
+
+        impl MinusInfinity for $ty {
+            const MINUS_INFINITY: Self = <$ty>::NEG_INFINITY;
         }
 
         test_elem_traits_nonnegative!($ty, $nonnegative_tests_mod);
