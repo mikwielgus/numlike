@@ -5,8 +5,8 @@
 //! Finite and extended numeric limits.
 
 /// Bundle of limits for a floating-point numeric type.
-pub trait FloatLimits: Limits + Digits + MantissaDigits {}
-impl<T: Limits + Digits + MantissaDigits> FloatLimits for T {}
+pub trait FloatLimits: Limits + Digits + MantissaDigits + Epsilon {}
+impl<T: Limits + Digits + MantissaDigits + Epsilon> FloatLimits for T {}
 
 /// Approximate number of significant digits in base 10 of a floating-point type.
 ///
@@ -23,13 +23,31 @@ pub trait Digits {
     const DIGITS: u32;
 }
 
-/// Number of significant digits in base 2.
+/// Number of significant digits in base 2 of a floating-point type.
 ///
 /// Note that the size of the mantissa in the bitwise representation is one
 /// smaller than this since the leading 1 is not stored explicitly.
+///
+/// This trait is only available for floating-point types. It would make no
+/// sense for integer types, since their accuracy is the same for any number
+/// of digits.
 pub trait MantissaDigits {
-    /// Number of significant digits in base 2.
+    /// Number of significant digits in base 2 of a floating-point type.
     const MANTISSA_DIGITS: u32;
+}
+
+/// [Machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value for
+/// this floating-point type.
+///
+/// This is the difference between 1.0 and the next larger representable number.
+///
+/// This trait is only available for floating-point types. It would make no
+/// sense for integer types, since their accuracy is the same for any number
+/// of digits.
+pub trait Epsilon {
+    /// [Machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value
+    /// for this floating-point type.
+    const EPSILON: Self;
 }
 
 /// Bundle of limits for a numeric type.
@@ -232,6 +250,24 @@ impl_limits_traits_for_int!(usize, usize_tests);
 
 macro_rules! impl_limits_traits_for_float {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl Bits for $ty {
+            // `BITS` for floats hasn't been stabilized yet, so we calculate it
+            // from `size_of`.
+            const BITS: u32 = core::mem::size_of::<$ty>() as u32 * 8;
+        }
+
+        impl Digits for $ty {
+            const DIGITS: u32 = <$ty>::DIGITS;
+        }
+
+        impl MantissaDigits for $ty {
+            const MANTISSA_DIGITS: u32 = <$ty>::MANTISSA_DIGITS;
+        }
+
+        impl Epsilon for $ty {
+            const EPSILON: Self = <$ty>::EPSILON;
+        }
+
         impl MinFinite for $ty {
             const MIN_FINITE: Self = <$ty>::MIN;
         }
@@ -257,20 +293,6 @@ macro_rules! impl_limits_traits_for_float {
                 ((1i128 << (<$ty>::MANTISSA_DIGITS as u32)) - 1) as Self;
         }
 
-        impl Bits for $ty {
-            // `BITS` for floats hasn't been stabilized yet, so we calculate it
-            // from `size_of`.
-            const BITS: u32 = core::mem::size_of::<$ty>() as u32 * 8;
-        }
-
-        impl Digits for $ty {
-            const DIGITS: u32 = <$ty>::DIGITS;
-        }
-
-        impl MantissaDigits for $ty {
-            const MANTISSA_DIGITS: u32 = <$ty>::MANTISSA_DIGITS;
-        }
-
         test_limits_traits_float_nonnegative!($ty, $nonnegative_tests_mod);
         test_limits_traits_float_negative!($ty, $negative_tests_mod);
     };
@@ -284,6 +306,16 @@ macro_rules! test_limits_traits_float_nonnegative {
 
             #[test]
             fn test_limits() {
+                // These constants are always non-negative, so they are only
+                // tested in nonnegative tests, not in negative tests.
+                assert_eq!(<$ty as Bits>::BITS, core::mem::size_of::<$ty>() as u32 * 8);
+                assert_eq!(<$ty as Digits>::DIGITS, <$ty>::DIGITS);
+                assert_eq!(
+                    <$ty as MantissaDigits>::MANTISSA_DIGITS,
+                    <$ty>::MANTISSA_DIGITS
+                );
+                assert_eq!(<$ty as Epsilon>::EPSILON, <$ty>::EPSILON);
+
                 assert_eq!(<$ty as MaxFinite>::MAX_FINITE, <$ty>::MAX);
                 assert_eq!(<$ty as MaxExtended>::MAX_EXTENDED, <$ty>::INFINITY);
                 assert_eq!(
@@ -298,15 +330,6 @@ macro_rules! test_limits_traits_float_nonnegative {
                 assert!(<$ty as MaxExtended>::MAX_EXTENDED > <$ty as MaxFinite>::MAX_FINITE);
                 assert!(
                     <$ty as MaxExactInteger>::MAX_EXACT_INTEGER < <$ty as MaxFinite>::MAX_FINITE
-                );
-
-                // These constants are always non-negative, so they are only
-                // tested in nonnegative tests, not in negative tests.
-                assert_eq!(<$ty as Bits>::BITS, core::mem::size_of::<$ty>() as u32 * 8);
-                assert_eq!(<$ty as Digits>::DIGITS, <$ty>::DIGITS);
-                assert_eq!(
-                    <$ty as MantissaDigits>::MANTISSA_DIGITS,
-                    <$ty>::MANTISSA_DIGITS
                 );
             }
 
