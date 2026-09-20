@@ -5,8 +5,11 @@
 //! Finite and extended numeric limits.
 
 /// Bundle of limits for a floating-point numeric type.
-pub trait FloatLimits: Limits + Digits + MantissaDigits + Epsilon {}
-impl<T: Limits + Digits + MantissaDigits + Epsilon> FloatLimits for T {}
+pub trait FloatLimits:
+    Limits + Digits + MantissaDigits + Epsilon + MinExponent + MaxExponent
+{
+}
+impl<T: Limits + Digits + MantissaDigits + Epsilon + MinExponent + MaxExponent> FloatLimits for T {}
 
 /// Approximate number of significant digits in base 10 of a floating-point type.
 ///
@@ -48,6 +51,33 @@ pub trait Epsilon {
     /// [Machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value
     /// for this floating-point type.
     const EPSILON: Self;
+}
+
+/// The minimum base-2 exponent according to the C definition.
+///
+/// One greater than the minimum possible normal power of 2 exponent for a
+/// significand bounded by 1 ≤ x < 2 (i.e. the IEEE definition).
+///
+/// This corresponds to the exact minimum possible normal power of 2 exponent
+/// for a significand bounded by 0.5 ≤ x < 1 (i.e. the C definition). In other
+/// words, all normal numbers representable by this type are greater than or
+/// equal to 0.5×2^MIN_EXP.
+pub trait MinExponent {
+    /// The minimum base-2 exponent according to C definition.
+    const MIN_EXPONENT: i32;
+}
+
+/// The maximum base-2 exponent according to the C definition.
+///
+/// One greater than the maximum possible power of 2 exponent for a significand
+/// bounded by 1 ≤ x < 2 (i.e. the IEEE definition).
+///
+/// This corresponds to the exact maximum possible power of 2 exponent for a
+/// significand bounded by 0.5 ≤ x < 1 (i.e. the C definition). In other words,
+/// all numbers representable by this type are strictly less than 2^MAX_EXP.
+pub trait MaxExponent {
+    /// The maximum base-2 exponent according to the C definition.
+    const MAX_EXPONENT: i32;
 }
 
 /// Bundle of limits for a numeric type.
@@ -155,16 +185,6 @@ macro_rules! impl_limits_traits_for_int {
         impl Bits for $ty {
             const BITS: u32 = <$ty>::BITS;
         }
-
-        // No `DIGITS` for ints.
-        /*impl Digits for $ty {
-            const DIGITS: u32 = <$ty>::DIGITS;
-        }*/
-
-        // No `MANTISSA_DIGITS` for ints.
-        /*impl Digits for $ty {
-            const MANTISSA_DIGITS: u32 = <$ty>::MANTISSA_DIGITS;
-        }*/
     };
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_limits_traits_for_int!($ty);
@@ -268,6 +288,14 @@ macro_rules! impl_limits_traits_for_float {
             const EPSILON: Self = <$ty>::EPSILON;
         }
 
+        impl MinExponent for $ty {
+            const MIN_EXPONENT: i32 = <$ty>::MIN_EXP;
+        }
+
+        impl MaxExponent for $ty {
+            const MAX_EXPONENT: i32 = <$ty>::MAX_EXP;
+        }
+
         impl MinFinite for $ty {
             const MIN_FINITE: Self = <$ty>::MIN;
         }
@@ -315,6 +343,10 @@ macro_rules! test_limits_traits_float_nonnegative {
                     <$ty>::MANTISSA_DIGITS
                 );
                 assert_eq!(<$ty as Epsilon>::EPSILON, <$ty>::EPSILON);
+                assert_eq!(<$ty as MinExponent>::MIN_EXPONENT, <$ty>::MIN_EXPONENT);
+                assert_eq!(<$ty as MaxExponent>::MAX_EXPONENT, <$ty>::MAX_EXPONENT);
+
+                // The below constants can be negative.
 
                 assert_eq!(<$ty as MaxFinite>::MAX_FINITE, <$ty>::MAX);
                 assert_eq!(<$ty as MaxExtended>::MAX_EXTENDED, <$ty>::INFINITY);
