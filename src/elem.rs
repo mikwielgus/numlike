@@ -27,6 +27,12 @@ pub trait One {
     const ONE: Self;
 }
 
+/// Not a Number (NaN) value for a floating-point type.
+pub trait Nan {
+    /// Not a Number (NaN) value for a floating-point type.
+    const NAN: Self;
+}
+
 macro_rules! impl_elem_traits_for_int {
     ($ty:ty) => {
         impl Zero for $ty {
@@ -54,6 +60,8 @@ macro_rules! test_elem_traits_nonnegative {
         #[cfg(test)]
         mod $tests_mod {
             use crate::elem::*;
+
+            /// TODO: Perhaps test `NAN` somehow.
 
             #[test]
             fn test_zero_one() {
@@ -115,6 +123,10 @@ macro_rules! impl_elem_traits_for_float {
 
         impl One for $ty {
             const ONE: Self = 1.0;
+        }
+
+        impl Nan for $ty {
+            const NAN: Self = <$ty>::NAN;
         }
 
         test_elem_traits_nonnegative!($ty, $nonnegative_tests_mod);
