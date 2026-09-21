@@ -4,6 +4,8 @@
 
 //! Distinguished elements such as zero, one, NaN, infinities.
 
+use core::num::{Saturating, Wrapping};
+
 /// Defines a distinguished `0` value.
 ///
 /// This is usually the additive identity, but it does not have to be so. It
@@ -55,16 +57,7 @@ pub trait MinusInfinity {
 
 macro_rules! impl_elem_traits_for_int {
     ($ty:ty) => {
-        impl Zero for $ty {
-            const ZERO: Self = 0;
-        }
-
-        impl One for $ty {
-            const ONE: Self = 1;
-        }
-
-        // No implementations of NaN, +infinity, -infinity, obviously, since
-        // these values don't exist for integers.
+        impl_elem_traits_for_int!($ty, 0, 1);
     };
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_elem_traits_for_int!($ty);
@@ -73,6 +66,28 @@ macro_rules! impl_elem_traits_for_int {
     };
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
         impl_elem_traits_for_int!($ty, $nonnegative_tests_mod);
+
+        test_elem_traits_negative!($ty, $negative_tests_mod);
+    };
+    ($ty:ty, $zero:expr, $one:expr) => {
+        impl Zero for $ty {
+            const ZERO: Self = $zero;
+        }
+
+        impl One for $ty {
+            const ONE: Self = $one;
+        }
+
+        // No implementations of NaN, +infinity, -infinity, obviously, since
+        // these values don't exist for integers.
+    };
+    ($ty:ty, $zero:expr, $one:expr, $nonnegative_tests_mod:ident) => {
+        impl_elem_traits_for_int!($ty, $zero, $one);
+
+        test_elem_traits_nonnegative!($ty, $nonnegative_tests_mod);
+    };
+    ($ty:ty, $zero:expr, $one:expr, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl_elem_traits_for_int!($ty, $zero, $one, $nonnegative_tests_mod);
 
         test_elem_traits_negative!($ty, $negative_tests_mod);
     };
@@ -138,6 +153,146 @@ impl_elem_traits_for_int!(u32, u32_tests);
 impl_elem_traits_for_int!(u64, u64_tests);
 impl_elem_traits_for_int!(u128, u128_tests);
 impl_elem_traits_for_int!(usize, usize_tests);
+
+impl_elem_traits_for_int!(
+    Wrapping<i8>,
+    Wrapping(0),
+    Wrapping(1),
+    wrapping_i8_nonnegative_tests,
+    wrapping_i8_negative_tests
+);
+impl_elem_traits_for_int!(
+    Wrapping<i16>,
+    Wrapping(0),
+    Wrapping(1),
+    wrapping_i16_nonnegative_tests,
+    wrapping_i16_negative_tests
+);
+impl_elem_traits_for_int!(
+    Wrapping<i32>,
+    Wrapping(0),
+    Wrapping(1),
+    wrapping_i32_nonnegative_tests,
+    wrapping_i32_negative_tests
+);
+impl_elem_traits_for_int!(
+    Wrapping<i64>,
+    Wrapping(0),
+    Wrapping(1),
+    wrapping_i64_nonnegative_tests,
+    wrapping_i64_negative_tests
+);
+impl_elem_traits_for_int!(
+    Wrapping<i128>,
+    Wrapping(0),
+    Wrapping(1),
+    wrapping_i128_nonnegative_tests,
+    wrapping_i128_negative_tests
+);
+impl_elem_traits_for_int!(
+    Wrapping<isize>,
+    Wrapping(0),
+    Wrapping(1),
+    wrapping_isize_nonnegative_tests,
+    wrapping_isize_negative_tests
+);
+
+impl_elem_traits_for_int!(Wrapping<u8>, Wrapping(0), Wrapping(1), wrapping_u8_tests);
+impl_elem_traits_for_int!(Wrapping<u16>, Wrapping(0), Wrapping(1), wrapping_u16_tests);
+impl_elem_traits_for_int!(Wrapping<u32>, Wrapping(0), Wrapping(1), wrapping_u32_tests);
+impl_elem_traits_for_int!(Wrapping<u64>, Wrapping(0), Wrapping(1), wrapping_u64_tests);
+impl_elem_traits_for_int!(
+    Wrapping<u128>,
+    Wrapping(0),
+    Wrapping(1),
+    wrapping_u128_tests
+);
+impl_elem_traits_for_int!(
+    Wrapping<usize>,
+    Wrapping(0),
+    Wrapping(1),
+    wrapping_usize_tests
+);
+
+impl_elem_traits_for_int!(
+    Saturating<i8>,
+    Saturating(0),
+    Saturating(1),
+    saturating_i8_nonnegative_tests,
+    saturating_i8_negative_tests
+);
+impl_elem_traits_for_int!(
+    Saturating<i16>,
+    Saturating(0),
+    Saturating(1),
+    saturating_i16_nonnegative_tests,
+    saturating_i16_negative_tests
+);
+impl_elem_traits_for_int!(
+    Saturating<i32>,
+    Saturating(0),
+    Saturating(1),
+    saturating_i32_nonnegative_tests,
+    saturating_i32_negative_tests
+);
+impl_elem_traits_for_int!(
+    Saturating<i64>,
+    Saturating(0),
+    Saturating(1),
+    saturating_i64_nonnegative_tests,
+    saturating_i64_negative_tests
+);
+impl_elem_traits_for_int!(
+    Saturating<i128>,
+    Saturating(0),
+    Saturating(1),
+    saturating_i128_nonnegative_tests,
+    saturating_i128_negative_tests
+);
+impl_elem_traits_for_int!(
+    Saturating<isize>,
+    Saturating(0),
+    Saturating(1),
+    saturating_isize_nonnegative_tests,
+    saturating_isize_negative_tests
+);
+
+impl_elem_traits_for_int!(
+    Saturating<u8>,
+    Saturating(0),
+    Saturating(1),
+    saturating_u8_tests
+);
+impl_elem_traits_for_int!(
+    Saturating<u16>,
+    Saturating(0),
+    Saturating(1),
+    saturating_u16_tests
+);
+impl_elem_traits_for_int!(
+    Saturating<u32>,
+    Saturating(0),
+    Saturating(1),
+    saturating_u32_tests
+);
+impl_elem_traits_for_int!(
+    Saturating<u64>,
+    Saturating(0),
+    Saturating(1),
+    saturating_u64_tests
+);
+impl_elem_traits_for_int!(
+    Saturating<u128>,
+    Saturating(0),
+    Saturating(1),
+    saturating_u128_tests
+);
+impl_elem_traits_for_int!(
+    Saturating<usize>,
+    Saturating(0),
+    Saturating(1),
+    saturating_usize_tests
+);
 
 macro_rules! impl_elem_traits_for_float {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
