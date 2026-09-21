@@ -4,6 +4,8 @@
 
 //! Finite and extended numeric limits.
 
+use core::num::{Saturating, Wrapping};
+
 /// Bundle of limits for a floating-point numeric type.
 pub trait FloatLimits:
     Limits
@@ -189,33 +191,7 @@ pub trait Bits {
 
 macro_rules! impl_limits_traits_for_int {
     ($ty:ty) => {
-        impl MinFinite for $ty {
-            const MIN_FINITE: Self = <$ty>::MIN;
-        }
-
-        impl MaxFinite for $ty {
-            const MAX_FINITE: Self = <$ty>::MAX;
-        }
-
-        impl MinExtended for $ty {
-            const MIN_EXTENDED: Self = <$ty>::MIN;
-        }
-
-        impl MaxExtended for $ty {
-            const MAX_EXTENDED: Self = <$ty>::MAX;
-        }
-
-        impl MinExactInteger for $ty {
-            const MIN_EXACT_INTEGER: Self = <$ty>::MIN;
-        }
-
-        impl MaxExactInteger for $ty {
-            const MAX_EXACT_INTEGER: Self = <$ty>::MAX;
-        }
-
-        impl Bits for $ty {
-            const BITS: u32 = <$ty>::BITS;
-        }
+        impl_limits_traits_for_int!($ty, <$ty>::MIN, <$ty>::MAX, <$ty>::BITS);
     };
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_limits_traits_for_int!($ty);
@@ -227,23 +203,72 @@ macro_rules! impl_limits_traits_for_int {
 
         test_limits_traits_int_negative!($ty, $negative_tests_mod);
     };
+    ($ty:ty, $min:expr, $max:expr, $bits:expr) => {
+        impl MinFinite for $ty {
+            const MIN_FINITE: Self = $min;
+        }
+
+        impl MaxFinite for $ty {
+            const MAX_FINITE: Self = $max;
+        }
+
+        impl MinExtended for $ty {
+            const MIN_EXTENDED: Self = $min;
+        }
+
+        impl MaxExtended for $ty {
+            const MAX_EXTENDED: Self = $max;
+        }
+
+        impl MinExactInteger for $ty {
+            const MIN_EXACT_INTEGER: Self = $min;
+        }
+
+        impl MaxExactInteger for $ty {
+            const MAX_EXACT_INTEGER: Self = $max;
+        }
+
+        impl Bits for $ty {
+            const BITS: u32 = $bits;
+        }
+    };
+    ($ty:ty, $min:expr, $max:expr, $bits:expr, $nonnegative_tests_mod:ident) => {
+        impl_limits_traits_for_int!($ty, $min, $max, $bits);
+
+        test_limits_traits_int_nonnegative!($ty, $min, $max, $nonnegative_tests_mod);
+    };
+    (
+        $ty:ty,
+        $min:expr,
+        $max:expr,
+        $bits:expr,
+        $nonnegative_tests_mod:ident,
+        $negative_tests_mod:ident
+    ) => {
+        impl_limits_traits_for_int!($ty, $min, $max, $bits, $nonnegative_tests_mod);
+
+        test_limits_traits_int_negative!($ty, $min, $max, $negative_tests_mod);
+    };
 }
 
 macro_rules! test_limits_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {
+        test_limits_traits_int_nonnegative!($ty, <$ty>::MIN, <$ty>::MAX, $tests_mod);
+    };
+    ($ty:ty, $min:expr, $max:expr, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
             use crate::limits::*;
 
             #[test]
             fn test_limits() {
-                assert_eq!(<$ty as MinFinite>::MIN_FINITE, <$ty>::MIN);
-                assert_eq!(<$ty as MinExtended>::MIN_EXTENDED, <$ty>::MIN);
-                assert_eq!(<$ty as MinExactInteger>::MIN_EXACT_INTEGER, <$ty>::MIN);
+                assert_eq!(<$ty as MinFinite>::MIN_FINITE, $min);
+                assert_eq!(<$ty as MinExtended>::MIN_EXTENDED, $min);
+                assert_eq!(<$ty as MinExactInteger>::MIN_EXACT_INTEGER, $min);
 
-                assert_eq!(<$ty as MaxFinite>::MAX_FINITE, <$ty>::MAX);
-                assert_eq!(<$ty as MaxExtended>::MAX_EXTENDED, <$ty>::MAX);
-                assert_eq!(<$ty as MaxExactInteger>::MAX_EXACT_INTEGER, <$ty>::MAX);
+                assert_eq!(<$ty as MaxFinite>::MAX_FINITE, $max);
+                assert_eq!(<$ty as MaxExtended>::MAX_EXTENDED, $max);
+                assert_eq!(<$ty as MaxExactInteger>::MAX_EXACT_INTEGER, $max);
 
                 assert_eq!(
                     <$ty as MaxFinite>::MAX_FINITE,
@@ -260,15 +285,18 @@ macro_rules! test_limits_traits_int_nonnegative {
 
 macro_rules! test_limits_traits_int_negative {
     ($ty:ty, $tests_mod:ident) => {
+        test_limits_traits_int_negative!($ty, <$ty>::MIN, <$ty>::MAX, $tests_mod);
+    };
+    ($ty:ty, $min:expr, $max:expr, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
             use crate::limits::*;
 
             #[test]
             fn test_limits() {
-                assert_eq!(<$ty as MinFinite>::MIN_FINITE, <$ty>::MIN);
-                assert_eq!(<$ty as MinExtended>::MIN_EXTENDED, <$ty>::MIN);
-                assert_eq!(<$ty as MinExactInteger>::MIN_EXACT_INTEGER, <$ty>::MIN);
+                assert_eq!(<$ty as MinFinite>::MIN_FINITE, $min);
+                assert_eq!(<$ty as MinExtended>::MIN_EXTENDED, $min);
+                assert_eq!(<$ty as MinExactInteger>::MIN_EXACT_INTEGER, $min);
 
                 assert_eq!(
                     <$ty as MinFinite>::MIN_FINITE,
@@ -298,6 +326,139 @@ impl_limits_traits_for_int!(u32, u32_tests);
 impl_limits_traits_for_int!(u64, u64_tests);
 impl_limits_traits_for_int!(u128, u128_tests);
 impl_limits_traits_for_int!(usize, usize_tests);
+
+impl_limits_traits_for_int!(
+    Wrapping<i8>,
+    Wrapping(i8::MIN),
+    Wrapping(i8::MAX),
+    i8::BITS,
+    wrapping_i8_nonnegative_tests,
+    wrapping_i8_negative_tests
+);
+impl_limits_traits_for_int!(
+    Wrapping<i16>,
+    Wrapping(i16::MIN),
+    Wrapping(i16::MAX),
+    i16::BITS,
+    wrapping_i16_nonnegative_tests,
+    wrapping_i16_negative_tests
+);
+impl_limits_traits_for_int!(
+    Wrapping<i32>,
+    Wrapping(i32::MIN),
+    Wrapping(i32::MAX),
+    i32::BITS,
+    wrapping_i32_nonnegative_tests,
+    wrapping_i32_negative_tests
+);
+impl_limits_traits_for_int!(
+    Wrapping<i64>,
+    Wrapping(i64::MIN),
+    Wrapping(i64::MAX),
+    i64::BITS,
+    wrapping_i64_nonnegative_tests,
+    wrapping_i64_negative_tests
+);
+impl_limits_traits_for_int!(
+    Wrapping<i128>,
+    Wrapping(i128::MIN),
+    Wrapping(i128::MAX),
+    i128::BITS,
+    wrapping_i128_nonnegative_tests,
+    wrapping_i128_negative_tests
+);
+impl_limits_traits_for_int!(
+    Wrapping<isize>,
+    Wrapping(isize::MIN),
+    Wrapping(isize::MAX),
+    isize::BITS,
+    wrapping_isize_nonnegative_tests,
+    wrapping_isize_negative_tests
+);
+
+impl_limits_traits_for_int!(
+    Wrapping<u8>,
+    Wrapping(u8::MIN),
+    Wrapping(u8::MAX),
+    u8::BITS,
+    wrapping_u8_tests
+);
+impl_limits_traits_for_int!(
+    Wrapping<u16>,
+    Wrapping(u16::MIN),
+    Wrapping(u16::MAX),
+    u16::BITS,
+    wrapping_u16_tests
+);
+impl_limits_traits_for_int!(
+    Wrapping<u32>,
+    Wrapping(u32::MIN),
+    Wrapping(u32::MAX),
+    u32::BITS,
+    wrapping_u32_tests
+);
+impl_limits_traits_for_int!(
+    Wrapping<u64>,
+    Wrapping(u64::MIN),
+    Wrapping(u64::MAX),
+    u64::BITS,
+    wrapping_u64_tests
+);
+impl_limits_traits_for_int!(
+    Wrapping<u128>,
+    Wrapping(u128::MIN),
+    Wrapping(u128::MAX),
+    u128::BITS,
+    wrapping_u128_tests
+);
+impl_limits_traits_for_int!(
+    Wrapping<usize>,
+    Wrapping(usize::MIN),
+    Wrapping(usize::MAX),
+    usize::BITS,
+    wrapping_usize_tests
+);
+
+impl_limits_traits_for_int!(
+    Saturating<i8>,
+    // `Saturating` already have `MIN`, `MAX`, `BITS` stabilized, so there's no
+    // need to repeat them here. Unlike with `Wrapping`, which don't have these
+    // in stable Rust yet.
+    saturating_i8_nonnegative_tests,
+    saturating_i8_negative_tests
+);
+impl_limits_traits_for_int!(
+    Saturating<i16>,
+    saturating_i16_nonnegative_tests,
+    saturating_i16_negative_tests
+);
+impl_limits_traits_for_int!(
+    Saturating<i32>,
+    saturating_i32_nonnegative_tests,
+    saturating_i32_negative_tests
+);
+impl_limits_traits_for_int!(
+    Saturating<i64>,
+    saturating_i64_nonnegative_tests,
+    saturating_i64_negative_tests
+);
+impl_limits_traits_for_int!(
+    Saturating<i128>,
+    saturating_i128_nonnegative_tests,
+    saturating_i128_negative_tests
+);
+impl_limits_traits_for_int!(
+    Saturating<isize>,
+    saturating_isize_nonnegative_tests,
+    saturating_isize_negative_tests
+);
+
+impl_limits_traits_for_int!(Saturating<u8>, saturating_u8_tests);
+impl_limits_traits_for_int!(Saturating<u16>, saturating_u16_tests);
+impl_limits_traits_for_int!(Saturating<u32>, saturating_u32_tests);
+impl_limits_traits_for_int!(Saturating<u64>, saturating_u64_tests);
+impl_limits_traits_for_int!(Saturating<u128>, saturating_u128_tests);
+impl_limits_traits_for_int!(Saturating<usize>, saturating_usize_tests);
 
 macro_rules! impl_limits_traits_for_float {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
