@@ -871,3 +871,5 @@ test_plain_arith_traits_float_nonnegative!(f32, f32_nonnegative_tests);
 test_plain_arith_traits_float_negative!(f32, f32_negative_tests);
 test_plain_arith_traits_float_nonnegative!(f64, f64_nonnegative_tests);
 test_plain_arith_traits_float_negative!(f64, f64_negative_tests);
+
+// TODO?: Tests for `Wrapping` and `Saturating`?

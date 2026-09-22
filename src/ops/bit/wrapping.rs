@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use core::num::{Saturating, Wrapping};
+
 /// Panic-free bitwise shift-left; yields `self << mask(rhs)`, where `mask`
 /// removes any high-order bits of `rhs` that would cause the shift to
 /// exceed the bitwidth of the type.
@@ -72,8 +74,60 @@ macro_rules! impl_wrapping_shift_traits_for_ints {
     };
 }
 
+macro_rules! impl_wrapping_shift_traits_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl WrappingShl for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_shl(self, rhs: u32) -> Self::Output {
+                    Self(self.0.wrapping_shl(rhs))
+                }
+            }
+
+            impl WrappingShr for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_shr(self, rhs: u32) -> Self::Output {
+                    Self(self.0.wrapping_shr(rhs))
+                }
+            }
+        )*
+    };
+}
+
 impl_wrapping_shift_traits_for_ints!(i8, i16, i32, i64, i128, isize);
 impl_wrapping_shift_traits_for_ints!(u8, u16, u32, u64, u128, usize);
+impl_wrapping_shift_traits_via_inner!(
+    Wrapping<i8>,
+    Wrapping<i16>,
+    Wrapping<i32>,
+    Wrapping<i64>,
+    Wrapping<i128>,
+    Wrapping<isize>,
+    Wrapping<u8>,
+    Wrapping<u16>,
+    Wrapping<u32>,
+    Wrapping<u64>,
+    Wrapping<u128>,
+    Wrapping<usize>
+);
+impl_wrapping_shift_traits_via_inner!(
+    Saturating<i8>,
+    Saturating<i16>,
+    Saturating<i32>,
+    Saturating<i64>,
+    Saturating<i128>,
+    Saturating<isize>,
+    Saturating<u8>,
+    Saturating<u16>,
+    Saturating<u32>,
+    Saturating<u64>,
+    Saturating<u128>,
+    Saturating<usize>
+);
 
 macro_rules! test_wrapping_bitshift_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use core::num::{Saturating, Wrapping};
+
 /// Bundle of overflowing bitwise shift operations.
 pub trait OverflowingBitOps: OverflowingShl + OverflowingShr {}
 impl<T: OverflowingShl + OverflowingShr> OverflowingBitOps for T {}
@@ -56,8 +58,64 @@ macro_rules! impl_overflowing_shift_traits_for_ints {
     };
 }
 
+macro_rules! impl_overflowing_shift_traits_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl OverflowingShl for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_shl(self, rhs: u32) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_shl(rhs);
+
+                    (Self(value), overflowed)
+                }
+            }
+
+            impl OverflowingShr for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_shr(self, rhs: u32) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_shr(rhs);
+
+                    (Self(value), overflowed)
+                }
+            }
+        )*
+    };
+}
+
 impl_overflowing_shift_traits_for_ints!(i8, i16, i32, i64, i128, isize);
 impl_overflowing_shift_traits_for_ints!(u8, u16, u32, u64, u128, usize);
+impl_overflowing_shift_traits_via_inner!(
+    Wrapping<i8>,
+    Wrapping<i16>,
+    Wrapping<i32>,
+    Wrapping<i64>,
+    Wrapping<i128>,
+    Wrapping<isize>,
+    Wrapping<u8>,
+    Wrapping<u16>,
+    Wrapping<u32>,
+    Wrapping<u64>,
+    Wrapping<u128>,
+    Wrapping<usize>
+);
+impl_overflowing_shift_traits_via_inner!(
+    Saturating<i8>,
+    Saturating<i16>,
+    Saturating<i32>,
+    Saturating<i64>,
+    Saturating<i128>,
+    Saturating<isize>,
+    Saturating<u8>,
+    Saturating<u16>,
+    Saturating<u32>,
+    Saturating<u64>,
+    Saturating<u128>,
+    Saturating<usize>
+);
 
 macro_rules! test_overflowing_bitshift_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {

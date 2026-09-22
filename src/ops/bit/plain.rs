@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use core::num::{Saturating, Wrapping};
 use core::ops::{
     BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Shl, ShlAssign, Shr,
     ShrAssign,
@@ -61,6 +62,34 @@ macro_rules! impl_not_assign_for_bitwisables {
 impl_not_assign_for_bitwisables!(i8, i16, i32, i64, i128, isize);
 impl_not_assign_for_bitwisables!(u8, u16, u32, u64, u128, usize);
 impl_not_assign_for_bitwisables!(bool);
+impl_not_assign_for_bitwisables!(
+    Wrapping<i8>,
+    Wrapping<i16>,
+    Wrapping<i32>,
+    Wrapping<i64>,
+    Wrapping<i128>,
+    Wrapping<isize>,
+    Wrapping<u8>,
+    Wrapping<u16>,
+    Wrapping<u32>,
+    Wrapping<u64>,
+    Wrapping<u128>,
+    Wrapping<usize>
+);
+impl_not_assign_for_bitwisables!(
+    Saturating<i8>,
+    Saturating<i16>,
+    Saturating<i32>,
+    Saturating<i64>,
+    Saturating<i128>,
+    Saturating<isize>,
+    Saturating<u8>,
+    Saturating<u16>,
+    Saturating<u32>,
+    Saturating<u64>,
+    Saturating<u128>,
+    Saturating<usize>
+);
 
 macro_rules! test_plain_bitshift_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {

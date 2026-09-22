@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use core::num::{Saturating, Wrapping};
+
 /// Bundle of checked bitwise shift operations.
 pub trait CheckedBitOps: CheckedShl + CheckedShr {}
 impl<T: CheckedShl + CheckedShr> CheckedBitOps for T {}
@@ -52,8 +54,60 @@ macro_rules! impl_checked_shift_traits_for_ints {
     };
 }
 
+macro_rules! impl_checked_shift_traits_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl CheckedShl for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_shl(self, rhs: u32) -> Option<Self::Output> {
+                    self.0.checked_shl(rhs).map(Self)
+                }
+            }
+
+            impl CheckedShr for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_shr(self, rhs: u32) -> Option<Self::Output> {
+                    self.0.checked_shr(rhs).map(Self)
+                }
+            }
+        )*
+    };
+}
+
 impl_checked_shift_traits_for_ints!(i8, i16, i32, i64, i128, isize);
 impl_checked_shift_traits_for_ints!(u8, u16, u32, u64, u128, usize);
+impl_checked_shift_traits_via_inner!(
+    Wrapping<i8>,
+    Wrapping<i16>,
+    Wrapping<i32>,
+    Wrapping<i64>,
+    Wrapping<i128>,
+    Wrapping<isize>,
+    Wrapping<u8>,
+    Wrapping<u16>,
+    Wrapping<u32>,
+    Wrapping<u64>,
+    Wrapping<u128>,
+    Wrapping<usize>
+);
+impl_checked_shift_traits_via_inner!(
+    Saturating<i8>,
+    Saturating<i16>,
+    Saturating<i32>,
+    Saturating<i64>,
+    Saturating<i128>,
+    Saturating<isize>,
+    Saturating<u8>,
+    Saturating<u16>,
+    Saturating<u32>,
+    Saturating<u64>,
+    Saturating<u128>,
+    Saturating<usize>
+);
 
 macro_rules! test_checked_bitshift_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {
