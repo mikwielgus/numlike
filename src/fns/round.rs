@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use core::num::{Saturating, Wrapping};
+
 /// Bundle of rounding functions.
 pub trait RoundFns: Round + Trunc + RoundTiesEven + Floor + Ceil {}
 impl<T: Round + Trunc + RoundTiesEven + Floor + Ceil> RoundFns for T {}
@@ -65,6 +67,71 @@ pub trait Ceil {
 
     /// Returns the smallest integer that is greater than or equal to `self`.
     fn ceil(self) -> Self::Output;
+}
+
+macro_rules! impl_round_traits_for_int {
+    (
+        $ty:ty
+    ) => {
+        impl Round for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn round(self) -> Self::Output {
+                self
+            }
+        }
+
+        impl Trunc for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn trunc(self) -> Self::Output {
+                self
+            }
+        }
+
+        impl RoundTiesEven for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn round_ties_even(self) -> Self::Output {
+                self
+            }
+        }
+
+        impl Floor for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn floor(self) -> Self::Output {
+                self
+            }
+        }
+
+        impl Ceil for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn ceil(self) -> Self::Output {
+                self
+            }
+        }
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident) => {
+        impl_round_traits_for_int!($ty);
+
+        // TODO: Let's implement tests too.
+        // We can't reuse existing tests because these contain fractional numbers.
+        //test_round_traits_nonnegative!($ty, $nonnegative_tests_mod);
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl_round_traits_for_int!($ty, $nonnegative_tests_mod);
+
+        // TODO: Let's implement tests too.
+        // We can't reuse existing tests because these contain fractional numbers.
+        //test_round_traits_negative!($ty, $negative_tests_mod);
+    };
 }
 
 #[cfg(any(feature = "std", feature = "libm"))]
@@ -320,6 +387,48 @@ macro_rules! test_round_traits_negative {
         }
     };
 }
+
+impl_round_traits_for_int!(i8, i8_nonnegative_tests, i8_negative_tests);
+impl_round_traits_for_int!(i16, i16_nonnegative_tests, i16_negative_tests);
+impl_round_traits_for_int!(i32, i32_nonnegative_tests, i32_negative_tests);
+impl_round_traits_for_int!(i64, i64_nonnegative_tests, i64_negative_tests);
+impl_round_traits_for_int!(i128, i128_nonnegative_tests, i128_negative_tests);
+impl_round_traits_for_int!(isize, isize_nonnegative_tests, isize_negative_tests);
+
+impl_round_traits_for_int!(u8, u8_tests);
+impl_round_traits_for_int!(u16, u16_tests);
+impl_round_traits_for_int!(u32, u32_tests);
+impl_round_traits_for_int!(u64, u64_tests);
+impl_round_traits_for_int!(u128, u128_tests);
+impl_round_traits_for_int!(usize, usize_tests);
+
+impl_round_traits_for_int!(Wrapping<i8>, wrapping_i8_tests);
+impl_round_traits_for_int!(Wrapping<i16>, wrapping_i16_tests);
+impl_round_traits_for_int!(Wrapping<i32>, wrapping_i32_tests);
+impl_round_traits_for_int!(Wrapping<i64>, wrapping_i64_tests);
+impl_round_traits_for_int!(Wrapping<i128>, wrapping_i128_tests);
+impl_round_traits_for_int!(Wrapping<isize>, wrapping_isize_tests);
+
+impl_round_traits_for_int!(Wrapping<u8>, wrapping_u8_tests);
+impl_round_traits_for_int!(Wrapping<u16>, wrapping_u16_tests);
+impl_round_traits_for_int!(Wrapping<u32>, wrapping_u32_tests);
+impl_round_traits_for_int!(Wrapping<u64>, wrapping_u64_tests);
+impl_round_traits_for_int!(Wrapping<u128>, wrapping_u128_tests);
+impl_round_traits_for_int!(Wrapping<usize>, wrapping_usize_tests);
+
+impl_round_traits_for_int!(Saturating<i8>, saturating_i8_tests);
+impl_round_traits_for_int!(Saturating<i16>, saturating_i16_tests);
+impl_round_traits_for_int!(Saturating<i32>, saturating_i32_tests);
+impl_round_traits_for_int!(Saturating<i64>, saturating_i64_tests);
+impl_round_traits_for_int!(Saturating<i128>, saturating_i128_tests);
+impl_round_traits_for_int!(Saturating<isize>, saturating_isize_tests);
+
+impl_round_traits_for_int!(Saturating<u8>, saturating_u8_tests);
+impl_round_traits_for_int!(Saturating<u16>, saturating_u16_tests);
+impl_round_traits_for_int!(Saturating<u32>, saturating_u32_tests);
+impl_round_traits_for_int!(Saturating<u64>, saturating_u64_tests);
+impl_round_traits_for_int!(Saturating<u128>, saturating_u128_tests);
+impl_round_traits_for_int!(Saturating<usize>, saturating_usize_tests);
 
 #[cfg(feature = "std")]
 impl_round_traits_for_float!(

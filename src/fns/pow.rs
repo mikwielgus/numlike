@@ -84,16 +84,16 @@ macro_rules! impl_pow_for_int_for_all_rhs {
     ($t:ty, $nonnegative_tests_mod:ident) => {
         impl_pow_for_int_for_all_rhs!($t);
 
-        test_pow_traits_int_nonnegative!($t, $nonnegative_tests_mod);
+        test_pow_traits_for_int_nonnegative!($t, $nonnegative_tests_mod);
     };
     ($t:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
         impl_pow_for_int_for_all_rhs!($t, $nonnegative_tests_mod);
 
-        test_pow_traits_int_negative!($t, $negative_tests_mod);
+        test_pow_traits_for_int_negative!($t, $negative_tests_mod);
     };
 }
 
-macro_rules! test_pow_traits_int_nonnegative {
+macro_rules! test_pow_traits_for_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
@@ -144,7 +144,7 @@ macro_rules! test_pow_traits_int_nonnegative {
     };
 }
 
-macro_rules! test_pow_traits_int_negative {
+macro_rules! test_pow_traits_for_int_negative {
     ($ty:ty, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
@@ -185,20 +185,6 @@ macro_rules! test_pow_traits_int_negative {
         }
     };
 }
-
-impl_pow_for_int_for_all_rhs!(u8, u8_tests);
-impl_pow_for_int_for_all_rhs!(u16, u16_tests);
-impl_pow_for_int_for_all_rhs!(u32, u32_tests);
-impl_pow_for_int_for_all_rhs!(u64, u64_tests);
-impl_pow_for_int_for_all_rhs!(u128, u128_tests);
-impl_pow_for_int_for_all_rhs!(usize, usize_tests);
-
-impl_pow_for_int_for_all_rhs!(i8, i8_nonnegative_tests, i8_negative_tests);
-impl_pow_for_int_for_all_rhs!(i16, i16_nonnegative_tests, i16_negative_tests);
-impl_pow_for_int_for_all_rhs!(i32, i32_nonnegative_tests, i32_negative_tests);
-impl_pow_for_int_for_all_rhs!(i64, i64_nonnegative_tests, i64_negative_tests);
-impl_pow_for_int_for_all_rhs!(i128, i128_nonnegative_tests, i128_negative_tests);
-impl_pow_for_int_for_all_rhs!(isize, isize_nonnegative_tests, isize_negative_tests);
 
 #[cfg(any(feature = "std", feature = "libm"))]
 macro_rules! impl_pow_for_float {
@@ -363,6 +349,20 @@ macro_rules! test_pow_traits_float_negative {
         }
     };
 }
+
+impl_pow_for_int_for_all_rhs!(u8, u8_tests);
+impl_pow_for_int_for_all_rhs!(u16, u16_tests);
+impl_pow_for_int_for_all_rhs!(u32, u32_tests);
+impl_pow_for_int_for_all_rhs!(u64, u64_tests);
+impl_pow_for_int_for_all_rhs!(u128, u128_tests);
+impl_pow_for_int_for_all_rhs!(usize, usize_tests);
+
+impl_pow_for_int_for_all_rhs!(i8, i8_nonnegative_tests, i8_negative_tests);
+impl_pow_for_int_for_all_rhs!(i16, i16_nonnegative_tests, i16_negative_tests);
+impl_pow_for_int_for_all_rhs!(i32, i32_nonnegative_tests, i32_negative_tests);
+impl_pow_for_int_for_all_rhs!(i64, i64_nonnegative_tests, i64_negative_tests);
+impl_pow_for_int_for_all_rhs!(i128, i128_nonnegative_tests, i128_negative_tests);
+impl_pow_for_int_for_all_rhs!(isize, isize_nonnegative_tests, isize_negative_tests);
 
 #[cfg(feature = "std")]
 impl_pow_for_float_for_all_rhs!(
