@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use core::num::{Saturating, Wrapping};
+
 /// Bundle of overflowing arithmetic and fused arithmetic operations.
 pub trait FullOverflowingArithOps<Rhs = Self>:
     OverflowingArithOps<Rhs> + OverflowingFusedArithOps<Rhs>
@@ -226,7 +228,7 @@ pub trait OverflowingNeg {
     fn overflowing_neg(self) -> (Self::Output, bool);
 }
 
-macro_rules! impl_overflowing_ring_field_traits_for_ints {
+macro_rules! impl_overflowing_field_traits_for_ints {
     ($($ty:ty),*) => {
         $(
             impl OverflowingAdd<$ty> for $ty {
@@ -360,7 +362,7 @@ macro_rules! impl_overflowing_mul_add_trait {
 
 macro_rules! impl_overflowing_arith_traits_for_signed_ints {
     ($($ty:ty),*) => {
-        impl_overflowing_ring_field_traits_for_ints!($($ty),*);
+        impl_overflowing_field_traits_for_ints!($($ty),*);
         impl_overflowing_div_rem_trait!($($ty),*);
         impl_overflowing_euclid_traits!($($ty),*);
         impl_overflowing_mul_add_trait!($($ty),*);
@@ -369,14 +371,174 @@ macro_rules! impl_overflowing_arith_traits_for_signed_ints {
 
 macro_rules! impl_overflowing_arith_traits_for_unsigned_ints {
     ($($ty:ty),*) => {
-        impl_overflowing_ring_field_traits_for_ints!($($ty),*);
+        impl_overflowing_field_traits_for_ints!($($ty),*);
         impl_overflowing_div_rem_trait!($($ty),*);
         impl_overflowing_euclid_traits!($($ty),*);
         impl_overflowing_mul_add_trait!($($ty),*);
     };
 }
 
-/*macro_rules! impl_overflowing_ring_field_traits_for_floats {
+macro_rules! impl_overflowing_field_traits_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl OverflowingAdd<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_add(self, other: $ty) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_add(other.0);
+
+                    (Self(value), overflowed)
+                }
+            }
+
+            impl OverflowingSub<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_sub(self, other: $ty) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_sub(other.0);
+
+                    (Self(value), overflowed)
+                }
+            }
+
+            impl OverflowingMul<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_mul(self, other: $ty) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_mul(other.0);
+
+                    (Self(value), overflowed)
+                }
+            }
+
+            impl OverflowingDiv<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_div(self, other: $ty) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_div(other.0);
+
+                    (Self(value), overflowed)
+                }
+            }
+
+            impl OverflowingRem<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_rem(self, other: $ty) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_rem(other.0);
+
+                    (Self(value), overflowed)
+                }
+            }
+
+            impl OverflowingNeg for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_neg(self) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_neg();
+
+                    (Self(value), overflowed)
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_overflowing_euclid_traits_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl OverflowingDivEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_div_euclid(self, other: $ty) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_div_euclid(other.0);
+
+                    (Self(value), overflowed)
+                }
+            }
+
+            impl OverflowingRemEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_rem_euclid(self, other: $ty) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_rem_euclid(other.0);
+
+                    (Self(value), overflowed)
+                }
+            }
+
+            impl OverflowingDivRemEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_div_rem_euclid(
+                    self,
+                    other: $ty,
+                ) -> ((Self::Output, Self::Output), bool) {
+                    let (div, div_overflow) = self.0.overflowing_div_euclid(other.0);
+                    let (rem, rem_overflow) = self.0.overflowing_rem_euclid(other.0);
+
+                    ((Self(div), Self(rem)), div_overflow | rem_overflow)
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_overflowing_div_rem_trait_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl OverflowingDivRem<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_div_rem(self, other: $ty) -> ((Self::Output, Self::Output), bool) {
+                    let (div, div_overflow) = self.0.overflowing_div(other.0);
+                    let (rem, rem_overflow) = self.0.overflowing_rem(other.0);
+
+                    ((Self(div), Self(rem)), div_overflow | rem_overflow)
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_overflowing_mul_add_trait_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl OverflowingMulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_mul_add(self, a: $ty, b: $ty) -> (Self::Output, bool) {
+                    let (product, mul_overflow) = self.0.overflowing_mul(a.0);
+                    let (result, add_overflow) = product.overflowing_add(b.0);
+
+                    (Self(result), mul_overflow | add_overflow)
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_overflowing_arith_traits_via_inner {
+    ($($ty:ty),*) => {
+        impl_overflowing_field_traits_via_inner!($($ty),*);
+        impl_overflowing_div_rem_trait_via_inner!($($ty),*);
+        impl_overflowing_euclid_traits_via_inner!($($ty),*);
+        impl_overflowing_mul_add_trait_via_inner!($($ty),*);
+    };
+}
+
+/*macro_rules! impl_overflowing_field_traits_for_floats {
     ($($ty:ty),*) => {
         $(
             impl OverflowingAdd<$ty> for $ty {
@@ -505,7 +667,7 @@ macro_rules! impl_overflowing_euclid_traits_for_floats {
 
 /*macro_rules! impl_overflowing_arith_traits_for_floats {
     ($($ty:ty),*) => {
-        impl_overflowing_ring_field_traits_for_floats!($($ty),*);
+        impl_overflowing_field_traits_for_floats!($($ty),*);
         impl_overflowing_div_rem_trait_for_floats!($($ty),*);
         #[cfg(feature = "std")]
         impl_overflowing_euclid_traits_for_floats!($($ty),*);
@@ -514,6 +676,34 @@ macro_rules! impl_overflowing_euclid_traits_for_floats {
 
 impl_overflowing_arith_traits_for_signed_ints!(i8, i16, i32, i64, i128, isize);
 impl_overflowing_arith_traits_for_unsigned_ints!(u8, u16, u32, u64, u128, usize);
+impl_overflowing_arith_traits_via_inner!(
+    Wrapping<i8>,
+    Wrapping<i16>,
+    Wrapping<i32>,
+    Wrapping<i64>,
+    Wrapping<i128>,
+    Wrapping<isize>,
+    Wrapping<u8>,
+    Wrapping<u16>,
+    Wrapping<u32>,
+    Wrapping<u64>,
+    Wrapping<u128>,
+    Wrapping<usize>
+);
+impl_overflowing_arith_traits_via_inner!(
+    Saturating<i8>,
+    Saturating<i16>,
+    Saturating<i32>,
+    Saturating<i64>,
+    Saturating<i128>,
+    Saturating<isize>,
+    Saturating<u8>,
+    Saturating<u16>,
+    Saturating<u32>,
+    Saturating<u64>,
+    Saturating<u128>,
+    Saturating<usize>
+);
 //impl_overflowing_arith_traits_for_floats!(f32, f64);
 
 //impl_overflowing_mul_add_trait_for_floats!(f32, f64);

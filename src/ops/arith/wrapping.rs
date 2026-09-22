@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use core::num::{Saturating, Wrapping};
+
 /// Bundle of wrapping arithmetic and fused arithmetic operations.
 pub trait FullWrappingArithOps<Rhs = Self>:
     WrappingArithOps<Rhs> + WrappingFusedArithOps<Rhs>
@@ -231,7 +233,7 @@ pub trait WrappingNeg {
     fn wrapping_neg(self) -> Self::Output;
 }
 
-macro_rules! impl_wrapping_ring_field_traits_for_ints {
+macro_rules! impl_wrapping_field_traits_for_ints {
     ($($ty:ty),*) => {
         $(
             impl WrappingAdd<$ty> for $ty {
@@ -362,7 +364,7 @@ macro_rules! impl_wrapping_mul_add_trait {
 
 macro_rules! impl_wrapping_arith_traits_for_signed_ints {
     ($($ty:ty),*) => {
-        impl_wrapping_ring_field_traits_for_ints!($($ty),*);
+        impl_wrapping_field_traits_for_ints!($($ty),*);
         impl_wrapping_div_rem_trait!($($ty),*);
         impl_wrapping_euclid_traits!($($ty),*);
         impl_wrapping_mul_add_trait!($($ty),*);
@@ -371,14 +373,152 @@ macro_rules! impl_wrapping_arith_traits_for_signed_ints {
 
 macro_rules! impl_wrapping_arith_traits_for_unsigned_ints {
     ($($ty:ty),*) => {
-        impl_wrapping_ring_field_traits_for_ints!($($ty),*);
+        impl_wrapping_field_traits_for_ints!($($ty),*);
         impl_wrapping_div_rem_trait!($($ty),*);
         impl_wrapping_euclid_traits!($($ty),*);
         impl_wrapping_mul_add_trait!($($ty),*);
     };
 }
 
-/*macro_rules! impl_wrapping_ring_field_traits_for_floats {
+macro_rules! impl_wrapping_field_traits_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl WrappingAdd<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_add(self, other: $ty) -> Self::Output {
+                    Self(self.0.wrapping_add(other.0))
+                }
+            }
+
+            impl WrappingSub<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_sub(self, other: $ty) -> Self::Output {
+                    Self(self.0.wrapping_sub(other.0))
+                }
+            }
+
+            impl WrappingMul<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_mul(self, other: $ty) -> Self::Output {
+                    Self(self.0.wrapping_mul(other.0))
+                }
+            }
+
+            impl WrappingDiv<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_div(self, other: $ty) -> Self::Output {
+                    Self(self.0.wrapping_div(other.0))
+                }
+            }
+
+            impl WrappingRem<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_rem(self, other: $ty) -> Self::Output {
+                    Self(self.0.wrapping_rem(other.0))
+                }
+            }
+
+            impl WrappingNeg for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_neg(self) -> Self::Output {
+                    Self(self.0.wrapping_neg())
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_wrapping_euclid_traits_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl WrappingDivEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_div_euclid(self, other: $ty) -> Self::Output {
+                    Self(self.0.wrapping_div_euclid(other.0))
+                }
+            }
+
+            impl WrappingRemEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_rem_euclid(self, other: $ty) -> Self::Output {
+                    Self(self.0.wrapping_rem_euclid(other.0))
+                }
+            }
+
+            impl WrappingDivRemEuclid<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_div_rem_euclid(self, other: $ty) -> (Self::Output, Self::Output) {
+                    (
+                        Self(self.0.wrapping_div_euclid(other.0)),
+                        Self(self.0.wrapping_rem_euclid(other.0)),
+                    )
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_wrapping_div_rem_trait_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl WrappingDivRem<$ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_div_rem(self, other: $ty) -> (Self::Output, Self::Output) {
+                    (
+                        Self(self.0.wrapping_div(other.0)),
+                        Self(self.0.wrapping_rem(other.0)),
+                    )
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_wrapping_mul_add_trait_via_inner {
+    ($($ty:ty),*) => {
+        $(
+            impl WrappingMulAdd<$ty, $ty> for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn wrapping_mul_add(self, a: $ty, b: $ty) -> Self::Output {
+                    Self(self.0.wrapping_mul(a.0).wrapping_add(b.0))
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_wrapping_arith_traits_via_inner {
+    ($($ty:ty),*) => {
+        impl_wrapping_field_traits_via_inner!($($ty),*);
+        impl_wrapping_div_rem_trait_via_inner!($($ty),*);
+        impl_wrapping_euclid_traits_via_inner!($($ty),*);
+        impl_wrapping_mul_add_trait_via_inner!($($ty),*);
+    };
+}
+
+/*macro_rules! impl_wrapping_field_traits_for_floats {
     ($($ty:ty),*) => {
         $(
             impl WrappingAdd<$ty> for $ty {
@@ -507,7 +647,7 @@ macro_rules! impl_wrapping_euclid_traits_for_floats {
 
 /*macro_rules! impl_wrapping_arith_traits_for_floats {
     ($($ty:ty),*) => {
-        impl_wrapping_ring_field_traits_for_floats!($($ty),*);
+        impl_wrapping_field_traits_for_floats!($($ty),*);
         impl_wrapping_div_rem_trait_for_floats!($($ty),*);
         #[cfg(feature = "std")]
         impl_wrapping_euclid_traits_for_floats!($($ty),*);
@@ -516,6 +656,34 @@ macro_rules! impl_wrapping_euclid_traits_for_floats {
 
 impl_wrapping_arith_traits_for_signed_ints!(i8, i16, i32, i64, i128, isize);
 impl_wrapping_arith_traits_for_unsigned_ints!(u8, u16, u32, u64, u128, usize);
+impl_wrapping_arith_traits_via_inner!(
+    Wrapping<i8>,
+    Wrapping<i16>,
+    Wrapping<i32>,
+    Wrapping<i64>,
+    Wrapping<i128>,
+    Wrapping<isize>,
+    Wrapping<u8>,
+    Wrapping<u16>,
+    Wrapping<u32>,
+    Wrapping<u64>,
+    Wrapping<u128>,
+    Wrapping<usize>
+);
+impl_wrapping_arith_traits_via_inner!(
+    Saturating<i8>,
+    Saturating<i16>,
+    Saturating<i32>,
+    Saturating<i64>,
+    Saturating<i128>,
+    Saturating<isize>,
+    Saturating<u8>,
+    Saturating<u16>,
+    Saturating<u32>,
+    Saturating<u64>,
+    Saturating<u128>,
+    Saturating<usize>
+);
 //impl_wrapping_arith_traits_for_floats!(f32, f64);
 
 //impl_wrapping_mul_add_trait_for_floats!(f32, f64);
