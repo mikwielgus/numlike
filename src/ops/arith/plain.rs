@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use core::num::{Saturating, Wrapping};
 use core::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
@@ -292,6 +293,11 @@ macro_rules! impl_neg_assign_trait {
 }
 
 macro_rules! impl_plain_arith_traits_for_signed_ints {
+    (no_euclid: $($ty:ty),*) => {
+        impl_div_rem_trait!($($ty),*);
+        impl_mul_add_trait!($($ty),*);
+        impl_neg_assign_trait!($($ty),*);
+    };
     ($($ty:ty),*) => {
         impl_div_rem_trait!($($ty),*);
         $(
@@ -303,6 +309,10 @@ macro_rules! impl_plain_arith_traits_for_signed_ints {
 }
 
 macro_rules! impl_plain_arith_traits_for_unsigned_ints {
+    (no_euclid: $($ty:ty),*) => {
+        impl_div_rem_trait!($($ty),*);
+        impl_mul_add_trait!($($ty),*);
+    };
     ($($ty:ty),*) => {
         impl_div_rem_trait!($($ty),*);
         $(
@@ -313,6 +323,10 @@ macro_rules! impl_plain_arith_traits_for_unsigned_ints {
 }
 
 macro_rules! impl_plain_arith_traits_for_floats {
+    (no_euclid: $($ty:ty),*) => {
+        impl_div_rem_trait!($($ty),*);
+        impl_neg_assign_trait!($($ty),*);
+    };
     ($($ty:ty),*) => {
         impl_div_rem_trait!($($ty),*);
         $(
@@ -324,7 +338,43 @@ macro_rules! impl_plain_arith_traits_for_floats {
 }
 
 impl_plain_arith_traits_for_signed_ints!(i8, i16, i32, i64, i128, isize);
+impl_plain_arith_traits_for_signed_ints!(
+    no_euclid:
+    Wrapping<i8>,
+    Wrapping<i16>,
+    Wrapping<i32>,
+    Wrapping<i64>,
+    Wrapping<i128>,
+    Wrapping<isize>
+);
+impl_plain_arith_traits_for_signed_ints!(
+    no_euclid:
+    Saturating<i8>,
+    Saturating<i16>,
+    Saturating<i32>,
+    Saturating<i64>,
+    Saturating<i128>,
+    Saturating<isize>
+);
 impl_plain_arith_traits_for_unsigned_ints!(u8, u16, u32, u64, u128, usize);
+impl_plain_arith_traits_for_unsigned_ints!(
+    no_euclid:
+    Wrapping<u8>,
+    Wrapping<u16>,
+    Wrapping<u32>,
+    Wrapping<u64>,
+    Wrapping<u128>,
+    Wrapping<usize>
+);
+impl_plain_arith_traits_for_unsigned_ints!(
+    no_euclid:
+    Saturating<u8>,
+    Saturating<u16>,
+    Saturating<u32>,
+    Saturating<u64>,
+    Saturating<u128>,
+    Saturating<usize>
+);
 impl_plain_arith_traits_for_floats!(f32, f64);
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
