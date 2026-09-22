@@ -5,6 +5,7 @@
 //! Equality and ordering with defined NaN behavior.
 
 use core::cmp::Ordering;
+use core::num::{Saturating, Wrapping};
 
 /// Trait for partial equality, identical to [`PartialEq`], except that `NaN` is
 /// treated as equal to itself, in contradiction to the IEEE 754 floating point
@@ -250,6 +251,82 @@ impl_nanfix_eq_traits_for_ord!(u32, u32_tests);
 impl_nanfix_eq_traits_for_ord!(u64, u64_tests);
 impl_nanfix_eq_traits_for_ord!(u128, u128_tests);
 impl_nanfix_eq_traits_for_ord!(usize, usize_tests);
+
+impl_nanfix_eq_traits_for_ord!(
+    Wrapping<i8>,
+    wrapping_i8_nonnegative_tests,
+    wrapping_i8_negative_tests
+);
+impl_nanfix_eq_traits_for_ord!(
+    Wrapping<i16>,
+    wrapping_i16_nonnegative_tests,
+    wrapping_i16_negative_tests
+);
+impl_nanfix_eq_traits_for_ord!(
+    Wrapping<i32>,
+    wrapping_i32_nonnegative_tests,
+    wrapping_i32_negative_tests
+);
+impl_nanfix_eq_traits_for_ord!(
+    Wrapping<i64>,
+    wrapping_i64_nonnegative_tests,
+    wrapping_i64_negative_tests
+);
+impl_nanfix_eq_traits_for_ord!(
+    Wrapping<i128>,
+    wrapping_i128_nonnegative_tests,
+    wrapping_i128_negative_tests
+);
+impl_nanfix_eq_traits_for_ord!(
+    Wrapping<isize>,
+    wrapping_isize_nonnegative_tests,
+    wrapping_isize_negative_tests
+);
+
+impl_nanfix_eq_traits_for_ord!(Wrapping<u8>, wrapping_u8_tests);
+impl_nanfix_eq_traits_for_ord!(Wrapping<u16>, wrapping_u16_tests);
+impl_nanfix_eq_traits_for_ord!(Wrapping<u32>, wrapping_u32_tests);
+impl_nanfix_eq_traits_for_ord!(Wrapping<u64>, wrapping_u64_tests);
+impl_nanfix_eq_traits_for_ord!(Wrapping<u128>, wrapping_u128_tests);
+impl_nanfix_eq_traits_for_ord!(Wrapping<usize>, wrapping_usize_tests);
+
+impl_nanfix_eq_traits_for_ord!(
+    Saturating<i8>,
+    saturating_i8_nonnegative_tests,
+    saturating_i8_negative_tests
+);
+impl_nanfix_eq_traits_for_ord!(
+    Saturating<i16>,
+    saturating_i16_nonnegative_tests,
+    saturating_i16_negative_tests
+);
+impl_nanfix_eq_traits_for_ord!(
+    Saturating<i32>,
+    saturating_i32_nonnegative_tests,
+    saturating_i32_negative_tests
+);
+impl_nanfix_eq_traits_for_ord!(
+    Saturating<i64>,
+    saturating_i64_nonnegative_tests,
+    saturating_i64_negative_tests
+);
+impl_nanfix_eq_traits_for_ord!(
+    Saturating<i128>,
+    saturating_i128_nonnegative_tests,
+    saturating_i128_negative_tests
+);
+impl_nanfix_eq_traits_for_ord!(
+    Saturating<isize>,
+    saturating_isize_nonnegative_tests,
+    saturating_isize_negative_tests
+);
+
+impl_nanfix_eq_traits_for_ord!(Saturating<u8>, saturating_u8_tests);
+impl_nanfix_eq_traits_for_ord!(Saturating<u16>, saturating_u16_tests);
+impl_nanfix_eq_traits_for_ord!(Saturating<u32>, saturating_u32_tests);
+impl_nanfix_eq_traits_for_ord!(Saturating<u64>, saturating_u64_tests);
+impl_nanfix_eq_traits_for_ord!(Saturating<u128>, saturating_u128_tests);
+impl_nanfix_eq_traits_for_ord!(Saturating<usize>, saturating_usize_tests);
 
 impl_nanfix_eq_traits_for_ord!(char);
 impl_nanfix_eq_traits_for_ord!(bool);
@@ -530,6 +607,82 @@ impl_nanmin_nanmax_ord_traits_for_ord!(u32, u32_ord_tests);
 impl_nanmin_nanmax_ord_traits_for_ord!(u64, u64_ord_tests);
 impl_nanmin_nanmax_ord_traits_for_ord!(u128, u128_ord_tests);
 impl_nanmin_nanmax_ord_traits_for_ord!(usize, usize_ord_tests);
+
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Wrapping<i8>,
+    wrapping_i8_ord_nonnegative_tests,
+    wrapping_i8_ord_negative_tests
+);
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Wrapping<i16>,
+    wrapping_i16_ord_nonnegative_tests,
+    wrapping_i16_ord_negative_tests
+);
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Wrapping<i32>,
+    wrapping_i32_ord_nonnegative_tests,
+    wrapping_i32_ord_negative_tests
+);
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Wrapping<i64>,
+    wrapping_i64_ord_nonnegative_tests,
+    wrapping_i64_ord_negative_tests
+);
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Wrapping<i128>,
+    wrapping_i128_ord_nonnegative_tests,
+    wrapping_i128_ord_negative_tests
+);
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Wrapping<isize>,
+    wrapping_isize_ord_nonnegative_tests,
+    wrapping_isize_ord_negative_tests
+);
+
+impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<u8>, wrapping_u8_ord_tests);
+impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<u16>, wrapping_u16_ord_tests);
+impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<u32>, wrapping_u32_ord_tests);
+impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<u64>, wrapping_u64_ord_tests);
+impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<u128>, wrapping_u128_ord_tests);
+impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<usize>, wrapping_usize_ord_tests);
+
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Saturating<i8>,
+    saturating_i8_ord_nonnegative_tests,
+    saturating_i8_ord_negative_tests
+);
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Saturating<i16>,
+    saturating_i16_ord_nonnegative_tests,
+    saturating_i16_ord_negative_tests
+);
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Saturating<i32>,
+    saturating_i32_ord_nonnegative_tests,
+    saturating_i32_ord_negative_tests
+);
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Saturating<i64>,
+    saturating_i64_ord_nonnegative_tests,
+    saturating_i64_ord_negative_tests
+);
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Saturating<i128>,
+    saturating_i128_ord_nonnegative_tests,
+    saturating_i128_ord_negative_tests
+);
+impl_nanmin_nanmax_ord_traits_for_ord!(
+    Saturating<isize>,
+    saturating_isize_ord_nonnegative_tests,
+    saturating_isize_ord_negative_tests
+);
+
+impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<u8>, saturating_u8_ord_tests);
+impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<u16>, saturating_u16_ord_tests);
+impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<u32>, saturating_u32_ord_tests);
+impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<u64>, saturating_u64_ord_tests);
+impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<u128>, saturating_u128_ord_tests);
+impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<usize>, saturating_usize_ord_tests);
 
 impl_nanmin_nanmax_ord_traits_for_ord!(char);
 impl_nanmin_nanmax_ord_traits_for_ord!(bool);
