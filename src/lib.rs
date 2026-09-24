@@ -15,11 +15,9 @@
 extern crate std;
 
 pub mod bytes;
+pub mod cmp;
 pub mod convert;
 pub mod elem;
-pub mod limits;
-//pub mod group;
-pub mod cmp;
 pub mod fns;
+pub mod limits;
 pub mod ops;
-//pub mod ring;

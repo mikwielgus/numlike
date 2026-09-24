@@ -4,27 +4,27 @@
 
 //! Lossy conversions between numeric types.
 
-/// Convert a value from one type to another, possibly with lossy approximation.
+/// Convert a value from one type to this type, typically using Rust's `as`
+/// keyword casting.
 ///
-/// This trait is analogous to standard library's [`From`], but allows
-/// the conversion to be approximate and thus lossy. It is the inverse of
-/// [`CastInto`].
+/// This trait is analogous to standard library's [`From`], though unlike it
+/// it's lossy. It's the inverse of [`CastInto`].
 ///
-/// Internally, `as` operator is used to convert between Rust primitives. For
-/// non-exact conversion where a non-primitive type is involved, the decision
-/// how rounding should be done is left to the implementors, but aiming for
-/// consistency with `as` is highly encouraged.
+/// Internally, `as` operator is used to lossily convert between Rust
+/// primitives. For non-exact conversion where a non-primitive type is involved,
+/// the decision how rounding should be done is left to the implementors, but
+/// aiming for consistency with `as` is highly encouraged.
 pub trait CastFrom<T> {
-    /// Convert to this type from the input type, possibly with lossy
-    /// approximation.
+    /// Convert a value from one type to this type using Rust's `as` keyword
+    /// casting.
     fn cast_from(value: T) -> Self;
 }
 
-/// Convert a value from one type to another, possibly with lossy approximation.
+/// Convert this value's type to another type, typically using Rust's `as`
+/// keyword casting.
 ///
-/// This trait is analogous to standard library's [`From`], but allows
-/// the conversion to be approximate and thus lossy. It is the inverse of
-/// [`CastFrom`].
+/// This trait is analogous to standard library's [`Into`], though unlike it
+/// it's lossy. It's the inverse of [`CastFrom`].
 ///
 /// Internally, `as` operator is used to convert between Rust primitives. For
 /// non-exact conversion where a non-primitive type is involved, the decision
@@ -35,8 +35,8 @@ pub trait CastFrom<T> {
 /// implement this trait directly, as it already has a blanket implementation
 /// for types that implement [`CastFrom`].
 pub trait CastInto<T> {
-    /// Convert this type into the (usually inferred) input type, possibly with
-    /// lossy approximation.
+    /// Convert this value's type into another type to another using Rust's `as`
+    /// keyword casting.
     fn cast_into(self) -> T;
 }
 
@@ -68,8 +68,8 @@ macro_rules! impl_cast_from_for_primitives {
         $(
             impl_cast_from!(
                 $src =>
-                u8, u16, u32, u64, u128, usize,
                 i8, i16, i32, i64, i128, isize,
+                u8, u16, u32, u64, u128, usize,
                 f32, f64
             );
         )+
@@ -77,7 +77,7 @@ macro_rules! impl_cast_from_for_primitives {
 }
 
 impl_cast_from_for_primitives!(
-    u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize, f32, f64
+    i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64
 );
 
 macro_rules! convert_traits_nonnegative_tests {
