@@ -62,11 +62,11 @@ decisions in the venerable `num-traits` crate.
   implementation for all elements could be inefficient, or *1* may
   be supposed to designate merely the generating element (aka. the
   [*generator*](https://en.wikipedia.org/wiki/Generator_(mathematics))).
-  - `num-traits` also requires `Output = Self` (closed operation) for `Add` and
-    `Mul`, making it impossible to use `Zero` and `One` for statically-typed
-    unit of measurement libraries like [`uom`](https://docs.rs/uom/latest/uom/),
-    where, for instance, multiplying two lengths gives you area, which is a
-    different dimension.
+  - `num-traits` also requires `Output = Self` (i.e. operation must have
+    closure property) for `Add` and `Mul`, making it impossible to use
+    `Zero` and `One` for statically-typed unit of measurement libraries like
+    [`uom`](https://docs.rs/uom/latest/uom/), where, for instance, multiplying
+    two lengths gives you area, which is a different dimension.
     - `numlike` does not have these problems because it does not have any
       supertraits for its `Zero` and `One`.
   - Moreover, `num-traits`'s `Zero` and `One` do not provide `ZERO` and `ONE`
@@ -97,9 +97,11 @@ decisions in the venerable `num-traits` crate.
     floats do not have minimum and maximum values in the strict mathematical
     sense due to the presence of NaN values, which are unordered. And Rust uses
     the terms `MIN` and `MAX` to actually mean `MIN_FINITE` and `MAX_FINITE`,
-    which mixes up things even more. We prefer to use terms in their strict
-    mathematical sense to avoid confusion, so it was better to just omit these
-    names.
+    thus omitting positive and negative infinity, that are nevertheless
+    mathematically valid elements of the set, which mixes up terminology even
+    more. We prefer to use terms in their strict mathematical sense to avoid
+    confusion, so it was better to just leave `MIN` and `MAX` identifiers
+    unused.
 - In `num-traits`, if you want to calculate absolute value (`.abs()`),
   the signum function (`.signum()` or `.sgn()`), or to check whether
   a number is positive or negative, you need to have a bound of
@@ -135,7 +137,7 @@ decisions in the venerable `num-traits` crate.
   from being solved.
   - Because of that, we have decided to roll our own library (this crate).
     However, because it's in active development, we are lacking the stability of
-    `num-traits` -- we are much more likely to have breaking changes and bugs.
+    `num-traits` -- we are more likely to have breaking changes and bugs.
 - Furthermore, `numlike` also has its own features, such as:
   - Equality and order traits that fix `NaN`s to be the highest value in the
     set, even larger than positive infinity, allowing for total order:
