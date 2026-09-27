@@ -40,7 +40,19 @@ numlike = { version = "0.4.0" }
 
 We developed `numlike` primarily because we disagree with many of design
 decisions in the venerable `num-traits` crate.
-
+- A large number of `num-traits`'s trait functions accept immutable reference,
+  not value, as input. For example,
+  [`checked_add()`](https://docs.rs/num-traits/latest/num_traits/ops/checked/trait.CheckedAdd.html#tymethod.checked_add),
+  [`.abs()`](https://docs.rs/num-traits/latest/num_traits/sign/trait.Signed.html#tymethod.abs),
+  [`.signum()`](https://docs.rs/num-traits/latest/num_traits/sign/trait.Signed.html#tymethod.signum),
+  [`.to_ne_bytes()`](https://docs.rs/num-traits/latest/num_traits/ops/bytes/trait.ToBytes.html#method.to_ne_bytes),
+  [`.from_be_bytes()`](https://docs.rs/num-traits/latest/num_traits/ops/bytes/trait.FromBytes.html#tymethod.from_be_bytes)
+  (and many more) all take in `&self` instead of `self`. This forces the
+  implementors to needlessly clone the value each time any of these operations
+  is performed, which degrades performance for arbitrary-precision numbers of
+  non-trivial size.
+    - `numlike` does not have this problem -- its trait functions always accept
+      arguments by value, so there's no unnecessary cloning.
 - `num-traits`'s
   [`Zero`](https://docs.rs/num-traits/latest/num_traits/identities/trait.Zero.html)
   and
