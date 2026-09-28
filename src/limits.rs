@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-//! Finite and extended numeric limits.
+//! Various numeric limits specific to finite, extended, float numbers and more.
 
 use core::num::{Saturating, Wrapping};
 
@@ -113,16 +113,23 @@ pub trait MaxBase10Exponent {
     const MAX_BASE_10_EXPONENT: i32;
 }
 
-/// Bundle of limits for a numeric type.
-pub trait Limits:
-    MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger + Bits
-{
+/// Bundle of all defined limits for a numeric type.
+pub trait Limits: Bounds + Bits {}
+impl<T: Bounds + Bits> Limits for T {}
+
+/// The size of this type in bits.
+pub trait Bits {
+    /// The size of this type in bits.
+    const BITS: u32;
 }
-impl<
-    T: MinFinite + MaxFinite + MinExtended + MaxExtended + MinExactInteger + MaxExactInteger + Bits,
-> Limits for T
-{
-}
+
+/// Bundle of all defined minimum and maximum value limits for a numeric type.
+pub trait Bounds: FiniteBounds + ExtendedBounds + ExactIntegerBounds {}
+impl<T: FiniteBounds + ExtendedBounds + ExactIntegerBounds> Bounds for T {}
+
+/// Bundle of finite minimum and maximum values of a numeric type.
+pub trait FiniteBounds: MinFinite + MaxFinite {}
+impl<T: MinFinite + MaxFinite> FiniteBounds for T {}
 
 /// Smallest finite value.
 pub trait MinFinite {
@@ -136,6 +143,11 @@ pub trait MaxFinite {
     const MAX_FINITE: Self;
 }
 
+/// Bundle of extended (i.e. also containing negative and positive infinities)
+/// minimum and maximum values of a numeric type.
+pub trait ExtendedBounds: MinExtended + MaxExtended {}
+impl<T: MinExtended + MaxExtended> ExtendedBounds for T {}
+
 /// Negative infinity if present in the type, otherwise smallest finite value.
 pub trait MinExtended {
     /// Negative infinity if present in the type, otherwise smallest finite value.
@@ -147,6 +159,10 @@ pub trait MaxExtended {
     /// Positive infinity if present in the type, otherwise greatest finite value.
     const MAX_EXTENDED: Self;
 }
+
+/// Bundle of minimum and maximum exact integer values of a numeric type.
+pub trait ExactIntegerBounds: MinExactInteger + MaxExactInteger {}
+impl<T: MinExactInteger + MaxExactInteger> ExactIntegerBounds for T {}
 
 /// Minimum integer that can be represented exactly in this type, with no other
 /// integer converting to the same value.
@@ -183,12 +199,6 @@ pub trait MaxExactInteger {
     const MAX_EXACT_INTEGER: Self;
 }
 
-/// The size of this type in bits.
-pub trait Bits {
-    /// The size of this type in bits.
-    const BITS: u32;
-}
-
 macro_rules! impl_limits_traits_for_int {
     ($ty:ty) => {
         impl_limits_traits_for_int!($ty, <$ty>::MIN, <$ty>::MAX, <$ty>::BITS);
@@ -204,6 +214,10 @@ macro_rules! impl_limits_traits_for_int {
         test_limits_traits_int_negative!($ty, $negative_tests_mod);
     };
     ($ty:ty, $min:expr, $max:expr, $bits:expr) => {
+        impl Bits for $ty {
+            const BITS: u32 = $bits;
+        }
+
         impl MinFinite for $ty {
             const MIN_FINITE: Self = $min;
         }
@@ -226,10 +240,6 @@ macro_rules! impl_limits_traits_for_int {
 
         impl MaxExactInteger for $ty {
             const MAX_EXACT_INTEGER: Self = $max;
-        }
-
-        impl Bits for $ty {
-            const BITS: u32 = $bits;
         }
     };
     ($ty:ty, $min:expr, $max:expr, $bits:expr, $nonnegative_tests_mod:ident) => {
