@@ -10,25 +10,25 @@ use crate::{
 };
 
 /// Element of a totally-ordered field (i.e. of a tofield).
-pub trait TofieldElem: Ord + FieldElem {}
-impl<T: Ord + FieldElem> TofieldElem for T {}
+pub trait Tofield: Ord + Field {}
+impl<T: Ord + Field> Tofield for T {}
 
 /// Element of a partially-ordered field (i.e. of a pofield).
-pub trait PofieldElem: PartialOrd + FieldElem {}
-impl<T: PartialOrd + FieldElem> PofieldElem for T {}
+pub trait Pofield: PartialOrd + Field {}
+impl<T: PartialOrd + Field> Pofield for T {}
 
 /// Element of a field.
-pub trait FieldElem: Zero + One + FieldOps + Sized {}
-impl<T: Zero + One + FieldOps + Sized> FieldElem for T {}
+pub trait Field: Zero + One + FieldOps + Sized {}
+impl<T: Zero + One + FieldOps + Sized> Field for T {}
 
 /// Element of a totally-ordered ring (i.e. of a toring).
-pub trait ToringElem: Ord + RingElem {}
-impl<T: Ord + RingElem> ToringElem for T {}
+pub trait Toring: Ord + Ring {}
+impl<T: Ord + Ring> Toring for T {}
 
 /// Element of a partially-ordered ring (i.e. of a poring).
-pub trait PoringElem: PartialOrd + RingElem {}
-impl<T: PartialOrd + RingElem> PoringElem for T {}
+pub trait Poring: PartialOrd + Ring {}
+impl<T: PartialOrd + Ring> Poring for T {}
 
 /// Element of a ring.
-pub trait RingElem: Zero + One + RingOps + Sized {}
-impl<T: Zero + One + RingOps + Sized> RingElem for T {}
+pub trait Ring: Zero + One + RingOps + Sized {}
+impl<T: Zero + One + RingOps + Sized> Ring for T {}
