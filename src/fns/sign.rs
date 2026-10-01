@@ -3,8 +3,24 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 /// Bundle of sign-related functions.
-pub trait SignFns: Sgn + Abs {}
-impl<T: Sgn + Abs> SignFns for T {}
+pub trait SignFns: IsPositive + IsNegative + Sgn + Abs {}
+impl<T: IsPositive + IsNegative + Sgn + Abs> SignFns for T {}
+
+/// Returns `true` if `self` is positive and `false` if the number is zero or
+/// negative.
+pub trait IsPositive {
+    /// Returns `true` if `self` is positive and `false` if the number is zero
+    /// or negative.
+    fn is_positive(self) -> bool;
+}
+
+/// Returns `true` if `self` is negative and `false` if the number is zero or
+/// positive.
+pub trait IsNegative {
+    /// Returns `true` if `self` is negative and `false` if the number is zero
+    /// or positive.
+    fn is_negative(self) -> bool;
+}
 
 /// Returns a number representing sign of `self`.
 ///
@@ -49,6 +65,20 @@ pub trait CheckedAbs {
 
 macro_rules! impl_sign_traits_for_unsigned_int {
     ($ty:ty, $tests_mod:ident) => {
+        impl IsPositive for $ty {
+            #[inline]
+            fn is_positive(self) -> bool {
+                self > 0
+            }
+        }
+
+        impl IsNegative for $ty {
+            #[inline]
+            fn is_negative(self) -> bool {
+                false
+            }
+        }
+
         impl Sgn for $ty {
             type Output = $ty;
 
@@ -86,6 +116,32 @@ macro_rules! sign_traits_nonnegative_tests {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+
+            #[test]
+            fn test_is_positive() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert!(!IsPositive::is_positive(zero));
+                assert!(IsPositive::is_positive(one));
+                assert!(IsPositive::is_positive(two));
+                assert!(IsPositive::is_positive(four));
+            }
+
+            #[test]
+            fn test_is_negative() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert!(!IsNegative::is_negative(zero));
+                assert!(!IsNegative::is_negative(one));
+                assert!(!IsNegative::is_negative(two));
+                assert!(!IsNegative::is_negative(four));
+            }
 
             #[test]
             fn test_sgn() {
@@ -138,6 +194,20 @@ impl_sign_traits_for_unsigned_int!(usize, usize_tests);
 
 macro_rules! impl_sign_traits_for_signed_int {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl IsPositive for $ty {
+            #[inline]
+            fn is_positive(self) -> bool {
+                <$ty>::is_positive(self)
+            }
+        }
+
+        impl IsNegative for $ty {
+            #[inline]
+            fn is_negative(self) -> bool {
+                <$ty>::is_negative(self)
+            }
+        }
+
         impl Sgn for $ty {
             type Output = $ty;
 
@@ -176,6 +246,32 @@ macro_rules! sign_traits_negative_tests {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+
+            #[test]
+            fn test_is_positive() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert!(!IsPositive::is_positive(-zero));
+                assert!(!IsPositive::is_positive(-one));
+                assert!(!IsPositive::is_positive(-two));
+                assert!(!IsPositive::is_positive(-four));
+            }
+
+            #[test]
+            fn test_is_negative() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let four = two + two;
+
+                assert!(!IsNegative::is_negative(-zero));
+                assert!(IsNegative::is_negative(-one));
+                assert!(IsNegative::is_negative(-two));
+                assert!(IsNegative::is_negative(-four));
+            }
 
             #[test]
             fn test_sgn() {
@@ -228,6 +324,20 @@ impl_sign_traits_for_signed_int!(isize, isize_nonnegative_tests, isize_negative_
 
 macro_rules! impl_sign_traits_for_float {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl IsPositive for $ty {
+            #[inline]
+            fn is_positive(self) -> bool {
+                self > 0.0
+            }
+        }
+
+        impl IsNegative for $ty {
+            #[inline]
+            fn is_negative(self) -> bool {
+                self < 0.0
+            }
+        }
+
         impl Sgn for $ty {
             type Output = $ty;
 
