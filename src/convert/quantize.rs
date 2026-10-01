@@ -80,6 +80,7 @@ macro_rules! impl_round_quantize_from {
     };
 }
 
+#[cfg(any(feature = "std", feature = "libm"))]
 macro_rules! impl_round_quantize_from_for_machreal {
     ($src:ty, $round:path) => {
         impl_round_quantize_from!(

@@ -62,20 +62,109 @@ macro_rules! impl_gcd_for_int {
             }
         )+
     };
-}
+    ($t:ty) => {
+        impl_gcd_for_int!(
+            $t =>
+            i8, i16, i32, i64, i128, isize,
+            u8, u16, u32, u64, u128, usize
+        );
+    };
+    ($t:ty, $nonnegative_tests_mod:ident) => {
+        impl_gcd_for_int!($t);
 
-macro_rules! impl_gcd_for_ints {
-    ($($t:ty),+) => {
-        $(
-            impl_gcd_for_int!(
-                $t =>
-                i8, i16, i32, i64, i128, isize,
-                u8, u16, u32, u64, u128, usize
-            );
-        )+
+        test_gcd_traits_int_nonnegative!($t, $nonnegative_tests_mod);
+    };
+    ($t:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl_gcd_for_int!($t, $nonnegative_tests_mod);
+
+        test_gcd_traits_int_negative!($t, $negative_tests_mod);
     };
 }
 
-impl_gcd_for_ints!(
-    i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize
-);
+macro_rules! test_gcd_traits_int_nonnegative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::fns::*;
+
+            #[test]
+            fn test_gcd() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let four = two + two;
+                let six = three + three;
+                let eight = four + four;
+                let nine = six + three;
+                let twelve = six + six;
+                let eighteen = nine + nine;
+
+                assert_eq!(Gcd::gcd(zero, zero), zero);
+                assert_eq!(Gcd::gcd(zero, eight), eight);
+                assert_eq!(Gcd::gcd(eight, zero), eight);
+                assert_eq!(Gcd::gcd(one, eighteen), one);
+                assert_eq!(Gcd::gcd(eighteen, one), one);
+                assert_eq!(Gcd::gcd(twelve, twelve), twelve);
+                assert_eq!(Gcd::gcd(twelve, eighteen), six);
+                assert_eq!(Gcd::gcd(eighteen, twelve), six);
+                assert_eq!(Gcd::gcd(eight, twelve), four);
+                assert_eq!(Gcd::gcd(twelve, eight), four);
+
+                assert_eq!(Gcd::gcd(twelve, 18u8), six);
+                assert_eq!(Gcd::gcd(twelve, 18u16), six);
+                assert_eq!(Gcd::gcd(twelve, 18), six);
+            }
+        }
+    };
+}
+
+macro_rules! test_gcd_traits_int_negative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::elem::*;
+            use crate::fns::*;
+
+            #[test]
+            fn test_gcd() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+                let three = two + one;
+                let four = two + two;
+                let six = three + three;
+                let eight = four + four;
+                let nine = six + three;
+                let twelve = six + six;
+                let eighteen = nine + nine;
+
+                assert_eq!(Gcd::gcd(-eight, zero), eight);
+                assert_eq!(Gcd::gcd(zero, -eight), eight);
+                assert_eq!(Gcd::gcd(-twelve, eighteen), six);
+                assert_eq!(Gcd::gcd(twelve, -eighteen), six);
+                assert_eq!(Gcd::gcd(-twelve, -eighteen), six);
+                assert_eq!(Gcd::gcd(-eight, twelve), four);
+                assert_eq!(Gcd::gcd(eight, -twelve), four);
+
+                assert_eq!(Gcd::gcd(-twelve, 18u8), six);
+                assert_eq!(Gcd::gcd(-twelve, 18), six);
+            }
+        }
+    };
+}
+
+impl_gcd_for_int!(u8, u8_tests);
+impl_gcd_for_int!(u16, u16_tests);
+impl_gcd_for_int!(u32, u32_tests);
+impl_gcd_for_int!(u64, u64_tests);
+impl_gcd_for_int!(u128, u128_tests);
+impl_gcd_for_int!(usize, usize_tests);
+
+impl_gcd_for_int!(i8, i8_nonnegative_tests, i8_negative_tests);
+impl_gcd_for_int!(i16, i16_nonnegative_tests, i16_negative_tests);
+impl_gcd_for_int!(i32, i32_nonnegative_tests, i32_negative_tests);
+impl_gcd_for_int!(i64, i64_nonnegative_tests, i64_negative_tests);
+impl_gcd_for_int!(i128, i128_nonnegative_tests, i128_negative_tests);
+impl_gcd_for_int!(isize, isize_nonnegative_tests, isize_negative_tests);
