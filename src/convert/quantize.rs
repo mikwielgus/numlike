@@ -2,19 +2,19 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-/// Multiply a number by a multiplier, round it to an integer, and convert it to
-/// this integer type, or do nothing if the input type is integer.
+/// Multiply a number by a multiplier (scale), round it to an integer, and
+/// convert it to this integer type, or do nothing if the input type is integer.
 ///
 /// This trait is analogous to standard library's [`From`], though unlike it
 /// it's lossy. It's the inverse of [`QuantizeInto`].
 pub trait QuantizeFrom<T> {
-    /// Multiply a number by a multiplier, round it to an integer, and convert it to
-    /// this integer type, or do nothing if input type is integer.
-    fn quantize_from(value: T, multiplier: T) -> Self;
+    /// Multiply a number by a multiplier (scale), round it to an integer, and
+    /// convert it to this integer type, or do nothing if input type is integer.
+    fn quantize_from(value: T, scale: T) -> Self;
 }
 
-/// Multiply this number by a multiplier, round it to an integer, and convert it
-/// to another type, or do nothing if the input type is integer.
+/// Multiply this number by a multiplier (scale), round it to an integer, and
+/// convert it to another type, or do nothing if the input type is integer.
 ///
 /// This trait is analogous to standard library's [`Into`], though unlike it
 /// it's lossy. It's the inverse of [`QuantizeFrom`].
@@ -23,9 +23,9 @@ pub trait QuantizeFrom<T> {
 /// implement this trait directly, as it already has a blanket implementation
 /// for types that implement [`QuantizeFrom`].
 pub trait QuantizeInto<T> {
-    /// Multiply a number by a multiplier, round it to an integer, and convert
-    /// it to another type, or do nothing if input type is integer.
-    fn quantize_into(self, multiplier: Self) -> T;
+    /// Multiply a number by a multiplier (scale), round it to an integer, and
+    /// convert it to another type, or do nothing if input type is integer.
+    fn quantize_into(self, scale: Self) -> T;
 }
 
 impl<T, U> QuantizeInto<U> for T
@@ -33,8 +33,8 @@ where
     U: QuantizeFrom<T>,
 {
     #[inline]
-    fn quantize_into(self, multiplier: Self) -> U {
-        U::quantize_from(self, multiplier)
+    fn quantize_into(self, scale: Self) -> U {
+        U::quantize_from(self, scale)
     }
 }
 
@@ -43,7 +43,7 @@ macro_rules! impl_passthrough_quantize_from {
         $(
             impl QuantizeFrom<$src> for $dst {
                 #[inline]
-                fn quantize_from(value: $src, _multiplier: $src) -> Self {
+                fn quantize_from(value: $src, _scale: $src) -> Self {
                     value as $dst
                 }
             }
@@ -72,8 +72,8 @@ macro_rules! impl_round_quantize_from {
         $(
             impl QuantizeFrom<$src> for $dst {
                 #[inline]
-                fn quantize_from(value: $src, multiplier: $src) -> Self {
-                    $round(value * multiplier) as $dst
+                fn quantize_from(value: $src, scale: $src) -> Self {
+                    $round(value * scale) as $dst
                 }
             }
         )+
