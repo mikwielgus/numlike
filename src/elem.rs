@@ -29,10 +29,14 @@ pub trait One {
     const ONE: Self;
 }
 
-/// Not a Number (NaN) value for a floating-point type.
-pub trait Nan {
-    /// Not a Number (NaN) value for a floating-point type.
-    const NAN: Self;
+/// Negative infinity (-∞).
+///
+/// This is an infinity going in the negative direction. This trait is not for
+/// a directionless infinity, such as the one present in Riemann sphere and in
+/// projectively extended reals.
+pub trait MinusInfinity {
+    /// Negative infinity (-∞).
+    const MINUS_INFINITY: Self;
 }
 
 /// Positive infinity (+∞).
@@ -45,14 +49,10 @@ pub trait PlusInfinity {
     const PLUS_INFINITY: Self;
 }
 
-/// Negative infinity (-∞).
-///
-/// This is an infinity going in the negative direction. This trait is not for
-/// a directionless infinity, such as the one present in Riemann sphere and in
-/// projectively extended reals.
-pub trait MinusInfinity {
-    /// Negative infinity (-∞).
-    const MINUS_INFINITY: Self;
+/// Not a Number (NaN) value for a floating-point type.
+pub trait Nan {
+    /// Not a Number (NaN) value for a floating-point type.
+    const NAN: Self;
 }
 
 macro_rules! impl_elem_traits_for_int {
@@ -304,16 +304,16 @@ macro_rules! impl_elem_traits_for_float {
             const ONE: Self = 1.0;
         }
 
-        impl Nan for $ty {
-            const NAN: Self = <$ty>::NAN;
+        impl MinusInfinity for $ty {
+            const MINUS_INFINITY: Self = <$ty>::NEG_INFINITY;
         }
 
         impl PlusInfinity for $ty {
             const PLUS_INFINITY: Self = <$ty>::INFINITY;
         }
 
-        impl MinusInfinity for $ty {
-            const MINUS_INFINITY: Self = <$ty>::NEG_INFINITY;
+        impl Nan for $ty {
+            const NAN: Self = <$ty>::NAN;
         }
 
         test_elem_traits_nonnegative!($ty, $nonnegative_tests_mod);

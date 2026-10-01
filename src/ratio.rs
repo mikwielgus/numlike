@@ -2,43 +2,176 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use crate::elem::{One, Zero};
+//! A ratio between two numbers.
 
+use core::ops::{Div, Neg};
+
+use crate::{
+    elem::{MinusInfinity, Nan, One, PlusInfinity, Zero},
+    fns::{Gcd, SignFns},
+    limits::{
+        MaxExactInteger, MaxExtended, MaxFinite, MaxNegative, MaximizerDenom, MinExactInteger,
+        MinExtended, MinFinite, MinPositive, MinimizerDenom,
+    },
+};
+
+/// A ratio between two numbers.
 pub struct Ratio<T> {
     numer: T,
     denom: T,
 }
 
+impl<T: Clone> Ratio<T> {
+    /// Returns the ratio's numerator by value.
+    pub fn numer(&self) -> T {
+        self.numer.clone()
+    }
+
+    /// Returns the ratio's denominator by value.
+    pub fn denom(&self) -> T {
+        self.denom.clone()
+    }
+}
+
 impl<T> Ratio<T> {
-    pub fn numer(&self) -> &T {
+    /// Returns the ratio's numerator by immutable reference.
+    pub fn numer_ref(&self) -> &T {
         &self.numer
     }
 
-    pub fn denom(&self) -> &T {
+    /// Returns the ratio's denominator by immutable reference.
+    pub fn denom_ref(&self) -> &T {
         &self.denom
     }
 }
 
-impl<T: PartialEq + Zero + One> Ratio<T> {
+impl<
+    T: Clone + Div<Output = T> + Gcd<Output = T> + Neg<Output = T> + One + PartialEq + SignFns + Zero,
+> Ratio<T>
+{
+    /// Creates a new ratio.
     pub fn new(numer: T, denom: T) -> Self {
-        let mut this = Self { numer, denom };
-        this.reduce();
-
-        this
+        Self::reduce(numer, denom)
     }
 
-    fn reduce(&mut self) {
-        if self.numer == Zero::ZERO {
-            self.denom = One::ONE;
-            return;
+    fn reduce(numer: T, denom: T) -> Self {
+        if numer == Zero::ZERO {
+            return Ratio {
+                numer,
+                denom: One::ONE,
+            };
         }
 
-        if self.numer == self.denom {
-            self.numer = One::ONE;
-            self.denom = One::ONE;
-            return;
+        if numer == denom {
+            return Ratio {
+                numer: One::ONE,
+                denom: One::ONE,
+            };
         }
 
-        let gcd = self.numer.gcd(&self.denom);
+        let gcd = numer.clone().gcd(denom.clone());
+
+        if denom.clone().is_positive() {
+            Ratio {
+                numer: numer / gcd.clone(),
+                denom: denom / gcd,
+            }
+        } else {
+            Ratio {
+                numer: -numer / gcd.clone(),
+                denom: -denom / gcd,
+            }
+        }
     }
+}
+
+impl<T: MinFinite + MinimizerDenom> MinFinite for Ratio<T> {
+    const MIN_FINITE: Self = Ratio {
+        numer: MinFinite::MIN_FINITE,
+        denom: MinimizerDenom::MINIMIZER_DENOM,
+    };
+}
+
+impl<T: MaxFinite + MaximizerDenom> MaxFinite for Ratio<T> {
+    const MAX_FINITE: Self = Ratio {
+        numer: MaxFinite::MAX_FINITE,
+        denom: MaximizerDenom::MAXIMIZER_DENOM,
+    };
+}
+
+impl<T: MinExtended + MinimizerDenom> MinExtended for Ratio<T> {
+    const MIN_EXTENDED: Self = Ratio {
+        numer: MinExtended::MIN_EXTENDED,
+        denom: MinimizerDenom::MINIMIZER_DENOM,
+    };
+}
+
+impl<T: MaxExtended + MaximizerDenom> MaxExtended for Ratio<T> {
+    const MAX_EXTENDED: Self = Ratio {
+        numer: MaxExtended::MAX_EXTENDED,
+        denom: MaximizerDenom::MAXIMIZER_DENOM,
+    };
+}
+
+impl<T: MinExactInteger + One> MinExactInteger for Ratio<T> {
+    const MIN_EXACT_INTEGER: Self = Ratio {
+        numer: MinExactInteger::MIN_EXACT_INTEGER,
+        denom: One::ONE,
+    };
+}
+
+impl<T: MaxExactInteger + One> MaxExactInteger for Ratio<T> {
+    const MAX_EXACT_INTEGER: Self = Ratio {
+        numer: MaxExactInteger::MAX_EXACT_INTEGER,
+        denom: One::ONE,
+    };
+}
+
+impl<T: MinPositive + MaxFinite + One> MinPositive for Ratio<T> {
+    const MIN_POSITIVE: Self = Ratio {
+        numer: MinPositive::MIN_POSITIVE,
+        denom: MaxFinite::MAX_FINITE,
+    };
+}
+
+impl<T: MaxNegative + MaxFinite + One> MaxNegative for Ratio<T> {
+    const MAX_NEGATIVE: Self = Ratio {
+        numer: MaxNegative::MAX_NEGATIVE,
+        denom: MaxFinite::MAX_FINITE,
+    };
+}
+
+impl<T: Zero + One> Zero for Ratio<T> {
+    const ZERO: Self = Ratio {
+        numer: Zero::ZERO,
+        denom: One::ONE,
+    };
+}
+
+impl<T: One> One for Ratio<T> {
+    const ONE: Self = Ratio {
+        numer: One::ONE,
+        denom: One::ONE,
+    };
+}
+
+impl<T: One + MinusInfinity> MinusInfinity for Ratio<T> {
+    const MINUS_INFINITY: Self = Ratio {
+        numer: MinusInfinity::MINUS_INFINITY,
+        denom: One::ONE,
+    };
+}
+
+impl<T: One + PlusInfinity> PlusInfinity for Ratio<T> {
+    const PLUS_INFINITY: Self = Ratio {
+        numer: PlusInfinity::PLUS_INFINITY,
+        denom: One::ONE,
+    };
+}
+
+impl<T: Nan + One> Nan for Ratio<T> {
+    const NAN: Self = Ratio {
+        numer: Nan::NAN,
+        denom: One::ONE,
+    };
 }

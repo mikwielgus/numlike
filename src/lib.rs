@@ -22,3 +22,4 @@ pub mod elem;
 pub mod fns;
 pub mod limits;
 pub mod ops;
+pub mod ratio;
