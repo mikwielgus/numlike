@@ -112,8 +112,7 @@ decisions in the venerable `num-traits` crate.
     thus omitting positive and negative infinity, that are nevertheless
     mathematically valid elements of the set, which mixes up terminology even
     more. We prefer to use terms in their strict mathematical sense to avoid
-    confusion, so it was better to just leave `MIN` and `MAX` identifiers
-    unused.
+    confusion, so we chose to just leave `MIN` and `MAX` identifiers unused.
 - In `num-traits`, if you want to calculate absolute value (`.abs()`),
   the signum function (`.signum()` or `.sgn()`), or to check whether
   a number is positive or negative, you need to have a bound of

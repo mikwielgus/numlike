@@ -127,7 +127,7 @@ pub trait Bits {
 pub trait Bounds: FiniteBounds + ExtendedBounds + ExactIntegerBounds {}
 impl<T: FiniteBounds + ExtendedBounds + ExactIntegerBounds> Bounds for T {}
 
-/// Bundle of finite minimum and maximum values of a numeric type.
+/// Bundle of the finite minimum and maximum values of a numeric type.
 pub trait FiniteBounds: MinFinite + MaxFinite {}
 impl<T: MinFinite + MaxFinite> FiniteBounds for T {}
 
@@ -143,8 +143,8 @@ pub trait MaxFinite {
     const MAX_FINITE: Self;
 }
 
-/// Bundle of extended (i.e. also containing negative and positive infinities)
-/// minimum and maximum values of a numeric type.
+/// Bundle of the extended (i.e. also containing negative and positive
+/// infinities) minimum and maximum values of a numeric type.
 pub trait ExtendedBounds: MinExtended + MaxExtended {}
 impl<T: MinExtended + MaxExtended> ExtendedBounds for T {}
 
@@ -160,7 +160,7 @@ pub trait MaxExtended {
     const MAX_EXTENDED: Self;
 }
 
-/// Bundle of minimum and maximum exact integer values of a numeric type.
+/// Bundle of the minimum and maximum exact integer values of a numeric type.
 pub trait ExactIntegerBounds: MinExactInteger + MaxExactInteger {}
 impl<T: MinExactInteger + MaxExactInteger> ExactIntegerBounds for T {}
 
@@ -199,9 +199,10 @@ pub trait MaxExactInteger {
     const MAX_EXACT_INTEGER: Self;
 }
 
-/// Bundle of minimum positive and maximum negative values of a numeric type.
-pub trait NearestToZero: MinPositive + MaxNegative {}
-impl<T: MinPositive + MaxNegative> NearestToZero for T {}
+/// Bundle of the minimum positive and maximum negative values of a numeric
+/// type.
+pub trait NearestsToZero: MinPositive + MaxNegative {}
+impl<T: MinPositive + MaxNegative> NearestsToZero for T {}
 
 /// The minimum positive value of a numeric type.
 ///
@@ -212,33 +213,83 @@ pub trait MinPositive {
     const MIN_POSITIVE: Self;
 }
 
-/// The maximum negative  value of a numeric type.
+/// The maximum negative value of a numeric type.
 ///
 /// For signed integers, this is equal to -1. For floats, this is equal to
 /// `-2^(MIN_EXPONENT - 1)`. For unsigned types this trait is not implemented.
 pub trait MaxNegative {
-    /// The maximum negative  value of a numeric type.
+    /// The maximum negative value of a numeric type.
     const MAX_NEGATIVE: Self;
+}
+
+/// Bundle of the ratio-minimizing and -maximizing denominator values of a
+/// numeric type.
+pub trait ExtremizerDenoms: MinimizerDenom + MaximizerDenom {}
+impl<T: MinimizerDenom + MaximizerDenom> ExtremizerDenoms for T {}
+
+/// Denominator of the minimum possible ratio with numerator and denominator of
+/// this type.
+///
+/// For unsigned types, this constant is equal to the type's finite maximum,
+/// `MAX_FINITE`, as the minimum possible ratio is `MIN_POSITIVE / MAX_FINITE`.
+///
+/// For signed types, due to presence of negative values, this constant is equal
+/// to the type's minimum possible value, `MIN_POSITIVE`, as the minimum possible
+/// ratio is `MIN_FINITE / MIN_POSITIVE`.
+pub trait MinimizerDenom {
+    /// Denominator of the minimum possible ratio with numerator and denominator of
+    /// this type.
+    const MINIMIZER_DENOM: Self;
+}
+
+/// Denominator of the maximum possible ratio with numerator and denominator of
+/// this type.
+///
+/// Equal to `MIN_POSITIVE`. This constant only exists for symmetry with
+/// `MINIMIZER_DENOM`.
+pub trait MaximizerDenom {
+    /// Denominator of the maximum possible ratio with numerator and denominator
+    /// of this type.
+    const MAXIMIZER_DENOM: Self;
 }
 
 macro_rules! impl_limits_traits_for_int {
     ($ty:ty) => {
-        impl_limits_traits_for_int!($ty, <$ty>::MIN, <$ty>::MAX, <$ty>::BITS);
+        impl_limits_traits_for_int!($ty, <$ty>::MIN, <$ty>::MAX, <$ty>::BITS, <$ty>::MAX);
     };
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_limits_traits_for_int!($ty);
+
         test_limits_traits_int_nonnegative!($ty, $nonnegative_tests_mod);
     };
     ($ty:ty, $max_negative:expr, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
-        impl_limits_traits_for_int!($ty, $nonnegative_tests_mod);
+        impl_limits_traits_for_int!(
+            $ty,
+            <$ty>::MIN,
+            <$ty>::MAX,
+            <$ty>::BITS,
+            <$ty as crate::elem::One>::ONE
+        );
 
         impl MaxNegative for $ty {
             const MAX_NEGATIVE: Self = $max_negative;
         }
 
+        test_limits_traits_int_nonnegative!(
+            $ty,
+            <$ty>::MIN,
+            <$ty>::MAX,
+            <$ty as MinPositive>::MIN_POSITIVE,
+            $nonnegative_tests_mod
+        );
         test_limits_traits_int_negative!($ty, $negative_tests_mod);
     };
-    ($ty:ty, $min:expr, $max:expr, $bits:expr) => {
+    ($ty:ty, $min:expr, $max:expr, $bits:expr, $nonnegative_tests_mod:ident) => {
+        impl_limits_traits_for_int!($ty, $min, $max, $bits, $max);
+
+        test_limits_traits_int_nonnegative!($ty, $min, $max, $max, $nonnegative_tests_mod);
+    };
+    ($ty:ty, $min:expr, $max:expr, $bits:expr, $minimizer_denom:expr) => {
         impl Bits for $ty {
             const BITS: u32 = $bits;
         }
@@ -270,11 +321,14 @@ macro_rules! impl_limits_traits_for_int {
         impl MinPositive for $ty {
             const MIN_POSITIVE: Self = <Self as crate::elem::One>::ONE;
         }
-    };
-    ($ty:ty, $min:expr, $max:expr, $bits:expr, $nonnegative_tests_mod:ident) => {
-        impl_limits_traits_for_int!($ty, $min, $max, $bits);
 
-        test_limits_traits_int_nonnegative!($ty, $min, $max, $nonnegative_tests_mod);
+        impl MinimizerDenom for $ty {
+            const MINIMIZER_DENOM: Self = $minimizer_denom;
+        }
+
+        impl MaximizerDenom for $ty {
+            const MAXIMIZER_DENOM: Self = <Self as MinPositive>::MIN_POSITIVE;
+        }
     };
     (
         $ty:ty,
@@ -285,21 +339,28 @@ macro_rules! impl_limits_traits_for_int {
         $nonnegative_tests_mod:ident,
         $negative_tests_mod:ident
     ) => {
-        impl_limits_traits_for_int!($ty, $min, $max, $bits, $nonnegative_tests_mod);
+        impl_limits_traits_for_int!($ty, $min, $max, $bits, <$ty as crate::elem::One>::ONE);
 
         impl MaxNegative for $ty {
             const MAX_NEGATIVE: Self = $max_negative;
         }
 
+        test_limits_traits_int_nonnegative!(
+            $ty,
+            $min,
+            $max,
+            <$ty as MinPositive>::MIN_POSITIVE,
+            $nonnegative_tests_mod
+        );
         test_limits_traits_int_negative!($ty, $min, $max, $negative_tests_mod);
     };
 }
 
 macro_rules! test_limits_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {
-        test_limits_traits_int_nonnegative!($ty, <$ty>::MIN, <$ty>::MAX, $tests_mod);
+        test_limits_traits_int_nonnegative!($ty, <$ty>::MIN, <$ty>::MAX, <$ty>::MAX, $tests_mod);
     };
-    ($ty:ty, $min:expr, $max:expr, $tests_mod:ident) => {
+    ($ty:ty, $min:expr, $max:expr, $minimizer_denom:expr, $tests_mod:ident) => {
         #[cfg(test)]
         mod $tests_mod {
             use crate::limits::*;
@@ -326,6 +387,12 @@ macro_rules! test_limits_traits_int_nonnegative {
                 assert_eq!(
                     <$ty as MinPositive>::MIN_POSITIVE,
                     <$ty as crate::elem::One>::ONE
+                );
+
+                assert_eq!(<$ty as MinimizerDenom>::MINIMIZER_DENOM, $minimizer_denom);
+                assert_eq!(
+                    <$ty as MaximizerDenom>::MAXIMIZER_DENOM,
+                    <$ty as MinPositive>::MIN_POSITIVE
                 );
             }
         }
@@ -595,6 +662,14 @@ macro_rules! impl_limits_traits_for_float {
             const MAX_NEGATIVE: Self = -<$ty>::MIN_POSITIVE;
         }
 
+        impl MinimizerDenom for $ty {
+            const MINIMIZER_DENOM: Self = <$ty>::MIN_POSITIVE;
+        }
+
+        impl MaximizerDenom for $ty {
+            const MAXIMIZER_DENOM: Self = <$ty>::MIN_POSITIVE;
+        }
+
         test_limits_traits_float_nonnegative!($ty, $nonnegative_tests_mod);
         test_limits_traits_float_negative!($ty, $negative_tests_mod);
     };
@@ -647,6 +722,15 @@ macro_rules! test_limits_traits_float_nonnegative {
                 );
 
                 assert_eq!(<$ty as MinPositive>::MIN_POSITIVE, <$ty>::MIN_POSITIVE);
+
+                assert_eq!(
+                    <$ty as MinimizerDenom>::MINIMIZER_DENOM,
+                    <$ty>::MIN_POSITIVE
+                );
+                assert_eq!(
+                    <$ty as MaximizerDenom>::MAXIMIZER_DENOM,
+                    <$ty>::MIN_POSITIVE
+                );
             }
 
             #[test]
