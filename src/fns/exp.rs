@@ -8,7 +8,7 @@ impl<T: Exp + Exp2 + ExpM1> ExpFns for T {}
 
 /// Returns `e^(self)`, (the exponential function).
 pub trait Exp {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns `e^(self)`, (the exponential function).
@@ -17,7 +17,7 @@ pub trait Exp {
 
 /// Returns `2^(self)`.
 pub trait Exp2 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns `2^(self)`.
@@ -27,7 +27,7 @@ pub trait Exp2 {
 /// Returns `e^(self) - 1` in a way that is accurate even if the
 /// number is close to zero.
 pub trait ExpM1 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns `e^(self) - 1` in a way that is accurate even if the
@@ -43,7 +43,7 @@ impl<T: CheckedExp + CheckedExp2 + CheckedExpM1> CheckedExpFns for T {}
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedExp {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns `e^(self)`, (the exponential function).
@@ -54,7 +54,7 @@ pub trait CheckedExp {
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedExp2 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns `2^(self)`.
@@ -66,7 +66,7 @@ pub trait CheckedExp2 {
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedExpM1 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns `e^(self) - 1` in a way that is accurate even if the

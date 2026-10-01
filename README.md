@@ -124,9 +124,9 @@ decisions in the venerable `num-traits` crate.
   and `One`, and some more, thus precluding its use on more abstract (e.g.
   group-like) mathematical structures.
   - But having these methods generically for both signed and unsigned types
-    can be useful for finding canonical denominators, reducing fractions,
-    combining and simplifying radicals, so `numlike` provides these methods
-    through two fine-grained, decoupled traits,
+    can be useful for finding greatest common divisors, finding canonical
+    denominators, reducing fractions, combining and simplifying radicals, so
+    `numlike` provides these methods through two fine-grained, decoupled traits,
     [`Sgn`](https://docs.rs/numlike/latest/numlike/ops/trait.Sgn.html)
     and [`Abs`](https://docs.rs/numlike/latest/numlike/ops/trait.Abs.html),
     implemented for all numeric primitives, not only signeds. These traits

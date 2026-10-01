@@ -12,7 +12,7 @@ impl<T: ClassicalTrigFns + SinCos> TrigFns for T {}
 /// Simultaneously computes the sine and cosine of the number, `x`. Returns
 /// `(sin(x), cos(x))`.
 pub trait SinCos {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Simultaneously computes the sine and cosine of the number, `x`. Returns
@@ -26,7 +26,7 @@ impl<T: Sin + Cos + Tan> ClassicalTrigFns for T {}
 
 /// Computes the sine of a number (in radians).
 pub trait Sin {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the sine of a number (in radians).
@@ -35,7 +35,7 @@ pub trait Sin {
 
 /// Computes the cosine of a number (in radians).
 pub trait Cos {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the cosine of a number (in radians).
@@ -44,7 +44,7 @@ pub trait Cos {
 
 /// Computes the tangent of a number (in radians).
 pub trait Tan {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the tangent of a number (in radians).
@@ -55,7 +55,7 @@ pub trait Tan {
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedTan {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the tangent of a number (in radians).
@@ -68,7 +68,7 @@ impl<Rhs, T: ClassicalInvTrigFns<Rhs> + Atan2<Rhs>> InvTrigFns<Rhs> for T {}
 
 /// Computes the four quadrant arctangent of `self` (`y`) and `rhs` (`x`) in radians.
 pub trait Atan2<Rhs> {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the four quadrant arctangent of `self` (`y`) and `rhs` (`x`) in radians.
@@ -83,7 +83,7 @@ impl<Rhs, T: Asin + Acos + Atan> ClassicalInvTrigFns<Rhs> for T {}
 /// the range [-pi/2, pi/2] or NaN if the number is outside the range
 /// [-1, 1].
 pub trait Asin {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the arcsine of a number. Return value is in radians in
@@ -96,7 +96,7 @@ pub trait Asin {
 /// the range [0, pi] or NaN if the number is outside the range
 /// [-1, 1].
 pub trait Acos {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the arccosine of a number. Return value is in radians in
@@ -108,7 +108,7 @@ pub trait Acos {
 /// Computes the arctangent of a number. Return value is in radians in the
 /// range [-pi/2, pi/2];
 pub trait Atan {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the arctangent of a number. Return value is in radians in the
@@ -126,7 +126,7 @@ impl<Rhs, T: CheckedAsin + CheckedAcos> CheckedClassicalInvTrigFns<Rhs> for T {}
 /// Returns `None` if the number is outside the range [-1, 1], or if the
 /// result is not finite.
 pub trait CheckedAsin {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the arcsine of a number. Return value is in radians in
@@ -140,7 +140,7 @@ pub trait CheckedAsin {
 /// Returns `None` if the number is outside the range [-1, 1], or if the
 /// result is not finite.
 pub trait CheckedAcos {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the arccosine of a number. Return value is in radians in

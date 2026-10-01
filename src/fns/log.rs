@@ -14,7 +14,7 @@ impl<Rhs, T: Log<Rhs> + Ln + Log2 + Log10 + Ln1p> LogFns<Rhs> for T {}
 /// `self.log2()` can produce more accurate results for base 2, and
 /// `self.log10()` can produce more accurate results for base 10.
 pub trait Log<Rhs = Self> {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the logarithm of the number with respect to an arbitrary base.
@@ -25,7 +25,7 @@ pub trait Log<Rhs = Self> {
 ///
 /// This returns NaN when the number is negative, and negative infinity when number is zero.
 pub trait Ln {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the natural logarithm of the number.
@@ -36,7 +36,7 @@ pub trait Ln {
 ///
 /// This returns NaN when the number is negative, and negative infinity when number is zero.
 pub trait Log2 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the base 2 logarithm of the number.
@@ -47,7 +47,7 @@ pub trait Log2 {
 ///
 /// This returns NaN when the number is negative, and negative infinity when number is zero.
 pub trait Log10 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the base 10 logarithm of the number.
@@ -59,7 +59,7 @@ pub trait Log10 {
 ///
 /// This returns NaN when `n < -1.0`, and negative infinity when `n == -1.0`.
 pub trait Ln1p {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns `ln(1+n)` (natural logarithm) more accurately than if
@@ -85,7 +85,7 @@ impl<Rhs, T: CheckedLog<Rhs> + CheckedLn + CheckedLog2 + CheckedLog10 + CheckedL
 /// `self.checked_log2()` can produce more accurate results for base 2, and
 /// `self.checked_log10()` can produce more accurate results for base 10.
 pub trait CheckedLog<Rhs = Self> {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the logarithm of the number with respect to an arbitrary base.
@@ -96,7 +96,7 @@ pub trait CheckedLog<Rhs = Self> {
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedLn {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the natural logarithm of the number.
@@ -107,7 +107,7 @@ pub trait CheckedLn {
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedLog2 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the base 2 logarithm of the number.
@@ -118,7 +118,7 @@ pub trait CheckedLog2 {
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedLog10 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the base 10 logarithm of the number.
@@ -130,7 +130,7 @@ pub trait CheckedLog10 {
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedLn1p {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns `ln(1+n)` (natural logarithm) more accurately than if
@@ -154,7 +154,7 @@ impl<Rhs, T: Ilog<Rhs> + Ilog2 + Ilog10> IlogFns<Rhs> for T {}
 /// This function will panic if `self` is less than or equal to zero,
 /// or if `base` is less than 2.
 pub trait Ilog<Rhs = Self> {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the logarithm of the number with respect to an arbitrary base,
@@ -168,7 +168,7 @@ pub trait Ilog<Rhs = Self> {
 ///
 /// This function will panic if `self` is less than or equal to zero.
 pub trait Ilog2 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the base 2 logarithm of the number, rounded down.
@@ -181,7 +181,7 @@ pub trait Ilog2 {
 ///
 /// This function will panic if `self` is less than or equal to zero.
 pub trait Ilog10 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the base 10 logarithm of the number, rounded down.
@@ -201,7 +201,7 @@ impl<Rhs, T: CheckedIlog<Rhs> + CheckedIlog2 + CheckedIlog10> CheckedIlogFns<Rhs
 /// `checked_ilog2` can produce results more efficiently for base 2, and
 /// `checked_ilog10` can produce results more efficiently for base 10.
 pub trait CheckedIlog<Rhs = Self> {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the logarithm of the number with respect to an arbitrary base,
@@ -213,7 +213,7 @@ pub trait CheckedIlog<Rhs = Self> {
 ///
 /// Returns `None` if `self` is less than or equal to zero.
 pub trait CheckedIlog2 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the base 2 logarithm of the number, rounded down.
@@ -224,7 +224,7 @@ pub trait CheckedIlog2 {
 ///
 /// Returns `None` if `self` is less than or equal to zero.
 pub trait CheckedIlog10 {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the base 10 logarithm of the number, rounded down.

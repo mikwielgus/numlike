@@ -11,7 +11,7 @@ impl<T: Sinh + Cosh + Tanh> HypFns for T {}
 
 /// Hyperbolic sine function.
 pub trait Sinh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Hyperbolic sine function.
@@ -20,7 +20,7 @@ pub trait Sinh {
 
 /// Hyperbolic cosine function.
 pub trait Cosh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Hyperbolic cosine function.
@@ -29,7 +29,7 @@ pub trait Cosh {
 
 /// Hyperbolic tangent function.
 pub trait Tanh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Hyperbolic tangent function.
@@ -44,7 +44,7 @@ impl<T: CheckedSinh + CheckedCosh> CheckedHypFns for T {}
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedSinh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Hyperbolic sine function.
@@ -55,7 +55,7 @@ pub trait CheckedSinh {
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedCosh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Hyperbolic cosine function.
@@ -70,7 +70,7 @@ impl<Rhs, T: Asinh + Acosh + Atanh> InvHypFns<Rhs> for T {}
 
 /// Inverse hyperbolic sine function.
 pub trait Asinh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Inverse hyperbolic sine function.
@@ -79,7 +79,7 @@ pub trait Asinh {
 
 /// Inverse hyperbolic cosine function.
 pub trait Acosh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Inverse hyperbolic cosine function.
@@ -88,7 +88,7 @@ pub trait Acosh {
 
 /// Inverse hyperbolic tangent function.
 pub trait Atanh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Inverse hyperbolic tangent function.
@@ -102,7 +102,7 @@ impl<Rhs, T: CheckedAcosh + CheckedAtanh> CheckedInvHypFns<Rhs> for T {}
 // No need for checked asinh, since it's defined for all reals.
 
 /*pub trait CheckedAsinh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     fn checked_asinh(self) -> Option<Self::Output>;
@@ -112,7 +112,7 @@ impl<Rhs, T: CheckedAcosh + CheckedAtanh> CheckedInvHypFns<Rhs> for T {}
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedAcosh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Inverse hyperbolic cosine function.
@@ -123,7 +123,7 @@ pub trait CheckedAcosh {
 ///
 /// Returns `None` if the result is not finite.
 pub trait CheckedAtanh {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Inverse hyperbolic tangent function.

@@ -18,7 +18,7 @@
 /// non-deterministically either a NaN or the result that the corresponding
 /// quiet NaN would produce.
 pub trait Pow<Rhs = Self> {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Raises `self` to the power of `rhs`.
@@ -28,7 +28,7 @@ pub trait Pow<Rhs = Self> {
 /// Checked exponentiation. Computes `self.pow(rhs)`, returning `None` if
 /// overflow occurred or the result is not finite.
 pub trait CheckedPow<Rhs = Self> {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Checked exponentiation. Computes `self.pow(rhs)`, returning `None` if

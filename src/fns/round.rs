@@ -13,7 +13,7 @@ impl<T: Round + Trunc + RoundTiesEven + Floor + Ceil> RoundFns for T {}
 ///
 /// This function always returns the precise result.
 pub trait Round {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the nearest integer to `self`. If a value is half-way between two
@@ -26,7 +26,7 @@ pub trait Round {
 ///
 /// This function always returns the precise result.
 pub trait Trunc {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the integer part of `self`.
@@ -39,7 +39,7 @@ pub trait Trunc {
 ///
 /// This function always returns the precise result.
 pub trait RoundTiesEven {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the nearest integer to a number. Rounds half-way cases to the number
@@ -51,7 +51,7 @@ pub trait RoundTiesEven {
 ///
 /// This function always returns the precise result.
 pub trait Floor {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the largest integer that is less than or equal to `self`.
@@ -62,7 +62,7 @@ pub trait Floor {
 ///
 /// This function always returns the precise result.
 pub trait Ceil {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the smallest integer that is greater than or equal to `self`.

@@ -13,7 +13,7 @@ impl<T: Sqrt + Cbrt> RootFns for T {}
 ///
 /// Returns NaN if `self` is a negative number other than `-0.0`.
 pub trait Sqrt {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the square root of a number.
@@ -22,7 +22,7 @@ pub trait Sqrt {
 
 /// Returns the cube root of a number.
 pub trait Cbrt {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the cube root of a number.
@@ -34,7 +34,7 @@ pub trait Cbrt {
 /// Returns `None` if the result is not finite (including when `self` is a
 /// negative number other than `-0.0`).
 pub trait CheckedSqrt {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the square root of a number.
@@ -51,7 +51,7 @@ pub trait CheckedSqrt {
 ///
 /// This function will panic if `self` is negative.
 pub trait Isqrt {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the integer square root of the number, rounded down.
@@ -66,7 +66,7 @@ pub trait Isqrt {
 ///
 /// Returns `None` if `self` is negative, or if the result is not finite.
 pub trait CheckedIsqrt {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns the integer square root of the number, rounded down.

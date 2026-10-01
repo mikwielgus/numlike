@@ -12,7 +12,7 @@ impl<T: Sgn + Abs> SignFns for T {}
 ///  - `1` if the number is positive
 ///  - `-1` if the number is negative
 pub trait Sgn {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Returns a number representing sign of `self`.
@@ -29,7 +29,7 @@ pub trait Sgn {
 /// panic on this case and optimized code will return the minimum value
 /// without a panic.
 pub trait Abs {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Computes the absolute value of `self`.
@@ -39,7 +39,7 @@ pub trait Abs {
 /// Checked absolute value. Computes `self.abs()`, returning `None` if
 /// `self` is the minimum value of a signed integer type.
 pub trait CheckedAbs {
-    /// The resulting type after applying the operation.
+    /// The resulting type after evaluating the function.
     type Output;
 
     /// Checked absolute value. Computes `self.abs()`, returning `None` if
