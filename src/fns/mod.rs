@@ -4,8 +4,8 @@
 
 //! Mathematical functions.
 
+mod div;
 mod exp;
-mod gcd;
 mod hyp;
 mod log;
 mod pow;
@@ -14,8 +14,8 @@ mod round;
 mod sign;
 mod trig;
 
+pub use div::*;
 pub use exp::*;
-pub use gcd::*;
 pub use hyp::*;
 pub use log::*;
 pub use pow::*;
