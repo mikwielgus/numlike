@@ -199,17 +199,42 @@ pub trait MaxExactInteger {
     const MAX_EXACT_INTEGER: Self;
 }
 
+/// Bundle of minimum positive and maximum negative values of a numeric type.
+pub trait NearestToZero: MinPositive + MaxNegative {}
+impl<T: MinPositive + MaxNegative> NearestToZero for T {}
+
+/// The minimum positive value of a numeric type.
+///
+/// For integers, this is equal to 1. For floats, this is equal to
+/// `2^(MIN_EXPONENT - 1)`.
+pub trait MinPositive {
+    /// The minimum positive value of a numeric type.
+    const MIN_POSITIVE: Self;
+}
+
+/// The maximum negative  value of a numeric type.
+///
+/// For signed integers, this is equal to -1. For floats, this is equal to
+/// `-2^(MIN_EXPONENT - 1)`. For unsigned types this trait is not implemented.
+pub trait MaxNegative {
+    /// The maximum negative  value of a numeric type.
+    const MAX_NEGATIVE: Self;
+}
+
 macro_rules! impl_limits_traits_for_int {
     ($ty:ty) => {
         impl_limits_traits_for_int!($ty, <$ty>::MIN, <$ty>::MAX, <$ty>::BITS);
     };
     ($ty:ty, $nonnegative_tests_mod:ident) => {
         impl_limits_traits_for_int!($ty);
-
         test_limits_traits_int_nonnegative!($ty, $nonnegative_tests_mod);
     };
-    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+    ($ty:ty, $max_negative:expr, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
         impl_limits_traits_for_int!($ty, $nonnegative_tests_mod);
+
+        impl MaxNegative for $ty {
+            const MAX_NEGATIVE: Self = $max_negative;
+        }
 
         test_limits_traits_int_negative!($ty, $negative_tests_mod);
     };
@@ -241,6 +266,10 @@ macro_rules! impl_limits_traits_for_int {
         impl MaxExactInteger for $ty {
             const MAX_EXACT_INTEGER: Self = $max;
         }
+
+        impl MinPositive for $ty {
+            const MIN_POSITIVE: Self = <Self as crate::elem::One>::ONE;
+        }
     };
     ($ty:ty, $min:expr, $max:expr, $bits:expr, $nonnegative_tests_mod:ident) => {
         impl_limits_traits_for_int!($ty, $min, $max, $bits);
@@ -252,10 +281,15 @@ macro_rules! impl_limits_traits_for_int {
         $min:expr,
         $max:expr,
         $bits:expr,
+        $max_negative:expr,
         $nonnegative_tests_mod:ident,
         $negative_tests_mod:ident
     ) => {
         impl_limits_traits_for_int!($ty, $min, $max, $bits, $nonnegative_tests_mod);
+
+        impl MaxNegative for $ty {
+            const MAX_NEGATIVE: Self = $max_negative;
+        }
 
         test_limits_traits_int_negative!($ty, $min, $max, $negative_tests_mod);
     };
@@ -288,6 +322,11 @@ macro_rules! test_limits_traits_int_nonnegative {
                     <$ty as MaxFinite>::MAX_FINITE,
                     <$ty as MaxExactInteger>::MAX_EXACT_INTEGER
                 );
+
+                assert_eq!(
+                    <$ty as MinPositive>::MIN_POSITIVE,
+                    <$ty as crate::elem::One>::ONE
+                );
             }
         }
     };
@@ -318,17 +357,22 @@ macro_rules! test_limits_traits_int_negative {
                 );
 
                 assert!(<$ty as MinFinite>::MIN_FINITE < <$ty as MaxFinite>::MAX_FINITE);
+
+                assert_eq!(
+                    <$ty as MaxNegative>::MAX_NEGATIVE,
+                    -<$ty as crate::elem::One>::ONE
+                );
             }
         }
     };
 }
 
-impl_limits_traits_for_int!(i8, i8_nonnegative_tests, i8_negative_tests);
-impl_limits_traits_for_int!(i16, i16_nonnegative_tests, i16_negative_tests);
-impl_limits_traits_for_int!(i32, i32_nonnegative_tests, i32_negative_tests);
-impl_limits_traits_for_int!(i64, i64_nonnegative_tests, i64_negative_tests);
-impl_limits_traits_for_int!(i128, i128_nonnegative_tests, i128_negative_tests);
-impl_limits_traits_for_int!(isize, isize_nonnegative_tests, isize_negative_tests);
+impl_limits_traits_for_int!(i8, -1, i8_nonnegative_tests, i8_negative_tests);
+impl_limits_traits_for_int!(i16, -1, i16_nonnegative_tests, i16_negative_tests);
+impl_limits_traits_for_int!(i32, -1, i32_nonnegative_tests, i32_negative_tests);
+impl_limits_traits_for_int!(i64, -1, i64_nonnegative_tests, i64_negative_tests);
+impl_limits_traits_for_int!(i128, -1, i128_nonnegative_tests, i128_negative_tests);
+impl_limits_traits_for_int!(isize, -1, isize_nonnegative_tests, isize_negative_tests);
 
 impl_limits_traits_for_int!(u8, u8_tests);
 impl_limits_traits_for_int!(u16, u16_tests);
@@ -342,6 +386,7 @@ impl_limits_traits_for_int!(
     Wrapping(i8::MIN),
     Wrapping(i8::MAX),
     i8::BITS,
+    Wrapping(-1),
     wrapping_i8_nonnegative_tests,
     wrapping_i8_negative_tests
 );
@@ -350,6 +395,7 @@ impl_limits_traits_for_int!(
     Wrapping(i16::MIN),
     Wrapping(i16::MAX),
     i16::BITS,
+    Wrapping(-1),
     wrapping_i16_nonnegative_tests,
     wrapping_i16_negative_tests
 );
@@ -358,6 +404,7 @@ impl_limits_traits_for_int!(
     Wrapping(i32::MIN),
     Wrapping(i32::MAX),
     i32::BITS,
+    Wrapping(-1),
     wrapping_i32_nonnegative_tests,
     wrapping_i32_negative_tests
 );
@@ -366,6 +413,7 @@ impl_limits_traits_for_int!(
     Wrapping(i64::MIN),
     Wrapping(i64::MAX),
     i64::BITS,
+    Wrapping(-1),
     wrapping_i64_nonnegative_tests,
     wrapping_i64_negative_tests
 );
@@ -374,6 +422,7 @@ impl_limits_traits_for_int!(
     Wrapping(i128::MIN),
     Wrapping(i128::MAX),
     i128::BITS,
+    Wrapping(-1),
     wrapping_i128_nonnegative_tests,
     wrapping_i128_negative_tests
 );
@@ -382,6 +431,7 @@ impl_limits_traits_for_int!(
     Wrapping(isize::MIN),
     Wrapping(isize::MAX),
     isize::BITS,
+    Wrapping(-1),
     wrapping_isize_nonnegative_tests,
     wrapping_isize_negative_tests
 );
@@ -434,31 +484,37 @@ impl_limits_traits_for_int!(
     // `Saturating` already have `MIN`, `MAX`, `BITS` stabilized, so there's no
     // need to repeat them here. Unlike with `Wrapping`, which don't have these
     // in stable Rust yet.
+    Saturating(-1),
     saturating_i8_nonnegative_tests,
     saturating_i8_negative_tests
 );
 impl_limits_traits_for_int!(
     Saturating<i16>,
+    Saturating(-1),
     saturating_i16_nonnegative_tests,
     saturating_i16_negative_tests
 );
 impl_limits_traits_for_int!(
     Saturating<i32>,
+    Saturating(-1),
     saturating_i32_nonnegative_tests,
     saturating_i32_negative_tests
 );
 impl_limits_traits_for_int!(
     Saturating<i64>,
+    Saturating(-1),
     saturating_i64_nonnegative_tests,
     saturating_i64_negative_tests
 );
 impl_limits_traits_for_int!(
     Saturating<i128>,
+    Saturating(-1),
     saturating_i128_nonnegative_tests,
     saturating_i128_negative_tests
 );
 impl_limits_traits_for_int!(
     Saturating<isize>,
+    Saturating(-1),
     saturating_isize_nonnegative_tests,
     saturating_isize_negative_tests
 );
@@ -531,6 +587,14 @@ macro_rules! impl_limits_traits_for_float {
                 ((1i128 << (<$ty>::MANTISSA_DIGITS as u32)) - 1) as Self;
         }
 
+        impl MinPositive for $ty {
+            const MIN_POSITIVE: Self = <$ty>::MIN_POSITIVE;
+        }
+
+        impl MaxNegative for $ty {
+            const MAX_NEGATIVE: Self = -<$ty>::MIN_POSITIVE;
+        }
+
         test_limits_traits_float_nonnegative!($ty, $nonnegative_tests_mod);
         test_limits_traits_float_negative!($ty, $negative_tests_mod);
     };
@@ -581,6 +645,8 @@ macro_rules! test_limits_traits_float_nonnegative {
                 assert!(
                     <$ty as MaxExactInteger>::MAX_EXACT_INTEGER < <$ty as MaxFinite>::MAX_FINITE
                 );
+
+                assert_eq!(<$ty as MinPositive>::MIN_POSITIVE, <$ty>::MIN_POSITIVE);
             }
 
             #[test]
@@ -624,6 +690,8 @@ macro_rules! test_limits_traits_float_negative {
                 assert!(
                     <$ty as MinExactInteger>::MIN_EXACT_INTEGER > <$ty as MinFinite>::MIN_FINITE
                 );
+
+                assert_eq!(<$ty as MaxNegative>::MAX_NEGATIVE, -<$ty>::MIN_POSITIVE);
             }
 
             #[test]
