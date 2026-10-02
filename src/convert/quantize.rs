@@ -67,6 +67,7 @@ impl_quantize_from_for_ints!(
     i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize
 );
 
+#[cfg(any(feature = "std", feature = "libm"))]
 macro_rules! impl_round_quantize_from {
     ($round:path, $src:ty => $($dst:ty),+) => {
         $(

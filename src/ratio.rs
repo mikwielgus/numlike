@@ -4,7 +4,7 @@
 
 //! A ratio between two numbers.
 
-use core::ops::{Div, Neg};
+use core::ops::{Div, Mul, Neg};
 
 use crate::{
     elem::{MinusInfinity, Nan, One, PlusInfinity, Zero},
@@ -16,6 +16,7 @@ use crate::{
 };
 
 /// A ratio between two numbers.
+#[derive(Clone, Copy, Debug)]
 pub struct Ratio<T> {
     numer: T,
     denom: T,
@@ -50,10 +51,12 @@ impl<
 > Ratio<T>
 {
     /// Creates a new ratio.
+    #[inline]
     pub fn new(numer: T, denom: T) -> Self {
         Self::reduce(numer, denom)
     }
 
+    #[inline]
     fn reduce(numer: T, denom: T) -> Self {
         if numer == Zero::ZERO {
             return Ratio {
@@ -81,6 +84,68 @@ impl<
                 numer: -numer / gcd.clone(),
                 denom: -denom / gcd,
             }
+        }
+    }
+}
+
+impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Mul<Ratio<T>>
+    for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn mul(self, rhs: Ratio<T>) -> Ratio<T> {
+        let gcd_ad = self.numer.clone().gcd(rhs.clone().denom);
+        let gcd_bc = self.denom.clone().gcd(rhs.clone().numer);
+
+        Ratio {
+            numer: (self.numer.clone() / gcd_ad.clone()) * (rhs.numer.clone() / gcd_bc.clone()),
+            denom: (self.numer / gcd_bc) * (rhs.denom / gcd_ad),
+        }
+    }
+}
+
+impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Mul<T> for Ratio<T> {
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn mul(self, rhs: T) -> Ratio<T> {
+        let gcd = self.denom.clone().gcd(rhs.clone());
+
+        Ratio {
+            numer: self.numer * (rhs / gcd.clone()),
+            denom: self.denom / gcd,
+        }
+    }
+}
+
+impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Div<Ratio<T>>
+    for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn div(self, rhs: Ratio<T>) -> Ratio<T> {
+        let gcd_ac = self.numer.clone().gcd(rhs.numer.clone());
+        let gcd_bd = self.denom.clone().gcd(rhs.denom.clone());
+
+        Ratio {
+            numer: (self.numer.clone() / gcd_ac.clone()) * (rhs.denom.clone() / gcd_bd.clone()),
+            denom: (self.denom / gcd_bd) * (rhs.numer / gcd_ac),
+        }
+    }
+}
+
+impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Div<T> for Ratio<T> {
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn div(self, rhs: T) -> Ratio<T> {
+        let gcd = self.numer.clone().gcd(rhs.clone());
+
+        Ratio {
+            numer: self.numer / gcd.clone(),
+            denom: self.denom * (rhs / gcd),
         }
     }
 }
