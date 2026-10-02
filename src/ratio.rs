@@ -4,7 +4,10 @@
 
 //! A ratio between two numbers.
 
-use core::ops::{Div, Mul, Neg};
+use core::{
+    cmp::Ordering,
+    ops::{Div, Mul, Neg},
+};
 
 use crate::{
     elem::{MinusInfinity, Nan, One, PlusInfinity, Zero},
@@ -152,6 +155,40 @@ impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> Div<T> for 
             numer: self.numer / gcd.clone(),
             denom: self.denom * (rhs / gcd),
         }
+    }
+}
+
+impl<T: Clone + Mul<Output = T> + PartialEq> PartialEq for Ratio<T> {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.numer.clone() * other.denom.clone() == self.denom.clone() * other.numer.clone()
+    }
+}
+
+impl<T: Clone + Mul<Output = T> + Eq> Eq for Ratio<T> {}
+
+impl<T: Clone + Mul<Output = T> + PartialOrd> PartialOrd for Ratio<T> {
+    #[inline]
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        (self.numer.clone() * other.denom.clone())
+            .partial_cmp(&(self.denom.clone() * other.numer.clone()))
+    }
+}
+
+impl<T: Clone + Mul<Output = T> + Ord> Ord for Ratio<T> {
+    #[inline]
+    fn cmp(&self, other: &Self) -> Ordering {
+        // If denominators are equal, just compare the numerators.
+        if self.denom == other.denom {
+            return self.numer.cmp(&other.numer);
+        }
+
+        // If numerators are equal, just compare the denominators in reverse.
+        if self.numer == other.numer {
+            return other.denom.cmp(&self.denom);
+        }
+
+        (self.numer.clone() * other.denom.clone()).cmp(&(self.denom.clone() * other.numer.clone()))
     }
 }
 
