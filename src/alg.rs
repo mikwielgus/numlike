@@ -10,25 +10,25 @@ use crate::{
 };
 
 /// Element of a totally-ordered field (i.e. of a tofield).
-pub trait Tofield: Ord + Field {}
-impl<T: Ord + Field> Tofield for T {}
+pub trait TofieldBundle: Ord + FieldBundle {}
+impl<T: Ord + FieldBundle> TofieldBundle for T {}
 
 /// Element of a partially-ordered field (i.e. of a pofield).
-pub trait Pofield: PartialOrd + Field {}
-impl<T: PartialOrd + Field> Pofield for T {}
+pub trait PofieldBundle: PartialOrd + FieldBundle {}
+impl<T: PartialOrd + FieldBundle> PofieldBundle for T {}
 
 /// Element of a field.
-pub trait Field: Zero + One + FieldOps + Sized {}
-impl<T: Zero + One + FieldOps + Sized> Field for T {}
+pub trait FieldBundle: Zero + One + FieldOps + Sized {}
+impl<T: Zero + One + FieldOps + Sized> FieldBundle for T {}
 
 /// Element of a totally-ordered ring (i.e. of a toring).
-pub trait Toring: Ord + Ring {}
-impl<T: Ord + Ring> Toring for T {}
+pub trait ToringBundle: Ord + RingBundle {}
+impl<T: Ord + RingBundle> ToringBundle for T {}
 
 /// Element of a partially-ordered ring (i.e. of a poring).
-pub trait Poring: PartialOrd + Ring {}
-impl<T: PartialOrd + Ring> Poring for T {}
+pub trait PoringBundle: PartialOrd + RingBundle {}
+impl<T: PartialOrd + RingBundle> PoringBundle for T {}
 
 /// Element of a ring.
-pub trait Ring: Zero + One + RingOps + Sized {}
-impl<T: Zero + One + RingOps + Sized> Ring for T {}
+pub trait RingBundle: Zero + One + RingOps + Sized {}
+impl<T: Zero + One + RingOps + Sized> RingBundle for T {}
