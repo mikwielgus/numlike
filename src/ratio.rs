@@ -88,9 +88,7 @@ impl<
     }
 }
 
-impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Mul<Ratio<T>>
-    for Ratio<T>
-{
+impl<T: Clone + Div<Output = T> + Gcd<Output = T> + Mul<Output = T>> Mul<Ratio<T>> for Ratio<T> {
     type Output = Ratio<T>;
 
     #[inline]
@@ -100,12 +98,12 @@ impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Mul<R
 
         Ratio {
             numer: (self.numer.clone() / gcd_ad.clone()) * (rhs.numer.clone() / gcd_bc.clone()),
-            denom: (self.numer / gcd_bc) * (rhs.denom / gcd_ad),
+            denom: (self.denom / gcd_bc) * (rhs.denom / gcd_ad),
         }
     }
 }
 
-impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Mul<T> for Ratio<T> {
+impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> Mul<T> for Ratio<T> {
     type Output = Ratio<T>;
 
     #[inline]
@@ -119,8 +117,8 @@ impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Mul<T
     }
 }
 
-impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Div<Ratio<T>>
-    for Ratio<T>
+impl<T: Clone + Div<Output = T> + Gcd<Output = T> + Mul<Output = T> + Neg<Output = T> + SignFns>
+    Div<Ratio<T>> for Ratio<T>
 {
     type Output = Ratio<T>;
 
@@ -129,14 +127,21 @@ impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Div<R
         let gcd_ac = self.numer.clone().gcd(rhs.numer.clone());
         let gcd_bd = self.denom.clone().gcd(rhs.denom.clone());
 
-        Ratio {
-            numer: (self.numer.clone() / gcd_ac.clone()) * (rhs.denom.clone() / gcd_bd.clone()),
-            denom: (self.denom / gcd_bd) * (rhs.numer / gcd_ac),
+        let numer = (self.numer.clone() / gcd_ac.clone()) * (rhs.denom.clone() / gcd_bd.clone());
+        let denom = (self.denom / gcd_bd) * (rhs.numer / gcd_ac);
+
+        if denom.clone().is_positive() {
+            Ratio { numer, denom }
+        } else {
+            Ratio {
+                numer: -numer,
+                denom: -denom,
+            }
         }
     }
 }
 
-impl<T: Clone + Gcd<Output = T> + Mul<T, Output = T> + Div<T, Output = T>> Div<T> for Ratio<T> {
+impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> Div<T> for Ratio<T> {
     type Output = Ratio<T>;
 
     #[inline]
