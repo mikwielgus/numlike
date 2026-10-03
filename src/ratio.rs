@@ -6,12 +6,12 @@
 
 use core::{
     cmp::Ordering,
-    ops::{Div, Mul, Neg},
+    ops::{Add, Div, Mul, Neg, Sub},
 };
 
 use crate::{
     elem::{MinusInfinity, Nan, One, PlusInfinity, Zero},
-    fns::{Gcd, SignFns},
+    fns::{Gcd, Lcm, SignFns},
     limits::{
         MaxExactInteger, MaxExtended, MaxFinite, MaxNegative, MaximizerDenom, MinExactInteger,
         MinExtended, MinFinite, MinPositive, MinimizerDenom,
@@ -88,6 +88,114 @@ impl<
                 denom: -denom / gcd,
             }
         }
+    }
+}
+
+impl<
+    T: Add<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + Lcm<Output = T>
+        + Mul<Output = T>
+        + Neg<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Zero,
+> Add<Ratio<T>> for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn add(self, rhs: Ratio<T>) -> Ratio<T> {
+        // If denominators are the same, it suffices to just add numerators and
+        // then reduce, obviously.
+        if self.denom == rhs.denom {
+            return Self::reduce(self.numer + rhs.numer, self.denom);
+        }
+
+        let lcm = self.denom.clone().lcm(rhs.denom.clone());
+
+        Self::reduce(
+            self.numer * (lcm.clone() / self.denom) + rhs.numer * (lcm.clone() / rhs.denom),
+            lcm,
+        )
+    }
+}
+
+impl<
+    T: Add<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + Mul<Output = T>
+        + Neg<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Zero,
+> Add<T> for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn add(self, rhs: T) -> Ratio<T> {
+        Self::reduce(self.numer + rhs * self.denom.clone(), self.denom)
+    }
+}
+
+impl<
+    T: Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + Lcm<Output = T>
+        + Mul<Output = T>
+        + Neg<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Sub<Output = T>
+        + Zero,
+> Sub<Ratio<T>> for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn sub(self, rhs: Ratio<T>) -> Ratio<T> {
+        // If denominators are the same, it suffices to just subtract one
+        // numerator from the other and then reduce, obviously.
+        if self.denom == rhs.denom {
+            return Self::reduce(self.numer - rhs.numer, self.denom);
+        }
+
+        let lcm = self.denom.clone().lcm(rhs.denom.clone());
+
+        Self::reduce(
+            self.numer * (lcm.clone() / self.denom) - rhs.numer * (lcm.clone() / rhs.denom),
+            lcm,
+        )
+    }
+}
+
+impl<
+    T: Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + Mul<Output = T>
+        + Neg<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Sub<Output = T>
+        + Zero,
+> Sub<T> for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn sub(self, rhs: T) -> Ratio<T> {
+        Self::reduce(self.numer - rhs * self.denom.clone(), self.denom)
     }
 }
 
@@ -188,6 +296,8 @@ impl<T: Clone + Mul<Output = T> + Ord> Ord for Ratio<T> {
             return other.denom.cmp(&self.denom);
         }
 
+        // TODO: For larger integers, we probably want to use a less efficient
+        // algorithm that won't overflow.
         (self.numer.clone() * other.denom.clone()).cmp(&(self.denom.clone() * other.numer.clone()))
     }
 }
