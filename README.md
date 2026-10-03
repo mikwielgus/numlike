@@ -65,7 +65,7 @@ decisions in the venerable `num-traits` crate.
   magma](https://ncatlab.org/nlab/show/absorption+magma) (*magma with zero*)
   and [absorption monoid](https://ncatlab.org/nlab/show/absorption+monoid)
   (*monoid with zero*) are usually described without addition,
-  yet still with an element denoted as as *0*, the [absorbing
+  yet still with an element denoted as *0*, the [absorbing
   element](https://en.wikipedia.org/wiki/Absorbing_element) (or just
   *absorber*).
 
@@ -127,8 +127,8 @@ decisions in the venerable `num-traits` crate.
     can be useful for finding greatest common divisors, finding canonical
     denominators, reducing fractions, combining and simplifying radicals, so
     `numlike` provides these methods through two fine-grained, decoupled traits,
-    [`Sgn`](https://docs.rs/numlike/latest/numlike/ops/trait.Sgn.html)
-    and [`Abs`](https://docs.rs/numlike/latest/numlike/ops/trait.Abs.html),
+    [`Sgn`](https://docs.rs/numlike/latest/numlike/fns/trait.Sgn.html)
+    and [`Abs`](https://docs.rs/numlike/latest/numlike/fns/trait.Abs.html),
     implemented for all numeric primitives, not only signeds. These traits
     do not have any other bounds, so they can be easily implemented for any
     algebraic structure without the need for any additional assumptions.

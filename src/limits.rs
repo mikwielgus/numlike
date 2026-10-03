@@ -34,7 +34,7 @@ impl<
 /// Approximate number of significant digits in base 10 of a floating-point type.
 ///
 /// This is the maximum `x` such that any decimal number with `x` significant
-/// digits can be converted to `f32` and back without loss.
+/// digits can be converted to this type and back without loss.
 ///
 /// Equal to `floor(log10(2^(MANTISSA_DIGITS − 1)))`.
 ///
@@ -233,9 +233,9 @@ impl<T: MinimizerDenom + MaximizerDenom> ExtremizerDenoms for T {}
 /// For unsigned types, this constant is equal to the type's finite maximum,
 /// `MAX_FINITE`, as the minimum possible ratio is `MIN_POSITIVE / MAX_FINITE`.
 ///
-/// For signed types, due to presence of negative values, this constant is equal
-/// to the type's minimum possible value, `MIN_POSITIVE`, as the minimum possible
-/// ratio is `MIN_FINITE / MIN_POSITIVE`.
+/// For signed types, due to presence of negative values, this constant is
+/// equal to the type's minimum positive value, `MIN_POSITIVE`, as the minimum
+/// possible ratio is `MIN_FINITE / MIN_POSITIVE`.
 pub trait MinimizerDenom {
     /// Denominator of the minimum possible ratio with numerator and denominator of
     /// this type.

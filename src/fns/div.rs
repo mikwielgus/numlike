@@ -144,24 +144,20 @@ macro_rules! test_gcd_lcm_traits_int_nonnegative {
                 let six = three + three;
                 let seven = six + one;
                 let eight = four + four;
-                let nine = six + three;
                 let twelve = six + six;
-                let eighteen = nine + nine;
 
                 assert_eq!(Gcd::gcd(zero, zero), zero);
-                assert_eq!(Gcd::gcd(zero, eight), eight);
-                assert_eq!(Gcd::gcd(one, eighteen), one);
+                assert_eq!(Gcd::gcd(three, seven), one);
+                assert_eq!(Gcd::gcd(seven, three), one);
                 assert_eq!(Gcd::gcd(two, four), two);
+                assert_eq!(Gcd::gcd(four, two), two);
                 assert_eq!(Gcd::gcd(four, six), two);
                 assert_eq!(Gcd::gcd(six, four), two);
-                assert_eq!(Gcd::gcd(seven, three), one);
-                assert_eq!(Gcd::gcd(eight, zero), eight);
                 assert_eq!(Gcd::gcd(eight, twelve), four);
                 assert_eq!(Gcd::gcd(twelve, eight), four);
+                assert_eq!(Gcd::gcd(zero, eight), eight);
+                assert_eq!(Gcd::gcd(eight, zero), eight);
                 assert_eq!(Gcd::gcd(twelve, twelve), twelve);
-                assert_eq!(Gcd::gcd(twelve, eighteen), six);
-                assert_eq!(Gcd::gcd(eighteen, one), one);
-                assert_eq!(Gcd::gcd(eighteen, twelve), six);
             }
 
             #[test]
@@ -174,27 +170,22 @@ macro_rules! test_gcd_lcm_traits_int_nonnegative {
                 let six = three + three;
                 let seven = six + one;
                 let eight = four + four;
-                let nine = six + three;
                 let twelve = six + six;
-                let eighteen = nine + nine;
                 let twenty_one = seven * three;
                 let twenty_four = twelve + twelve;
-                let thirty_six = eighteen + eighteen;
 
                 assert_eq!(Lcm::lcm(zero, zero), zero);
-                assert_eq!(Lcm::lcm(zero, eight), zero);
-                assert_eq!(Lcm::lcm(one, eighteen), eighteen);
+                assert_eq!(Lcm::lcm(three, seven), twenty_one);
+                assert_eq!(Lcm::lcm(seven, three), twenty_one);
                 assert_eq!(Lcm::lcm(two, four), four);
+                assert_eq!(Lcm::lcm(four, two), four);
                 assert_eq!(Lcm::lcm(four, six), twelve);
                 assert_eq!(Lcm::lcm(six, four), twelve);
-                assert_eq!(Lcm::lcm(seven, three), twenty_one);
-                assert_eq!(Lcm::lcm(eight, zero), zero);
                 assert_eq!(Lcm::lcm(eight, twelve), twenty_four);
                 assert_eq!(Lcm::lcm(twelve, eight), twenty_four);
+                assert_eq!(Lcm::lcm(zero, eight), zero);
+                assert_eq!(Lcm::lcm(eight, zero), zero);
                 assert_eq!(Lcm::lcm(twelve, twelve), twelve);
-                assert_eq!(Lcm::lcm(twelve, eighteen), thirty_six);
-                assert_eq!(Lcm::lcm(eighteen, one), eighteen);
-                assert_eq!(Lcm::lcm(eighteen, twelve), thirty_six);
             }
 
             #[test]
@@ -207,27 +198,22 @@ macro_rules! test_gcd_lcm_traits_int_nonnegative {
                 let six = three + three;
                 let seven = six + one;
                 let eight = four + four;
-                let nine = six + three;
                 let twelve = six + six;
-                let eighteen = nine + nine;
                 let twenty_one = seven * three;
                 let twenty_four = twelve + twelve;
-                let thirty_six = eighteen + eighteen;
 
                 assert_eq!(GcdLcm::gcd_lcm(zero, zero), (zero, zero));
-                assert_eq!(GcdLcm::gcd_lcm(zero, eight), (eight, zero));
-                assert_eq!(GcdLcm::gcd_lcm(one, eighteen), (one, eighteen));
+                assert_eq!(GcdLcm::gcd_lcm(three, seven), (one, twenty_one));
+                assert_eq!(GcdLcm::gcd_lcm(seven, three), (one, twenty_one));
                 assert_eq!(GcdLcm::gcd_lcm(two, four), (two, four));
+                assert_eq!(GcdLcm::gcd_lcm(four, two), (two, four));
                 assert_eq!(GcdLcm::gcd_lcm(four, six), (two, twelve));
                 assert_eq!(GcdLcm::gcd_lcm(six, four), (two, twelve));
-                assert_eq!(GcdLcm::gcd_lcm(seven, three), (one, twenty_one));
-                assert_eq!(GcdLcm::gcd_lcm(eight, zero), (eight, zero));
                 assert_eq!(GcdLcm::gcd_lcm(eight, twelve), (four, twenty_four));
                 assert_eq!(GcdLcm::gcd_lcm(twelve, eight), (four, twenty_four));
+                assert_eq!(GcdLcm::gcd_lcm(zero, eight), (eight, zero));
+                assert_eq!(GcdLcm::gcd_lcm(eight, zero), (eight, zero));
                 assert_eq!(GcdLcm::gcd_lcm(twelve, twelve), (twelve, twelve));
-                assert_eq!(GcdLcm::gcd_lcm(twelve, eighteen), (six, thirty_six));
-                assert_eq!(GcdLcm::gcd_lcm(eighteen, one), (one, eighteen));
-                assert_eq!(GcdLcm::gcd_lcm(eighteen, twelve), (six, thirty_six));
             }
         }
     };
@@ -248,21 +234,22 @@ macro_rules! test_gcd_lcm_traits_int_negative {
                 let three = two + one;
                 let four = two + two;
                 let six = three + three;
+                let seven = six + one;
                 let eight = four + four;
-                let nine = six + three;
                 let twelve = six + six;
-                let eighteen = nine + nine;
 
-                assert_eq!(Gcd::gcd(-twelve, -eighteen), six);
-                assert_eq!(Gcd::gcd(-twelve, eighteen), six);
-                assert_eq!(Gcd::gcd(-eight, zero), eight);
-                assert_eq!(Gcd::gcd(-eight, twelve), four);
-                assert_eq!(Gcd::gcd(-four, -six), two);
+                assert_eq!(Gcd::gcd(zero, -zero), zero);
+                assert_eq!(Gcd::gcd(-three, seven), one);
+                assert_eq!(Gcd::gcd(-seven, three), one);
+                assert_eq!(Gcd::gcd(-two, -four), two);
+                assert_eq!(Gcd::gcd(-four, -two), two);
                 assert_eq!(Gcd::gcd(-four, six), two);
-                assert_eq!(Gcd::gcd(zero, -eight), eight);
-                assert_eq!(Gcd::gcd(four, -six), two);
+                assert_eq!(Gcd::gcd(-six, four), two);
                 assert_eq!(Gcd::gcd(eight, -twelve), four);
-                assert_eq!(Gcd::gcd(twelve, -eighteen), six);
+                assert_eq!(Gcd::gcd(twelve, -eight), four);
+                assert_eq!(Gcd::gcd(-zero, eight), eight);
+                assert_eq!(Gcd::gcd(-eight, zero), eight);
+                assert_eq!(Gcd::gcd(-twelve, -twelve), twelve);
             }
 
             #[test]
@@ -273,23 +260,24 @@ macro_rules! test_gcd_lcm_traits_int_negative {
                 let three = two + one;
                 let four = two + two;
                 let six = three + three;
+                let seven = six + one;
                 let eight = four + four;
-                let nine = six + three;
                 let twelve = six + six;
-                let eighteen = nine + nine;
+                let twenty_one = seven * three;
                 let twenty_four = twelve + twelve;
-                let thirty_six = eighteen + eighteen;
 
-                assert_eq!(Lcm::lcm(-twelve, -eighteen), thirty_six);
-                assert_eq!(Lcm::lcm(-twelve, eighteen), thirty_six);
-                assert_eq!(Lcm::lcm(-eight, zero), zero);
-                assert_eq!(Lcm::lcm(-eight, twelve), twenty_four);
-                assert_eq!(Lcm::lcm(-four, -six), twelve);
+                assert_eq!(Lcm::lcm(zero, -zero), zero);
+                assert_eq!(Lcm::lcm(-three, seven), twenty_one);
+                assert_eq!(Lcm::lcm(-seven, three), twenty_one);
+                assert_eq!(Lcm::lcm(two, -four), four);
+                assert_eq!(Lcm::lcm(four, -two), four);
                 assert_eq!(Lcm::lcm(-four, six), twelve);
-                assert_eq!(Lcm::lcm(zero, -eight), zero);
-                assert_eq!(Lcm::lcm(four, -six), twelve);
+                assert_eq!(Lcm::lcm(-six, four), twelve);
                 assert_eq!(Lcm::lcm(eight, -twelve), twenty_four);
-                assert_eq!(Lcm::lcm(twelve, -eighteen), thirty_six);
+                assert_eq!(Lcm::lcm(twelve, -eight), twenty_four);
+                assert_eq!(Lcm::lcm(-zero, eight), zero);
+                assert_eq!(Lcm::lcm(-eight, zero), zero);
+                assert_eq!(Lcm::lcm(twelve, twelve), twelve);
             }
 
             #[test]
@@ -300,23 +288,24 @@ macro_rules! test_gcd_lcm_traits_int_negative {
                 let three = two + one;
                 let four = two + two;
                 let six = three + three;
+                let seven = six + one;
                 let eight = four + four;
-                let nine = six + three;
                 let twelve = six + six;
-                let eighteen = nine + nine;
+                let twenty_one = seven * three;
                 let twenty_four = twelve + twelve;
-                let thirty_six = eighteen + eighteen;
 
-                assert_eq!(GcdLcm::gcd_lcm(-twelve, -eighteen), (six, thirty_six));
-                assert_eq!(GcdLcm::gcd_lcm(-twelve, eighteen), (six, thirty_six));
-                assert_eq!(GcdLcm::gcd_lcm(-eight, zero), (eight, zero));
-                assert_eq!(GcdLcm::gcd_lcm(-eight, twelve), (four, twenty_four));
-                assert_eq!(GcdLcm::gcd_lcm(-four, -six), (two, twelve));
+                assert_eq!(GcdLcm::gcd_lcm(zero, -zero), (zero, zero));
+                assert_eq!(GcdLcm::gcd_lcm(-three, seven), (one, twenty_one));
+                assert_eq!(GcdLcm::gcd_lcm(-seven, three), (one, twenty_one));
+                assert_eq!(GcdLcm::gcd_lcm(two, -four), (two, four));
+                assert_eq!(GcdLcm::gcd_lcm(four, -two), (two, four));
                 assert_eq!(GcdLcm::gcd_lcm(-four, six), (two, twelve));
-                assert_eq!(GcdLcm::gcd_lcm(zero, -eight), (eight, zero));
-                assert_eq!(GcdLcm::gcd_lcm(four, -six), (two, twelve));
+                assert_eq!(GcdLcm::gcd_lcm(-six, four), (two, twelve));
                 assert_eq!(GcdLcm::gcd_lcm(eight, -twelve), (four, twenty_four));
-                assert_eq!(GcdLcm::gcd_lcm(twelve, -eighteen), (six, thirty_six));
+                assert_eq!(GcdLcm::gcd_lcm(twelve, -eight), (four, twenty_four));
+                assert_eq!(GcdLcm::gcd_lcm(-zero, eight), (eight, zero));
+                assert_eq!(GcdLcm::gcd_lcm(-eight, zero), (eight, zero));
+                assert_eq!(GcdLcm::gcd_lcm(twelve, twelve), (twelve, twelve));
             }
         }
     };

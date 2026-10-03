@@ -25,7 +25,7 @@ pub trait Zero {
 /// or an element that maps to the classical real one, as it sometimes is in
 /// descriptions of tropical semirings.
 pub trait One {
-    /// A distinguished `0` value.
+    /// A distinguished `1` value.
     const ONE: Self;
 }
 

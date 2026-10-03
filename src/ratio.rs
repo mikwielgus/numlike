@@ -54,7 +54,7 @@ impl<
     T: Clone + Div<Output = T> + Gcd<Output = T> + Neg<Output = T> + One + PartialEq + SignFns + Zero,
 > Ratio<T>
 {
-    /// Creates a new ratio.
+    /// Creates a new ratio. The numerator and denominator will be reduced.
     #[inline]
     pub fn new(numer: T, denom: T) -> Self {
         Self::reduce(numer, denom)
