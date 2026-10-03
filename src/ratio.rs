@@ -6,7 +6,7 @@
 
 use core::{
     cmp::Ordering,
-    ops::{Add, Div, Mul, Neg, Sub},
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
 use crate::{
@@ -16,6 +16,7 @@ use crate::{
         MaxExactInteger, MaxExtended, MaxFinite, MaxNegative, MaximizerDenom, MinExactInteger,
         MinExtended, MinFinite, MinPositive, MinimizerDenom,
     },
+    ops::NegAssign,
 };
 
 /// A ratio between two numbers.
@@ -129,6 +130,26 @@ impl<
         + Clone
         + Div<Output = T>
         + Gcd<Output = T>
+        + Lcm<Output = T>
+        + Mul<Output = T>
+        + Neg<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Zero,
+> AddAssign<Ratio<T>> for Ratio<T>
+{
+    #[inline]
+    fn add_assign(&mut self, rhs: Ratio<T>) {
+        *self = self.clone() + rhs;
+    }
+}
+
+impl<
+    T: Add<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
         + Mul<Output = T>
         + Neg<Output = T>
         + One
@@ -142,6 +163,25 @@ impl<
     #[inline]
     fn add(self, rhs: T) -> Ratio<T> {
         Self::reduce(self.numer + rhs * self.denom.clone(), self.denom)
+    }
+}
+
+impl<
+    T: Add<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + Mul<Output = T>
+        + Neg<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Zero,
+> AddAssign<T> for Ratio<T>
+{
+    #[inline]
+    fn add_assign(&mut self, rhs: T) {
+        *self = self.clone() + rhs;
     }
 }
 
@@ -182,6 +222,26 @@ impl<
     T: Clone
         + Div<Output = T>
         + Gcd<Output = T>
+        + Lcm<Output = T>
+        + Mul<Output = T>
+        + Neg<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Sub<Output = T>
+        + Zero,
+> SubAssign<Ratio<T>> for Ratio<T>
+{
+    #[inline]
+    fn sub_assign(&mut self, rhs: Ratio<T>) {
+        *self = self.clone() - rhs;
+    }
+}
+
+impl<
+    T: Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
         + Mul<Output = T>
         + Neg<Output = T>
         + One
@@ -196,6 +256,25 @@ impl<
     #[inline]
     fn sub(self, rhs: T) -> Ratio<T> {
         Self::reduce(self.numer - rhs * self.denom.clone(), self.denom)
+    }
+}
+
+impl<
+    T: Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + Mul<Output = T>
+        + Neg<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Sub<Output = T>
+        + Zero,
+> SubAssign<T> for Ratio<T>
+{
+    #[inline]
+    fn sub_assign(&mut self, rhs: T) {
+        *self = self.clone() - rhs;
     }
 }
 
@@ -214,6 +293,15 @@ impl<T: Clone + Div<Output = T> + Gcd<Output = T> + Mul<Output = T>> Mul<Ratio<T
     }
 }
 
+impl<T: Clone + Div<Output = T> + Gcd<Output = T> + Mul<Output = T>> MulAssign<Ratio<T>>
+    for Ratio<T>
+{
+    #[inline]
+    fn mul_assign(&mut self, rhs: Ratio<T>) {
+        *self = self.clone() * rhs;
+    }
+}
+
 impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> Mul<T> for Ratio<T> {
     type Output = Ratio<T>;
 
@@ -225,6 +313,13 @@ impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> Mul<T> for 
             numer: self.numer * (rhs / gcd.clone()),
             denom: self.denom / gcd,
         }
+    }
+}
+
+impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> MulAssign<T> for Ratio<T> {
+    #[inline]
+    fn mul_assign(&mut self, rhs: T) {
+        *self = self.clone() * rhs;
     }
 }
 
@@ -252,6 +347,15 @@ impl<T: Clone + Div<Output = T> + Gcd<Output = T> + Mul<Output = T> + Neg<Output
     }
 }
 
+impl<T: Clone + Div<Output = T> + Gcd<Output = T> + Mul<Output = T> + Neg<Output = T> + SignFns>
+    DivAssign<Ratio<T>> for Ratio<T>
+{
+    #[inline]
+    fn div_assign(&mut self, rhs: Ratio<T>) {
+        *self = self.clone() / rhs;
+    }
+}
+
 impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> Div<T> for Ratio<T> {
     type Output = Ratio<T>;
 
@@ -266,6 +370,13 @@ impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> Div<T> for 
     }
 }
 
+impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> DivAssign<T> for Ratio<T> {
+    #[inline]
+    fn div_assign(&mut self, rhs: T) {
+        *self = self.clone() / rhs;
+    }
+}
+
 impl<T: Neg<Output = T>> Neg for Ratio<T> {
     type Output = Ratio<T>;
 
@@ -275,6 +386,13 @@ impl<T: Neg<Output = T>> Neg for Ratio<T> {
             numer: -self.numer,
             denom: self.denom,
         }
+    }
+}
+
+impl<T: Clone + Neg<Output = T>> NegAssign for Ratio<T> {
+    #[inline]
+    fn neg_assign(&mut self) {
+        *self = -self.clone();
     }
 }
 
@@ -404,3 +522,5 @@ impl<T: Nan + One> Nan for Ratio<T> {
         denom: One::ONE,
     };
 }
+
+// TODO: the remaining traits.
