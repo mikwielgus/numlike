@@ -11,12 +11,12 @@ use core::{
 
 use crate::{
     elem::{MinusInfinity, Nan, One, PlusInfinity, Zero},
-    fns::{Gcd, Lcm, SignFns},
+    fns::{CheckedAbs, Gcd, Lcm, SignFns},
     limits::{
         MaxExactInteger, MaxExtended, MaxFinite, MaxNegative, MaximizerDenom, MinExactInteger,
         MinExtended, MinFinite, MinPositive, MinimizerDenom,
     },
-    ops::NegAssign,
+    ops::{CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedSub, NegAssign},
 };
 
 /// A ratio between two numbers.
@@ -93,6 +93,71 @@ impl<
 }
 
 impl<
+    T: CheckedNeg<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Zero,
+> Ratio<T>
+{
+    #[inline]
+    fn checked_reduce(numer: T, denom: T) -> Option<Self> {
+        if numer == Zero::ZERO {
+            return Some(Ratio {
+                numer,
+                denom: One::ONE,
+            });
+        }
+
+        if numer == denom {
+            return Some(Ratio {
+                numer: One::ONE,
+                denom: One::ONE,
+            });
+        }
+
+        let gcd = numer.clone().gcd(denom.clone());
+
+        if denom.clone().is_positive() {
+            Some(Ratio {
+                numer: numer / gcd.clone(),
+                denom: denom / gcd,
+            })
+        } else {
+            Some(Ratio {
+                numer: numer.checked_neg()? / gcd.clone(),
+                denom: denom.checked_neg()? / gcd,
+            })
+        }
+    }
+}
+
+impl<
+    T: CheckedAbs<Output = T>
+        + CheckedMul<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + PartialEq
+        + Zero,
+> Ratio<T>
+{
+    #[inline]
+    fn checked_lcm(lhs: T, rhs: T) -> Option<T> {
+        if lhs == Zero::ZERO && rhs == Zero::ZERO {
+            return Some(Zero::ZERO);
+        }
+
+        let gcd = lhs.clone().gcd(rhs.clone());
+
+        lhs.checked_mul(rhs / gcd)?.checked_abs()
+    }
+}
+
+impl<
     T: Add<Output = T>
         + Clone
         + Div<Output = T>
@@ -146,6 +211,39 @@ impl<
 }
 
 impl<
+    T: CheckedAbs<Output = T>
+        + CheckedAdd<Output = T>
+        + CheckedMul<Output = T>
+        + CheckedNeg<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Zero,
+> CheckedAdd<Ratio<T>> for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn checked_add(self, rhs: Ratio<T>) -> Option<Ratio<T>> {
+        if self.denom == rhs.denom {
+            return Self::checked_reduce(self.numer.checked_add(rhs.numer)?, self.denom);
+        }
+
+        let lcm = Self::checked_lcm(self.denom.clone(), rhs.denom.clone())?;
+
+        Self::checked_reduce(
+            self.numer
+                .checked_mul(lcm.clone() / self.denom)?
+                .checked_add(rhs.numer.checked_mul(lcm.clone() / rhs.denom)?)?,
+            lcm,
+        )
+    }
+}
+
+impl<
     T: Add<Output = T>
         + Clone
         + Div<Output = T>
@@ -182,6 +280,31 @@ impl<
     #[inline]
     fn add_assign(&mut self, rhs: T) {
         *self = self.clone() + rhs;
+    }
+}
+
+impl<
+    T: CheckedAdd<Output = T>
+        + CheckedMul<Output = T>
+        + CheckedNeg<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Zero,
+> CheckedAdd<T> for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn checked_add(self, rhs: T) -> Option<Ratio<T>> {
+        Self::checked_reduce(
+            self.numer
+                .checked_add(rhs.checked_mul(self.denom.clone())?)?,
+            self.denom,
+        )
     }
 }
 
@@ -239,6 +362,39 @@ impl<
 }
 
 impl<
+    T: CheckedAbs<Output = T>
+        + CheckedMul<Output = T>
+        + CheckedNeg<Output = T>
+        + CheckedSub<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Zero,
+> CheckedSub<Ratio<T>> for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn checked_sub(self, rhs: Ratio<T>) -> Option<Ratio<T>> {
+        if self.denom == rhs.denom {
+            return Self::checked_reduce(self.numer.checked_sub(rhs.numer)?, self.denom);
+        }
+
+        let lcm = Self::checked_lcm(self.denom.clone(), rhs.denom.clone())?;
+
+        Self::checked_reduce(
+            self.numer
+                .checked_mul(lcm.clone() / self.denom)?
+                .checked_sub(rhs.numer.checked_mul(lcm.clone() / rhs.denom)?)?,
+            lcm,
+        )
+    }
+}
+
+impl<
     T: Clone
         + Div<Output = T>
         + Gcd<Output = T>
@@ -278,6 +434,31 @@ impl<
     }
 }
 
+impl<
+    T: CheckedMul<Output = T>
+        + CheckedNeg<Output = T>
+        + CheckedSub<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + One
+        + PartialEq
+        + SignFns
+        + Zero,
+> CheckedSub<T> for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn checked_sub(self, rhs: T) -> Option<Ratio<T>> {
+        Self::checked_reduce(
+            self.numer
+                .checked_sub(rhs.checked_mul(self.denom.clone())?)?,
+            self.denom,
+        )
+    }
+}
+
 impl<T: Clone + Div<Output = T> + Gcd<Output = T> + Mul<Output = T>> Mul<Ratio<T>> for Ratio<T> {
     type Output = Ratio<T>;
 
@@ -302,6 +483,23 @@ impl<T: Clone + Div<Output = T> + Gcd<Output = T> + Mul<Output = T>> MulAssign<R
     }
 }
 
+impl<T: CheckedMul<Output = T> + Clone + Div<Output = T> + Gcd<Output = T>> CheckedMul<Ratio<T>>
+    for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn checked_mul(self, rhs: Ratio<T>) -> Option<Ratio<T>> {
+        let gcd_ad = self.numer.clone().gcd(rhs.denom.clone());
+        let gcd_bc = self.denom.clone().gcd(rhs.numer.clone());
+
+        Some(Ratio {
+            numer: (self.numer / gcd_ad.clone()).checked_mul(rhs.numer / gcd_bc.clone())?,
+            denom: (self.denom / gcd_bc).checked_mul(rhs.denom / gcd_ad)?,
+        })
+    }
+}
+
 impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> Mul<T> for Ratio<T> {
     type Output = Ratio<T>;
 
@@ -320,6 +518,22 @@ impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> MulAssign<T
     #[inline]
     fn mul_assign(&mut self, rhs: T) {
         *self = self.clone() * rhs;
+    }
+}
+
+impl<T: CheckedMul<Output = T> + Clone + Div<Output = T> + Gcd<Output = T>> CheckedMul<T>
+    for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn checked_mul(self, rhs: T) -> Option<Ratio<T>> {
+        let gcd = self.denom.clone().gcd(rhs.clone());
+
+        Some(Ratio {
+            numer: self.numer.checked_mul(rhs / gcd.clone())?,
+            denom: self.denom / gcd,
+        })
     }
 }
 
@@ -356,6 +570,42 @@ impl<T: Clone + Div<Output = T> + Gcd<Output = T> + Mul<Output = T> + Neg<Output
     }
 }
 
+impl<
+    T: CheckedMul<Output = T>
+        + CheckedNeg<Output = T>
+        + Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + PartialEq
+        + SignFns
+        + Zero,
+> CheckedDiv<Ratio<T>> for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn checked_div(self, rhs: Ratio<T>) -> Option<Ratio<T>> {
+        if rhs.numer == Zero::ZERO {
+            return None;
+        }
+
+        let gcd_ac = self.numer.clone().gcd(rhs.numer.clone());
+        let gcd_bd = self.denom.clone().gcd(rhs.denom.clone());
+
+        let numer = (self.numer / gcd_ac.clone()).checked_mul(rhs.denom / gcd_bd.clone())?;
+        let denom = (self.denom / gcd_bd).checked_mul(rhs.numer / gcd_ac)?;
+
+        if denom.clone().is_positive() {
+            Some(Ratio { numer, denom })
+        } else {
+            Some(Ratio {
+                numer: numer.checked_neg()?,
+                denom: denom.checked_neg()?,
+            })
+        }
+    }
+}
+
 impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> Div<T> for Ratio<T> {
     type Output = Ratio<T>;
 
@@ -377,6 +627,26 @@ impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> DivAssign<T
     }
 }
 
+impl<T: CheckedMul<Output = T> + Clone + Div<Output = T> + Gcd<Output = T> + PartialEq + Zero>
+    CheckedDiv<T> for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn checked_div(self, rhs: T) -> Option<Ratio<T>> {
+        if rhs == Zero::ZERO {
+            return None;
+        }
+
+        let gcd = self.numer.clone().gcd(rhs.clone());
+
+        Some(Ratio {
+            numer: self.numer / gcd.clone(),
+            denom: self.denom.checked_mul(rhs / gcd)?,
+        })
+    }
+}
+
 impl<T: Neg<Output = T>> Neg for Ratio<T> {
     type Output = Ratio<T>;
 
@@ -393,6 +663,18 @@ impl<T: Clone + Neg<Output = T>> NegAssign for Ratio<T> {
     #[inline]
     fn neg_assign(&mut self) {
         *self = -self.clone();
+    }
+}
+
+impl<T: CheckedNeg<Output = T>> CheckedNeg for Ratio<T> {
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn checked_neg(self) -> Option<Ratio<T>> {
+        Some(Ratio {
+            numer: self.numer.checked_neg()?,
+            denom: self.denom,
+        })
     }
 }
 
