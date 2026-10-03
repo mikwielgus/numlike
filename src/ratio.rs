@@ -266,6 +266,18 @@ impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> Div<T> for 
     }
 }
 
+impl<T: Neg<Output = T>> Neg for Ratio<T> {
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn neg(self) -> Ratio<T> {
+        Ratio {
+            numer: -self.numer,
+            denom: self.denom,
+        }
+    }
+}
+
 impl<T: Clone + Mul<Output = T> + PartialEq> PartialEq for Ratio<T> {
     #[inline]
     fn eq(&self, other: &Self) -> bool {

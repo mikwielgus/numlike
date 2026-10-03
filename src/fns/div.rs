@@ -4,36 +4,38 @@
 
 use crate::fns::Abs;
 
-/// Calculate the greatest common divisor and least common multiple together.
+/// Calculate the greatest common divisor (GCD) and least common multiple (LCM)
+/// together.
 ///
-/// Potentially more efficient than calling [`Gcd::gcd`] and [`Lcm::lcm`]
-/// individually for identical inputs.
+/// Could be more efficient than calling [`Gcd::gcd`] and [`Lcm::lcm`]
+/// individually with identical inputs.
 pub trait GcdLcm<Rhs = Self> {
     /// The resulting type after evaluating the function.
     type Output;
 
-    /// Calculate the greatest common divisor and least common multiple together.
+    /// Calculate the greatest common divisor (GCD) and least common multiple
+    /// (LCM) together.
     ///
-    /// Potentially more efficient than calling [`Gcd::gcd`] and [`Lcm::lcm`]
-    /// individually for identical inputs.
+    /// Could be more efficient than calling [`Gcd::gcd`] and [`Lcm::lcm`]
+    /// individually with identical inputs.
     fn gcd_lcm(self, rhs: Rhs) -> (Self::Output, Self::Output);
 }
 
-/// Calculate the greatest common divisor.
+/// Calculate the greatest common divisor (GCD).
 pub trait Gcd<Rhs = Self> {
     /// The resulting type after evaluating the function.
     type Output;
 
-    /// Calculate the greatest common divisor.
+    /// Calculate the greatest common divisor (GCD).
     fn gcd(self, rhs: Rhs) -> Self::Output;
 }
 
-/// Calculate the least common multiple.
+/// Calculate the least common multiple (LCM).
 pub trait Lcm<Rhs = Self> {
     /// The resulting type after evaluating the function.
     type Output;
 
-    /// Calculate the least common multiple.
+    /// Calculate the least common multiple (LCM).
     fn lcm(self, rhs: Rhs) -> Self::Output;
 }
 
@@ -107,7 +109,7 @@ macro_rules! impl_gcd_lcm_for_int {
                 }
 
                 // `lcm(a, b) = |a * (b / gcd(a, b))|`. We divide before
-                // multiplying to reduce the chance of overflow.
+                // multiplying to make overflow less likely.
                 Abs::abs(self * (rhs / Gcd::gcd(self, rhs)))
             }
         }
