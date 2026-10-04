@@ -11,7 +11,7 @@ use core::{
 
 use crate::{
     elem::{MinusInfinity, Nan, One, PlusInfinity, Zero},
-    fns::{CheckedAbs, Gcd, Lcm, SignFns},
+    fns::{Abs, CheckedAbs, Gcd, IsNegative, IsPositive, Lcm, Sgn, SignFns},
     limits::{
         MaxExactInteger, MaxExtended, MaxFinite, MaxNegative, MaximizerDenom, MinExactInteger,
         MinExtended, MinFinite, MinPositive, MinimizerDenom,
@@ -803,6 +803,56 @@ impl<T: Nan + One> Nan for Ratio<T> {
         numer: Nan::NAN,
         denom: One::ONE,
     };
+}
+
+impl<T: IsPositive> IsPositive for Ratio<T> {
+    #[inline]
+    fn is_positive(self) -> bool {
+        self.numer.is_positive()
+    }
+}
+
+impl<T: IsNegative> IsNegative for Ratio<T> {
+    #[inline]
+    fn is_negative(self) -> bool {
+        self.numer.is_negative()
+    }
+}
+
+impl<T: One + Sgn<Output = T>> Sgn for Ratio<T> {
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn sgn(self) -> Self::Output {
+        Ratio {
+            numer: self.numer.sgn(),
+            denom: One::ONE,
+        }
+    }
+}
+
+impl<T: Abs<Output = T>> Abs for Ratio<T> {
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn abs(self) -> Self::Output {
+        Ratio {
+            numer: self.numer.abs(),
+            denom: self.denom,
+        }
+    }
+}
+
+impl<T: CheckedAbs<Output = T>> CheckedAbs for Ratio<T> {
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn checked_abs(self) -> Option<Self::Output> {
+        Some(Ratio {
+            numer: self.numer.checked_abs()?,
+            denom: self.denom,
+        })
+    }
 }
 
 // TODO: the remaining traits.
