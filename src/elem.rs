@@ -55,6 +55,15 @@ pub trait Nan {
     const NAN: Self;
 }
 
+/// Returns `true` if `self` is NaN and `false` otherwise.
+///
+/// Types that don't have NaN values can implement this trait, always just
+/// returning false.
+pub trait IsNan {
+    /// Returns `true` if `self` is NaN and `false` otherwise.
+    fn is_nan(self) -> bool;
+}
+
 macro_rules! impl_elem_traits_for_int {
     ($ty:ty) => {
         impl_elem_traits_for_int!($ty, 0, 1);
@@ -78,8 +87,16 @@ macro_rules! impl_elem_traits_for_int {
             const ONE: Self = $one;
         }
 
+        // Ints can implement `IsNan`, they just always return false.
+        impl IsNan for $ty {
+            #[inline]
+            fn is_nan(self) -> bool {
+                false
+            }
+        }
+
         // No implementations of NaN, +infinity, -infinity, obviously, since
-        // these values don't exist for integers.
+        // these values don't exist for ints.
     };
     ($ty:ty, $zero:expr, $one:expr, $nonnegative_tests_mod:ident) => {
         impl_elem_traits_for_int!($ty, $zero, $one);
@@ -114,6 +131,15 @@ macro_rules! test_elem_traits_nonnegative {
                 assert_eq!(one * zero, zero);
                 assert_eq!(zero * one, zero);
                 assert_eq!(one * one, one);
+            }
+
+            #[test]
+            fn test_is_nan() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+
+                assert!(!IsNan::is_nan(zero));
+                assert!(!IsNan::is_nan(one));
             }
         }
     };
@@ -314,6 +340,13 @@ macro_rules! impl_elem_traits_for_float {
 
         impl Nan for $ty {
             const NAN: Self = <$ty>::NAN;
+        }
+
+        impl IsNan for $ty {
+            #[inline]
+            fn is_nan(self) -> bool {
+                <$ty>::is_nan(self)
+            }
         }
 
         test_elem_traits_nonnegative!($ty, $nonnegative_tests_mod);

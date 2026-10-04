@@ -10,7 +10,7 @@ use core::{
 };
 
 use crate::{
-    elem::{MinusInfinity, Nan, One, PlusInfinity, Zero},
+    elem::{IsNan, MinusInfinity, Nan, One, PlusInfinity, Zero},
     fns::{Abs, CheckedAbs, Gcd, IsNegative, IsPositive, Lcm, Sgn, SignFns},
     limits::{
         MaxExactInteger, MaxExtended, MaxFinite, MaxNegative, MaximizerDenom, MinExactInteger,
@@ -803,6 +803,13 @@ impl<T: Nan + One> Nan for Ratio<T> {
         numer: Nan::NAN,
         denom: One::ONE,
     };
+}
+
+impl<T: IsNan> IsNan for Ratio<T> {
+    #[inline]
+    fn is_nan(self) -> bool {
+        self.numer.is_nan() || self.denom.is_nan()
+    }
 }
 
 impl<T: IsPositive> IsPositive for Ratio<T> {
