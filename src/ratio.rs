@@ -10,6 +10,7 @@ use core::{
 };
 
 use crate::{
+    cmp::{NanfixEq, NanfixPartialEq, NanmaxOrd, NanmaxPartialOrd, NanminOrd, NanminPartialOrd},
     elem::{IsNan, MinusInfinity, Nan, One, PlusInfinity, Zero},
     fns::{Abs, CheckedAbs, Gcd, IsNegative, IsPositive, Lcm, Sgn, SignFns},
     limits::{
@@ -714,6 +715,53 @@ impl<T: Clone + Mul<Output = T> + Ord> Ord for Ratio<T> {
     }
 }
 
+impl<T: Clone + IsNan + Mul<Output = T> + PartialEq> NanfixPartialEq for Ratio<T> {
+    #[inline]
+    fn nanfix_eq(&self, other: &Self) -> bool {
+        (self.clone().is_nan() && other.clone().is_nan()) || PartialEq::eq(self, other)
+    }
+}
+
+impl<T: Clone + IsNan + Mul<Output = T> + PartialEq> NanfixEq for Ratio<T> {}
+
+impl<T: Clone + IsNan + Mul<Output = T> + PartialEq + PartialOrd> NanminPartialOrd for Ratio<T> {
+    #[inline]
+    fn nanmin_partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(NanminOrd::nanmin_cmp(self, other))
+    }
+}
+
+impl<T: Clone + IsNan + Mul<Output = T> + PartialEq + PartialOrd> NanminOrd for Ratio<T> {
+    #[inline]
+    fn nanmin_cmp(&self, other: &Self) -> Ordering {
+        match (self.clone().is_nan(), other.clone().is_nan()) {
+            (true, true) => Ordering::Equal,
+            (true, false) => Ordering::Less,
+            (false, true) => Ordering::Greater,
+            (false, false) => PartialOrd::partial_cmp(self, other).unwrap(),
+        }
+    }
+}
+
+impl<T: Clone + IsNan + Mul<Output = T> + PartialEq + PartialOrd> NanmaxPartialOrd for Ratio<T> {
+    #[inline]
+    fn nanmax_partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(NanmaxOrd::nanmax_cmp(self, other))
+    }
+}
+
+impl<T: Clone + IsNan + Mul<Output = T> + PartialEq + PartialOrd> NanmaxOrd for Ratio<T> {
+    #[inline]
+    fn nanmax_cmp(&self, other: &Self) -> Ordering {
+        match (self.clone().is_nan(), other.clone().is_nan()) {
+            (true, true) => Ordering::Equal,
+            (true, false) => Ordering::Greater,
+            (false, true) => Ordering::Less,
+            (false, false) => PartialOrd::partial_cmp(self, other).unwrap(),
+        }
+    }
+}
+
 impl<T: MinFinite + MinimizerDenom> MinFinite for Ratio<T> {
     const MIN_FINITE: Self = Ratio {
         numer: MinFinite::MIN_FINITE,
@@ -808,6 +856,9 @@ impl<T: Nan + One> Nan for Ratio<T> {
 impl<T: IsNan> IsNan for Ratio<T> {
     #[inline]
     fn is_nan(self) -> bool {
+        // NaN is contagious by any arithmetic operations, including division,
+        // so we believe it will be the most natural to assume ratio is NaN not
+        // only when its numerator is NaN, but also when denominator is.
         self.numer.is_nan() || self.denom.is_nan()
     }
 }
