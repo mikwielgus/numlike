@@ -5,7 +5,9 @@
 //! Conversions from one type to another, possibly lossy.
 
 mod cast;
+mod dequantize;
 mod quantize;
 
 pub use cast::*;
+pub use dequantize::*;
 pub use quantize::*;

@@ -6,7 +6,9 @@
 /// convert it to this integer type, or do nothing if the input type is integer.
 ///
 /// This trait is analogous to standard library's [`From`], though unlike it
-/// it's lossy. It's the inverse of [`QuantizeInto`].
+/// it's lossy. It's the converse of [`QuantizeInto`].
+///
+/// To reverse quantization, use [`DequantizeFrom`]/[`DequantizeInto`].
 pub trait QuantizeFrom<T> {
     /// Multiply a number by a multiplier (scale), round it to an integer, and
     /// convert it to this integer type, or do nothing if input type is integer.
@@ -17,11 +19,13 @@ pub trait QuantizeFrom<T> {
 /// convert it to another type, or do nothing if the input type is integer.
 ///
 /// This trait is analogous to standard library's [`Into`], though unlike it
-/// it's lossy. It's the inverse of [`QuantizeFrom`].
+/// it's lossy. It's the converse of [`QuantizeFrom`].
 ///
 /// Analogously to Rust standard library's [`Into`], it is recommended to not
 /// implement this trait directly, as it already has a blanket implementation
 /// for types that implement [`QuantizeFrom`].
+///
+/// To reverse quantization, use [`DequantizeFrom`]/[`DequantizeInto`].
 pub trait QuantizeInto<T> {
     /// Multiply a number by a multiplier (scale), round it to an integer, and
     /// convert it to another type, or do nothing if input type is integer.

@@ -8,7 +8,7 @@
 /// keyword casting.
 ///
 /// This trait is analogous to standard library's [`From`], though unlike it
-/// it's lossy. It's the inverse of [`CastInto`].
+/// it's lossy. It's the converse of [`CastInto`].
 ///
 /// Internally, `as` operator is used to lossily convert between Rust
 /// primitives. For non-exact conversion where a non-primitive type is involved,
@@ -24,7 +24,7 @@ pub trait CastFrom<T> {
 /// keyword casting.
 ///
 /// This trait is analogous to standard library's [`Into`], though unlike it
-/// it's lossy. It's the inverse of [`CastFrom`].
+/// it's lossy. It's the converse of [`CastFrom`].
 ///
 /// Internally, `as` operator is used to convert between Rust primitives. For
 /// non-exact conversion where a non-primitive type is involved, the decision
