@@ -70,12 +70,12 @@ impl_dequantize_from_for_ints!(
 );
 
 #[cfg(any(feature = "std", feature = "libm"))]
-macro_rules! impl_round_dequantize_from {
-    ($round:path, $src:ty => $($dst:ty),+) => {
+macro_rules! impl_machreal_dequantize_from {
+    ($dst:ty => $($src:ty),+) => {
         $(
             impl DequantizeFrom<$src> for $dst {
                 #[inline]
-                fn dequantize_from(value: $src, scale: $dst) -> Self {
+                fn dequantize_from(value: $src, scale: Self) -> Self {
                     value as $dst / scale
                 }
             }
@@ -84,23 +84,19 @@ macro_rules! impl_round_dequantize_from {
 }
 
 #[cfg(any(feature = "std", feature = "libm"))]
-macro_rules! impl_round_dequantize_from_for_machreal {
-    ($src:ty, $round:path) => {
-        impl_round_dequantize_from!(
-            $round, $src =>
+macro_rules! impl_machreal_dequantize_from_for_ints {
+    ($dst:ty) => {
+        impl_machreal_dequantize_from!(
+            $dst =>
             i8, i16, i32, i64, i128, isize,
             u8, u16, u32, u64, u128, usize
         );
     };
 }
 
-#[cfg(feature = "std")]
-impl_round_dequantize_from_for_machreal!(f32, f32::round);
-#[cfg(feature = "std")]
-impl_round_dequantize_from_for_machreal!(f64, f64::round);
-#[cfg(all(not(feature = "std"), feature = "libm"))]
-impl_round_dequantize_from_for_machreal!(f32, libm::roundf);
-#[cfg(all(not(feature = "std"), feature = "libm"))]
-impl_round_dequantize_from_for_machreal!(f64, libm::round);
+#[cfg(any(feature = "std", feature = "libm"))]
+impl_machreal_dequantize_from_for_ints!(f32);
+#[cfg(any(feature = "std", feature = "libm"))]
+impl_machreal_dequantize_from_for_ints!(f64);
 
 // TODO tests?
