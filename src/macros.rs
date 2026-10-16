@@ -23,27 +23,6 @@ macro_rules! for_signed_ints {
     };
 }
 
-macro_rules! for_unsigned_ints {
-    ($m:ident) => {
-        $m!(u8, u8_tests);
-        $m!(u16, u16_tests);
-        $m!(u32, u32_tests);
-        $m!(u64, u64_tests);
-        $m!(u128, u128_tests);
-        $m!(usize, usize_tests);
-    };
-    ($m:ident, $suffix:ident) => {
-        pastey::paste! {
-            $m!(u8, [<u8 _ $suffix _ tests>]);
-            $m!(u16, [<u16 _ $suffix _ tests>]);
-            $m!(u32, [<u32 _ $suffix _ tests>]);
-            $m!(u64, [<u64 _ $suffix _ tests>]);
-            $m!(u128, [<u128 _ $suffix _ tests>]);
-            $m!(usize, [<usize _ $suffix _ tests>]);
-        }
-    };
-}
-
 macro_rules! for_wrapping_signed_ints {
     ($m:ident) => {
         $m!(Wrapping<i8>, wrapping_i8_nonnegative_tests, wrapping_i8_negative_tests);
@@ -120,6 +99,27 @@ macro_rules! for_all_signed_ints {
     };
 }
 
+macro_rules! for_unsigned_ints {
+    ($m:ident) => {
+        $m!(u8, u8_tests);
+        $m!(u16, u16_tests);
+        $m!(u32, u32_tests);
+        $m!(u64, u64_tests);
+        $m!(u128, u128_tests);
+        $m!(usize, usize_tests);
+    };
+    ($m:ident, $suffix:ident) => {
+        pastey::paste! {
+            $m!(u8, [<u8 _ $suffix _ tests>]);
+            $m!(u16, [<u16 _ $suffix _ tests>]);
+            $m!(u32, [<u32 _ $suffix _ tests>]);
+            $m!(u64, [<u64 _ $suffix _ tests>]);
+            $m!(u128, [<u128 _ $suffix _ tests>]);
+            $m!(usize, [<usize _ $suffix _ tests>]);
+        }
+    };
+}
+
 macro_rules! for_wrapping_unsigned_ints {
     ($m:ident) => {
         $m!(Wrapping<u8>, wrapping_u8_tests);
@@ -193,5 +193,13 @@ macro_rules! for_all_unsigned_ints {
         for_unsigned_ints!($m);
         for_wrapping_unsigned_ints!($m, $($prefix)+);
         for_saturating_unsigned_ints!($m, $($prefix)+);
+    };
+}
+
+macro_rules! for_misc {
+    ($m:ident) => {
+        $m!(char);
+        $m!(bool);
+        $m!(());
     };
 }

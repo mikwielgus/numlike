@@ -676,20 +676,12 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
 }
 
 for_all_signed_ints!(impl_nanfix_eq_traits_for_ord);
-
 for_all_unsigned_ints!(impl_nanfix_eq_traits_for_ord);
-
-impl_nanfix_eq_traits_for_ord!(char);
-impl_nanfix_eq_traits_for_ord!(bool);
-impl_nanfix_eq_traits_for_ord!(());
+for_misc!(impl_nanfix_eq_traits_for_ord);
 
 for_all_signed_ints!(impl_nanmin_nanmax_ord_traits_for_ord, ord);
-
 for_all_unsigned_ints!(impl_nanmin_nanmax_ord_traits_for_ord, ord);
-
-impl_nanmin_nanmax_ord_traits_for_ord!(char);
-impl_nanmin_nanmax_ord_traits_for_ord!(bool);
-impl_nanmin_nanmax_ord_traits_for_ord!(());
+for_misc!(impl_nanmin_nanmax_ord_traits_for_ord);
 
 impl_nanfix_eq_traits_for_float!(
     f32,
