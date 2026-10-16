@@ -23,12 +23,6 @@ macro_rules! for_signed_ints {
     };
 }
 
-macro_rules! for_signed_int_seq {
-    ($m:ident) => {
-        $m!(i8, i16, i32, i64, i128, isize);
-    };
-}
-
 macro_rules! for_unsigned_ints {
     ($m:ident) => {
         $m!(u8, u8_tests);
@@ -47,12 +41,6 @@ macro_rules! for_unsigned_ints {
             $m!(u128, [<u128 _ $suffix _ tests>]);
             $m!(usize, [<usize _ $suffix _ tests>]);
         }
-    };
-}
-
-macro_rules! for_unsigned_int_seq {
-    ($m:ident) => {
-        $m!(u8, u16, u32, u64, u128, usize);
     };
 }
 
@@ -75,29 +63,13 @@ macro_rules! for_wrapping_signed_ints {
             $m!(Wrapping<isize>, [<wrapping _ isize _ $suffix _ nonnegative_tests>], [<wrapping _ isize _ $suffix _ negative_tests>]);
         }
     };
-}
-
-macro_rules! for_wrapping_signed_int_seq {
-    ($m:ident) => {
-        $m!(
-            Wrapping<i8>,
-            Wrapping<i16>,
-            Wrapping<i32>,
-            Wrapping<i64>,
-            Wrapping<i128>,
-            Wrapping<isize>
-        );
-    };
     ($m:ident, $($prefix:tt)+) => {
-        $m!(
-            $($prefix)+
-            Wrapping<i8>,
-            Wrapping<i16>,
-            Wrapping<i32>,
-            Wrapping<i64>,
-            Wrapping<i128>,
-            Wrapping<isize>
-        );
+        $m!($($prefix)+ Wrapping<i8>, wrapping_i8_nonnegative_tests, wrapping_i8_negative_tests);
+        $m!($($prefix)+ Wrapping<i16>, wrapping_i16_nonnegative_tests, wrapping_i16_negative_tests);
+        $m!($($prefix)+ Wrapping<i32>, wrapping_i32_nonnegative_tests, wrapping_i32_negative_tests);
+        $m!($($prefix)+ Wrapping<i64>, wrapping_i64_nonnegative_tests, wrapping_i64_negative_tests);
+        $m!($($prefix)+ Wrapping<i128>, wrapping_i128_nonnegative_tests, wrapping_i128_negative_tests);
+        $m!($($prefix)+ Wrapping<isize>, wrapping_isize_nonnegative_tests, wrapping_isize_negative_tests);
     };
 }
 
@@ -120,29 +92,13 @@ macro_rules! for_saturating_signed_ints {
             $m!(Saturating<isize>, [<saturating _ isize _ $suffix _ nonnegative_tests>], [<saturating _ isize _ $suffix _ negative_tests>]);
         }
     };
-}
-
-macro_rules! for_saturating_signed_int_seq {
-    ($m:ident) => {
-        $m!(
-            Saturating<i8>,
-            Saturating<i16>,
-            Saturating<i32>,
-            Saturating<i64>,
-            Saturating<i128>,
-            Saturating<isize>
-        );
-    };
     ($m:ident, $($prefix:tt)+) => {
-        $m!(
-            $($prefix)+
-            Saturating<i8>,
-            Saturating<i16>,
-            Saturating<i32>,
-            Saturating<i64>,
-            Saturating<i128>,
-            Saturating<isize>
-        );
+        $m!($($prefix)+ Saturating<i8>, saturating_i8_nonnegative_tests, saturating_i8_negative_tests);
+        $m!($($prefix)+ Saturating<i16>, saturating_i16_nonnegative_tests, saturating_i16_negative_tests);
+        $m!($($prefix)+ Saturating<i32>, saturating_i32_nonnegative_tests, saturating_i32_negative_tests);
+        $m!($($prefix)+ Saturating<i64>, saturating_i64_nonnegative_tests, saturating_i64_negative_tests);
+        $m!($($prefix)+ Saturating<i128>, saturating_i128_nonnegative_tests, saturating_i128_negative_tests);
+        $m!($($prefix)+ Saturating<isize>, saturating_isize_nonnegative_tests, saturating_isize_negative_tests);
     };
 }
 
@@ -157,18 +113,10 @@ macro_rules! for_all_signed_ints {
         for_wrapping_signed_ints!($m, $suffix);
         for_saturating_signed_ints!($m, $suffix);
     };
-}
-
-macro_rules! for_all_signed_int_seq {
-    ($m:ident) => {
-        for_signed_int_seq!($m);
-        for_wrapping_signed_int_seq!($m);
-        for_saturating_signed_int_seq!($m);
-    };
     ($m:ident, $($prefix:tt)+) => {
-        for_signed_int_seq!($m);
-        for_wrapping_signed_int_seq!($m, $($prefix)+);
-        for_saturating_signed_int_seq!($m, $($prefix)+);
+        for_signed_ints!($m);
+        for_wrapping_signed_ints!($m, $($prefix)+);
+        for_saturating_signed_ints!($m, $($prefix)+);
     };
 }
 
@@ -191,29 +139,13 @@ macro_rules! for_wrapping_unsigned_ints {
             $m!(Wrapping<usize>, [<wrapping _ usize _ $suffix _ tests>]);
         }
     };
-}
-
-macro_rules! for_wrapping_unsigned_int_seq {
-    ($m:ident) => {
-        $m!(
-            Wrapping<u8>,
-            Wrapping<u16>,
-            Wrapping<u32>,
-            Wrapping<u64>,
-            Wrapping<u128>,
-            Wrapping<usize>
-        );
-    };
     ($m:ident, $($prefix:tt)+) => {
-        $m!(
-            $($prefix)+
-            Wrapping<u8>,
-            Wrapping<u16>,
-            Wrapping<u32>,
-            Wrapping<u64>,
-            Wrapping<u128>,
-            Wrapping<usize>
-        );
+        $m!($($prefix)+ Wrapping<u8>, wrapping_u8_tests);
+        $m!($($prefix)+ Wrapping<u16>, wrapping_u16_tests);
+        $m!($($prefix)+ Wrapping<u32>, wrapping_u32_tests);
+        $m!($($prefix)+ Wrapping<u64>, wrapping_u64_tests);
+        $m!($($prefix)+ Wrapping<u128>, wrapping_u128_tests);
+        $m!($($prefix)+ Wrapping<usize>, wrapping_usize_tests);
     };
 }
 
@@ -236,29 +168,13 @@ macro_rules! for_saturating_unsigned_ints {
             $m!(Saturating<usize>, [<saturating _ usize _ $suffix _ tests>]);
         }
     };
-}
-
-macro_rules! for_saturating_unsigned_int_seq {
-    ($m:ident) => {
-        $m!(
-            Saturating<u8>,
-            Saturating<u16>,
-            Saturating<u32>,
-            Saturating<u64>,
-            Saturating<u128>,
-            Saturating<usize>
-        );
-    };
     ($m:ident, $($prefix:tt)+) => {
-        $m!(
-            $($prefix)+
-            Saturating<u8>,
-            Saturating<u16>,
-            Saturating<u32>,
-            Saturating<u64>,
-            Saturating<u128>,
-            Saturating<usize>
-        );
+        $m!($($prefix)+ Saturating<u8>, saturating_u8_tests);
+        $m!($($prefix)+ Saturating<u16>, saturating_u16_tests);
+        $m!($($prefix)+ Saturating<u32>, saturating_u32_tests);
+        $m!($($prefix)+ Saturating<u64>, saturating_u64_tests);
+        $m!($($prefix)+ Saturating<u128>, saturating_u128_tests);
+        $m!($($prefix)+ Saturating<usize>, saturating_usize_tests);
     };
 }
 
@@ -273,17 +189,9 @@ macro_rules! for_all_unsigned_ints {
         for_wrapping_unsigned_ints!($m, $suffix);
         for_saturating_unsigned_ints!($m, $suffix);
     };
-}
-
-macro_rules! for_all_unsigned_int_seq {
-    ($m:ident) => {
-        for_unsigned_int_seq!($m);
-        for_wrapping_unsigned_int_seq!($m);
-        for_saturating_unsigned_int_seq!($m);
-    };
     ($m:ident, $($prefix:tt)+) => {
-        for_unsigned_int_seq!($m);
-        for_wrapping_unsigned_int_seq!($m, $($prefix)+);
-        for_saturating_unsigned_int_seq!($m, $($prefix)+);
+        for_unsigned_ints!($m);
+        for_wrapping_unsigned_ints!($m, $($prefix)+);
+        for_saturating_unsigned_ints!($m, $($prefix)+);
     };
 }

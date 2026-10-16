@@ -51,59 +51,55 @@ pub trait WrappingShr {
 }
 
 macro_rules! impl_wrapping_shift_traits_for_ints {
-    ($($ty:ty),*) => {
-        $(
-            impl WrappingShl for $ty {
-                type Output = $ty;
+    ($ty:ty $(, $rest:ident)*) => {
+        impl WrappingShl for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn wrapping_shl(self, rhs: u32) -> Self::Output {
-                    <$ty>::wrapping_shl(self, rhs)
-                }
+            #[inline]
+            fn wrapping_shl(self, rhs: u32) -> Self::Output {
+                <$ty>::wrapping_shl(self, rhs)
             }
+        }
 
-            impl WrappingShr for $ty {
-                type Output = $ty;
+        impl WrappingShr for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn wrapping_shr(self, rhs: u32) -> Self::Output {
-                    <$ty>::wrapping_shr(self, rhs)
-                }
+            #[inline]
+            fn wrapping_shr(self, rhs: u32) -> Self::Output {
+                <$ty>::wrapping_shr(self, rhs)
             }
-        )*
+        }
     };
 }
 
 macro_rules! impl_wrapping_shift_traits_via_inner {
-    ($($ty:ty),*) => {
-        $(
-            impl WrappingShl for $ty {
-                type Output = $ty;
+    ($ty:ty $(, $rest:ident)*) => {
+        impl WrappingShl for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn wrapping_shl(self, rhs: u32) -> Self::Output {
-                    Self(self.0.wrapping_shl(rhs))
-                }
+            #[inline]
+            fn wrapping_shl(self, rhs: u32) -> Self::Output {
+                Self(self.0.wrapping_shl(rhs))
             }
+        }
 
-            impl WrappingShr for $ty {
-                type Output = $ty;
+        impl WrappingShr for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn wrapping_shr(self, rhs: u32) -> Self::Output {
-                    Self(self.0.wrapping_shr(rhs))
-                }
+            #[inline]
+            fn wrapping_shr(self, rhs: u32) -> Self::Output {
+                Self(self.0.wrapping_shr(rhs))
             }
-        )*
+        }
     };
 }
 
-for_signed_int_seq!(impl_wrapping_shift_traits_for_ints);
-for_unsigned_int_seq!(impl_wrapping_shift_traits_for_ints);
-for_wrapping_signed_int_seq!(impl_wrapping_shift_traits_via_inner);
-for_wrapping_unsigned_int_seq!(impl_wrapping_shift_traits_via_inner);
-for_saturating_signed_int_seq!(impl_wrapping_shift_traits_via_inner);
-for_saturating_unsigned_int_seq!(impl_wrapping_shift_traits_via_inner);
+for_signed_ints!(impl_wrapping_shift_traits_for_ints);
+for_unsigned_ints!(impl_wrapping_shift_traits_for_ints);
+for_wrapping_signed_ints!(impl_wrapping_shift_traits_via_inner);
+for_wrapping_unsigned_ints!(impl_wrapping_shift_traits_via_inner);
+for_saturating_signed_ints!(impl_wrapping_shift_traits_via_inner);
+for_saturating_unsigned_ints!(impl_wrapping_shift_traits_via_inner);
 
 macro_rules! test_wrapping_bitshift_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {

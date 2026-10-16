@@ -31,59 +31,55 @@ pub trait CheckedShr {
 }
 
 macro_rules! impl_checked_shift_traits_for_ints {
-    ($($ty:ty),*) => {
-        $(
-            impl CheckedShl for $ty {
-                type Output = $ty;
+    ($ty:ty $(, $rest:ident)*) => {
+        impl CheckedShl for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_shl(self, rhs: u32) -> Option<Self::Output> {
-                    <$ty>::checked_shl(self, rhs)
-                }
+            #[inline]
+            fn checked_shl(self, rhs: u32) -> Option<Self::Output> {
+                <$ty>::checked_shl(self, rhs)
             }
+        }
 
-            impl CheckedShr for $ty {
-                type Output = $ty;
+        impl CheckedShr for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_shr(self, rhs: u32) -> Option<Self::Output> {
-                    <$ty>::checked_shr(self, rhs)
-                }
+            #[inline]
+            fn checked_shr(self, rhs: u32) -> Option<Self::Output> {
+                <$ty>::checked_shr(self, rhs)
             }
-        )*
+        }
     };
 }
 
 macro_rules! impl_checked_shift_traits_via_inner {
-    ($($ty:ty),*) => {
-        $(
-            impl CheckedShl for $ty {
-                type Output = $ty;
+    ($ty:ty $(, $rest:ident)*) => {
+        impl CheckedShl for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_shl(self, rhs: u32) -> Option<Self::Output> {
-                    self.0.checked_shl(rhs).map(Self)
-                }
+            #[inline]
+            fn checked_shl(self, rhs: u32) -> Option<Self::Output> {
+                self.0.checked_shl(rhs).map(Self)
             }
+        }
 
-            impl CheckedShr for $ty {
-                type Output = $ty;
+        impl CheckedShr for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn checked_shr(self, rhs: u32) -> Option<Self::Output> {
-                    self.0.checked_shr(rhs).map(Self)
-                }
+            #[inline]
+            fn checked_shr(self, rhs: u32) -> Option<Self::Output> {
+                self.0.checked_shr(rhs).map(Self)
             }
-        )*
+        }
     };
 }
 
-for_signed_int_seq!(impl_checked_shift_traits_for_ints);
-for_unsigned_int_seq!(impl_checked_shift_traits_for_ints);
-for_wrapping_signed_int_seq!(impl_checked_shift_traits_via_inner);
-for_wrapping_unsigned_int_seq!(impl_checked_shift_traits_via_inner);
-for_saturating_signed_int_seq!(impl_checked_shift_traits_via_inner);
-for_saturating_unsigned_int_seq!(impl_checked_shift_traits_via_inner);
+for_signed_ints!(impl_checked_shift_traits_for_ints);
+for_unsigned_ints!(impl_checked_shift_traits_for_ints);
+for_wrapping_signed_ints!(impl_checked_shift_traits_via_inner);
+for_wrapping_unsigned_ints!(impl_checked_shift_traits_via_inner);
+for_saturating_signed_ints!(impl_checked_shift_traits_via_inner);
+for_saturating_unsigned_ints!(impl_checked_shift_traits_via_inner);
 
 macro_rules! test_checked_bitshift_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {

@@ -293,32 +293,28 @@ macro_rules! impl_neg_assign_trait {
 }
 
 macro_rules! impl_plain_arith_traits_for_signed_ints {
-    (no_euclid: $($ty:ty),*) => {
-        impl_div_rem_trait!($($ty),*);
-        impl_mul_add_trait!($($ty),*);
-        impl_neg_assign_trait!($($ty),*);
+    (no_euclid: $ty:ty $(, $rest:ident)*) => {
+        impl_div_rem_trait!($ty);
+        impl_mul_add_trait!($ty);
+        impl_neg_assign_trait!($ty);
     };
-    ($($ty:ty),*) => {
-        impl_div_rem_trait!($($ty),*);
-        $(
-            impl_euclid_traits!($ty, <$ty>::div_euclid, <$ty>::rem_euclid);
-        )*
-        impl_mul_add_trait!($($ty),*);
-        impl_neg_assign_trait!($($ty),*);
+    ($ty:ty $(, $rest:ident)*) => {
+        impl_div_rem_trait!($ty);
+        impl_euclid_traits!($ty, <$ty>::div_euclid, <$ty>::rem_euclid);
+        impl_mul_add_trait!($ty);
+        impl_neg_assign_trait!($ty);
     };
 }
 
 macro_rules! impl_plain_arith_traits_for_unsigned_ints {
-    (no_euclid: $($ty:ty),*) => {
-        impl_div_rem_trait!($($ty),*);
-        impl_mul_add_trait!($($ty),*);
+    (no_euclid: $ty:ty $(, $rest:ident)*) => {
+        impl_div_rem_trait!($ty);
+        impl_mul_add_trait!($ty);
     };
-    ($($ty:ty),*) => {
-        impl_div_rem_trait!($($ty),*);
-        $(
-            impl_euclid_traits!($ty, <$ty>::div_euclid, <$ty>::rem_euclid);
-        )*
-        impl_mul_add_trait!($($ty),*);
+    ($ty:ty $(, $rest:ident)*) => {
+        impl_div_rem_trait!($ty);
+        impl_euclid_traits!($ty, <$ty>::div_euclid, <$ty>::rem_euclid);
+        impl_mul_add_trait!($ty);
     };
 }
 
@@ -337,8 +333,8 @@ macro_rules! impl_plain_arith_traits_for_floats {
     };
 }
 
-for_all_signed_int_seq!(impl_plain_arith_traits_for_signed_ints, no_euclid:);
-for_all_unsigned_int_seq!(impl_plain_arith_traits_for_unsigned_ints, no_euclid:);
+for_all_signed_ints!(impl_plain_arith_traits_for_signed_ints, no_euclid:);
+for_all_unsigned_ints!(impl_plain_arith_traits_for_unsigned_ints, no_euclid:);
 impl_plain_arith_traits_for_floats!(f32, f64);
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]

@@ -35,63 +35,59 @@ pub trait OverflowingShr {
 }
 
 macro_rules! impl_overflowing_shift_traits_for_ints {
-    ($($ty:ty),*) => {
-        $(
-            impl OverflowingShl for $ty {
-                type Output = $ty;
+    ($ty:ty $(, $rest:ident)*) => {
+        impl OverflowingShl for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn overflowing_shl(self, rhs: u32) -> (Self::Output, bool) {
-                    <$ty>::overflowing_shl(self, rhs)
-                }
+            #[inline]
+            fn overflowing_shl(self, rhs: u32) -> (Self::Output, bool) {
+                <$ty>::overflowing_shl(self, rhs)
             }
+        }
 
-            impl OverflowingShr for $ty {
-                type Output = $ty;
+        impl OverflowingShr for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn overflowing_shr(self, rhs: u32) -> (Self::Output, bool) {
-                    <$ty>::overflowing_shr(self, rhs)
-                }
+            #[inline]
+            fn overflowing_shr(self, rhs: u32) -> (Self::Output, bool) {
+                <$ty>::overflowing_shr(self, rhs)
             }
-        )*
+        }
     };
 }
 
 macro_rules! impl_overflowing_shift_traits_via_inner {
-    ($($ty:ty),*) => {
-        $(
-            impl OverflowingShl for $ty {
-                type Output = $ty;
+    ($ty:ty $(, $rest:ident)*) => {
+        impl OverflowingShl for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn overflowing_shl(self, rhs: u32) -> (Self::Output, bool) {
-                    let (value, overflowed) = self.0.overflowing_shl(rhs);
+            #[inline]
+            fn overflowing_shl(self, rhs: u32) -> (Self::Output, bool) {
+                let (value, overflowed) = self.0.overflowing_shl(rhs);
 
-                    (Self(value), overflowed)
-                }
+                (Self(value), overflowed)
             }
+        }
 
-            impl OverflowingShr for $ty {
-                type Output = $ty;
+        impl OverflowingShr for $ty {
+            type Output = $ty;
 
-                #[inline]
-                fn overflowing_shr(self, rhs: u32) -> (Self::Output, bool) {
-                    let (value, overflowed) = self.0.overflowing_shr(rhs);
+            #[inline]
+            fn overflowing_shr(self, rhs: u32) -> (Self::Output, bool) {
+                let (value, overflowed) = self.0.overflowing_shr(rhs);
 
-                    (Self(value), overflowed)
-                }
+                (Self(value), overflowed)
             }
-        )*
+        }
     };
 }
 
-for_signed_int_seq!(impl_overflowing_shift_traits_for_ints);
-for_unsigned_int_seq!(impl_overflowing_shift_traits_for_ints);
-for_wrapping_signed_int_seq!(impl_overflowing_shift_traits_via_inner);
-for_wrapping_unsigned_int_seq!(impl_overflowing_shift_traits_via_inner);
-for_saturating_signed_int_seq!(impl_overflowing_shift_traits_via_inner);
-for_saturating_unsigned_int_seq!(impl_overflowing_shift_traits_via_inner);
+for_signed_ints!(impl_overflowing_shift_traits_for_ints);
+for_unsigned_ints!(impl_overflowing_shift_traits_for_ints);
+for_wrapping_signed_ints!(impl_overflowing_shift_traits_via_inner);
+for_wrapping_unsigned_ints!(impl_overflowing_shift_traits_via_inner);
+for_saturating_signed_ints!(impl_overflowing_shift_traits_via_inner);
+for_saturating_unsigned_ints!(impl_overflowing_shift_traits_via_inner);
 
 macro_rules! test_overflowing_bitshift_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {

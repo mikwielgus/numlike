@@ -47,20 +47,18 @@ pub trait NotAssign {
 }
 
 macro_rules! impl_not_assign_for_bitwisables {
-    ($($ty:ty),*) => {
-        $(
-            impl NotAssign for $ty {
-                #[inline]
-                fn not_assign(&mut self) {
-                    *self = Not::not(*self);
-                }
+    ($ty:ty $(, $rest:ident)*) => {
+        impl NotAssign for $ty {
+            #[inline]
+            fn not_assign(&mut self) {
+                *self = Not::not(*self);
             }
-        )*
+        }
     };
 }
 
-for_all_signed_int_seq!(impl_not_assign_for_bitwisables);
-for_all_unsigned_int_seq!(impl_not_assign_for_bitwisables);
+for_all_signed_ints!(impl_not_assign_for_bitwisables);
+for_all_unsigned_ints!(impl_not_assign_for_bitwisables);
 impl_not_assign_for_bitwisables!(bool);
 
 macro_rules! test_plain_bitshift_traits_int_nonnegative {

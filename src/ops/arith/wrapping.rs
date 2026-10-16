@@ -363,20 +363,20 @@ macro_rules! impl_wrapping_mul_add_trait {
 }
 
 macro_rules! impl_wrapping_arith_traits_for_signed_ints {
-    ($($ty:ty),*) => {
-        impl_wrapping_field_traits_for_ints!($($ty),*);
-        impl_wrapping_div_rem_trait!($($ty),*);
-        impl_wrapping_euclid_traits!($($ty),*);
-        impl_wrapping_mul_add_trait!($($ty),*);
+    ($ty:ty $(, $rest:ident)*) => {
+        impl_wrapping_field_traits_for_ints!($ty);
+        impl_wrapping_div_rem_trait!($ty);
+        impl_wrapping_euclid_traits!($ty);
+        impl_wrapping_mul_add_trait!($ty);
     };
 }
 
 macro_rules! impl_wrapping_arith_traits_for_unsigned_ints {
-    ($($ty:ty),*) => {
-        impl_wrapping_field_traits_for_ints!($($ty),*);
-        impl_wrapping_div_rem_trait!($($ty),*);
-        impl_wrapping_euclid_traits!($($ty),*);
-        impl_wrapping_mul_add_trait!($($ty),*);
+    ($ty:ty $(, $rest:ident)*) => {
+        impl_wrapping_field_traits_for_ints!($ty);
+        impl_wrapping_div_rem_trait!($ty);
+        impl_wrapping_euclid_traits!($ty);
+        impl_wrapping_mul_add_trait!($ty);
     };
 }
 
@@ -510,11 +510,11 @@ macro_rules! impl_wrapping_mul_add_trait_via_inner {
 }
 
 macro_rules! impl_wrapping_arith_traits_via_inner {
-    ($($ty:ty),*) => {
-        impl_wrapping_field_traits_via_inner!($($ty),*);
-        impl_wrapping_div_rem_trait_via_inner!($($ty),*);
-        impl_wrapping_euclid_traits_via_inner!($($ty),*);
-        impl_wrapping_mul_add_trait_via_inner!($($ty),*);
+    ($ty:ty $(, $rest:ident)*) => {
+        impl_wrapping_field_traits_via_inner!($ty);
+        impl_wrapping_div_rem_trait_via_inner!($ty);
+        impl_wrapping_euclid_traits_via_inner!($ty);
+        impl_wrapping_mul_add_trait_via_inner!($ty);
     };
 }
 
@@ -654,12 +654,12 @@ macro_rules! impl_wrapping_euclid_traits_for_floats {
     };
 }*/
 
-for_signed_int_seq!(impl_wrapping_arith_traits_for_signed_ints);
-for_unsigned_int_seq!(impl_wrapping_arith_traits_for_unsigned_ints);
-for_wrapping_signed_int_seq!(impl_wrapping_arith_traits_via_inner);
-for_wrapping_unsigned_int_seq!(impl_wrapping_arith_traits_via_inner);
-for_saturating_signed_int_seq!(impl_wrapping_arith_traits_via_inner);
-for_saturating_unsigned_int_seq!(impl_wrapping_arith_traits_via_inner);
+for_signed_ints!(impl_wrapping_arith_traits_for_signed_ints);
+for_unsigned_ints!(impl_wrapping_arith_traits_for_unsigned_ints);
+for_wrapping_signed_ints!(impl_wrapping_arith_traits_via_inner);
+for_wrapping_unsigned_ints!(impl_wrapping_arith_traits_via_inner);
+for_saturating_signed_ints!(impl_wrapping_arith_traits_via_inner);
+for_saturating_unsigned_ints!(impl_wrapping_arith_traits_via_inner);
 //impl_wrapping_arith_traits_for_floats!(f32, f64);
 
 //impl_wrapping_mul_add_trait_for_floats!(f32, f64);
