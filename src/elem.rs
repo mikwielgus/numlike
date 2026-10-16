@@ -166,19 +166,9 @@ macro_rules! test_elem_traits_negative {
     };
 }
 
-impl_elem_traits_for_int!(i8, i8_nonnegative_tests, i8_negative_tests);
-impl_elem_traits_for_int!(i16, i16_nonnegative_tests, i16_negative_tests);
-impl_elem_traits_for_int!(i32, i32_nonnegative_tests, i32_negative_tests);
-impl_elem_traits_for_int!(i64, i64_nonnegative_tests, i64_negative_tests);
-impl_elem_traits_for_int!(i128, i128_nonnegative_tests, i128_negative_tests);
-impl_elem_traits_for_int!(isize, isize_nonnegative_tests, isize_negative_tests);
+for_signed_ints!(impl_elem_traits_for_int);
 
-impl_elem_traits_for_int!(u8, u8_tests);
-impl_elem_traits_for_int!(u16, u16_tests);
-impl_elem_traits_for_int!(u32, u32_tests);
-impl_elem_traits_for_int!(u64, u64_tests);
-impl_elem_traits_for_int!(u128, u128_tests);
-impl_elem_traits_for_int!(usize, usize_tests);
+for_unsigned_ints!(impl_elem_traits_for_int);
 
 impl_elem_traits_for_int!(
     Wrapping<i8>,

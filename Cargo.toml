@@ -27,6 +27,7 @@ libm = ["dep:libm"]
 [dependencies]
 document-features = { version = "0.2", optional = true }
 libm = { version = "0.2", optional = true }
+pastey = "0.2"
 
 [package.metadata.release]
 pre-release-replacements = [

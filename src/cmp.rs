@@ -675,19 +675,9 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
     };
 }
 
-impl_nanfix_eq_traits_for_ord!(i8, i8_nonnegative_tests, i8_negative_tests);
-impl_nanfix_eq_traits_for_ord!(i16, i16_nonnegative_tests, i16_negative_tests);
-impl_nanfix_eq_traits_for_ord!(i32, i32_nonnegative_tests, i32_negative_tests);
-impl_nanfix_eq_traits_for_ord!(i64, i64_nonnegative_tests, i64_negative_tests);
-impl_nanfix_eq_traits_for_ord!(i128, i128_nonnegative_tests, i128_negative_tests);
-impl_nanfix_eq_traits_for_ord!(isize, isize_nonnegative_tests, isize_negative_tests);
+for_signed_ints!(impl_nanfix_eq_traits_for_ord);
 
-impl_nanfix_eq_traits_for_ord!(u8, u8_tests);
-impl_nanfix_eq_traits_for_ord!(u16, u16_tests);
-impl_nanfix_eq_traits_for_ord!(u32, u32_tests);
-impl_nanfix_eq_traits_for_ord!(u64, u64_tests);
-impl_nanfix_eq_traits_for_ord!(u128, u128_tests);
-impl_nanfix_eq_traits_for_ord!(usize, usize_tests);
+for_unsigned_ints!(impl_nanfix_eq_traits_for_ord);
 
 impl_nanfix_eq_traits_for_ord!(
     Wrapping<i8>,
@@ -769,23 +759,9 @@ impl_nanfix_eq_traits_for_ord!(char);
 impl_nanfix_eq_traits_for_ord!(bool);
 impl_nanfix_eq_traits_for_ord!(());
 
-impl_nanmin_nanmax_ord_traits_for_ord!(i8, i8_ord_nonnegative_tests, i8_ord_negative_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(i16, i16_ord_nonnegative_tests, i16_ord_negative_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(i32, i32_ord_nonnegative_tests, i32_ord_negative_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(i64, i64_ord_nonnegative_tests, i64_ord_negative_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(i128, i128_ord_nonnegative_tests, i128_ord_negative_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    isize,
-    isize_ord_nonnegative_tests,
-    isize_ord_negative_tests
-);
+for_signed_ints!(impl_nanmin_nanmax_ord_traits_for_ord, ord);
 
-impl_nanmin_nanmax_ord_traits_for_ord!(u8, u8_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(u16, u16_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(u32, u32_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(u64, u64_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(u128, u128_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(usize, usize_ord_tests);
+for_unsigned_ints!(impl_nanmin_nanmax_ord_traits_for_ord, ord);
 
 impl_nanmin_nanmax_ord_traits_for_ord!(
     Wrapping<i8>,

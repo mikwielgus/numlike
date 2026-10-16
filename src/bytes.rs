@@ -381,19 +381,9 @@ macro_rules! test_bytes_traits_negative {
     };
 }
 
-impl_bytes_traits!(i8, i8_nonnegative_tests, i8_negative_tests);
-impl_bytes_traits!(i16, i16_nonnegative_tests, i16_negative_tests);
-impl_bytes_traits!(i32, i32_nonnegative_tests, i32_negative_tests);
-impl_bytes_traits!(i64, i64_nonnegative_tests, i64_negative_tests);
-impl_bytes_traits!(i128, i128_nonnegative_tests, i128_negative_tests);
-impl_bytes_traits!(isize, isize_nonnegative_tests, isize_negative_tests);
+for_signed_ints!(impl_bytes_traits);
 
-impl_bytes_traits!(u8, u8_tests);
-impl_bytes_traits!(u16, u16_tests);
-impl_bytes_traits!(u32, u32_tests);
-impl_bytes_traits!(u64, u64_tests);
-impl_bytes_traits!(u128, u128_tests);
-impl_bytes_traits!(usize, usize_tests);
+for_unsigned_ints!(impl_bytes_traits);
 
 impl_bytes_traits!(f32, f32_nonnegative_tests, f32_negative_tests);
 impl_bytes_traits!(f64, f64_nonnegative_tests, f64_negative_tests);

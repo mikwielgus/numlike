@@ -14,6 +14,9 @@
 #[cfg(feature = "std")]
 extern crate std;
 
+#[macro_use]
+mod macros;
+
 pub mod alg;
 pub mod bytes;
 pub mod cmp;

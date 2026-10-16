@@ -242,19 +242,9 @@ macro_rules! test_convert_traits {
     };
 }
 
-test_convert_traits!(i8, i8_nonnegative_tests, i8_negative_tests);
-test_convert_traits!(i16, i16_nonnegative_tests, i16_negative_tests);
-test_convert_traits!(i32, i32_nonnegative_tests, i32_negative_tests);
-test_convert_traits!(i64, i64_nonnegative_tests, i64_negative_tests);
-test_convert_traits!(i128, i128_nonnegative_tests, i128_negative_tests);
-test_convert_traits!(isize, isize_nonnegative_tests, isize_negative_tests);
+for_signed_ints!(test_convert_traits);
 
-test_convert_traits!(u8, u8_tests);
-test_convert_traits!(u16, u16_tests);
-test_convert_traits!(u32, u32_tests);
-test_convert_traits!(u64, u64_tests);
-test_convert_traits!(u128, u128_tests);
-test_convert_traits!(usize, usize_tests);
+for_unsigned_ints!(test_convert_traits);
 
 test_convert_traits!(f32, f32_nonnegative_tests, f32_negative_tests);
 test_convert_traits!(f64, f64_nonnegative_tests, f64_negative_tests);

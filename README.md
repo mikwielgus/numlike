@@ -16,10 +16,10 @@ Numeric traits for generic mathematics. More fine-grained,
 less restrictive and less conservative alternative to
 [`num-traits`](https://docs.rs/num-traits/latest/num_traits/).
 
-This crate has no `unsafe` code and no mandatory third-party dependencies, and
-is `no_std`-compatible. Most of `no_std` operations on floating point numbers
-still have a dependency on [`libm`](https://docs.rs/libm/latest/libm/), which is
-gated behind `libm` feature flag. MSRV is 1.85.
+This crate has no `unsafe` code and has only one mandatory dependency, `pastey`,
+and is `no_std`-compatible. Most of `no_std` operations on floating point
+numbers still have a dependency on [`libm`](https://docs.rs/libm/latest/libm/),
+which is gated behind `libm` feature flag. MSRV is 1.85.
 
 If you are looking for abstract container traits in addition to
 abstract number traits, also check out another crate of ours,

@@ -441,12 +441,7 @@ impl_limits_traits_for_int!(i64, -1, i64_nonnegative_tests, i64_negative_tests);
 impl_limits_traits_for_int!(i128, -1, i128_nonnegative_tests, i128_negative_tests);
 impl_limits_traits_for_int!(isize, -1, isize_nonnegative_tests, isize_negative_tests);
 
-impl_limits_traits_for_int!(u8, u8_tests);
-impl_limits_traits_for_int!(u16, u16_tests);
-impl_limits_traits_for_int!(u32, u32_tests);
-impl_limits_traits_for_int!(u64, u64_tests);
-impl_limits_traits_for_int!(u128, u128_tests);
-impl_limits_traits_for_int!(usize, usize_tests);
+for_unsigned_ints!(impl_limits_traits_for_int);
 
 impl_limits_traits_for_int!(
     Wrapping<i8>,

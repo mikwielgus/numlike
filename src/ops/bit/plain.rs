@@ -59,8 +59,8 @@ macro_rules! impl_not_assign_for_bitwisables {
     };
 }
 
-impl_not_assign_for_bitwisables!(i8, i16, i32, i64, i128, isize);
-impl_not_assign_for_bitwisables!(u8, u16, u32, u64, u128, usize);
+for_signed_int_seq!(impl_not_assign_for_bitwisables);
+for_unsigned_int_seq!(impl_not_assign_for_bitwisables);
 impl_not_assign_for_bitwisables!(bool);
 impl_not_assign_for_bitwisables!(
     Wrapping<i8>,
@@ -230,9 +230,4 @@ test_plain_bitshift_traits_int_negative!(i128, i128_negative_tests);
 test_plain_bitshift_traits_int_nonnegative!(isize, isize_nonnegative_tests);
 test_plain_bitshift_traits_int_negative!(isize, isize_negative_tests);
 
-test_plain_bitshift_traits_int_nonnegative!(u8, u8_tests);
-test_plain_bitshift_traits_int_nonnegative!(u16, u16_tests);
-test_plain_bitshift_traits_int_nonnegative!(u32, u32_tests);
-test_plain_bitshift_traits_int_nonnegative!(u64, u64_tests);
-test_plain_bitshift_traits_int_nonnegative!(u128, u128_tests);
-test_plain_bitshift_traits_int_nonnegative!(usize, usize_tests);
+for_unsigned_ints!(test_plain_bitshift_traits_int_nonnegative);
