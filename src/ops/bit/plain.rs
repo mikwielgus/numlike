@@ -59,13 +59,9 @@ macro_rules! impl_not_assign_for_bitwisables {
     };
 }
 
-for_signed_int_seq!(impl_not_assign_for_bitwisables);
-for_unsigned_int_seq!(impl_not_assign_for_bitwisables);
+for_all_signed_int_seq!(impl_not_assign_for_bitwisables);
+for_all_unsigned_int_seq!(impl_not_assign_for_bitwisables);
 impl_not_assign_for_bitwisables!(bool);
-for_wrapping_signed_int_seq!(impl_not_assign_for_bitwisables);
-for_wrapping_unsigned_int_seq!(impl_not_assign_for_bitwisables);
-for_saturating_signed_int_seq!(impl_not_assign_for_bitwisables);
-for_saturating_unsigned_int_seq!(impl_not_assign_for_bitwisables);
 
 macro_rules! test_plain_bitshift_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {

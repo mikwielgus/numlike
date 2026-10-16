@@ -146,6 +146,32 @@ macro_rules! for_saturating_signed_int_seq {
     };
 }
 
+macro_rules! for_all_signed_ints {
+    ($m:ident) => {
+        for_signed_ints!($m);
+        for_wrapping_signed_ints!($m);
+        for_saturating_signed_ints!($m);
+    };
+    ($m:ident, $suffix:ident) => {
+        for_signed_ints!($m, $suffix);
+        for_wrapping_signed_ints!($m, $suffix);
+        for_saturating_signed_ints!($m, $suffix);
+    };
+}
+
+macro_rules! for_all_signed_int_seq {
+    ($m:ident) => {
+        for_signed_int_seq!($m);
+        for_wrapping_signed_int_seq!($m);
+        for_saturating_signed_int_seq!($m);
+    };
+    ($m:ident, $($prefix:tt)+) => {
+        for_signed_int_seq!($m);
+        for_wrapping_signed_int_seq!($m, $($prefix)+);
+        for_saturating_signed_int_seq!($m, $($prefix)+);
+    };
+}
+
 macro_rules! for_wrapping_unsigned_ints {
     ($m:ident) => {
         $m!(Wrapping<u8>, wrapping_u8_tests);
@@ -233,5 +259,31 @@ macro_rules! for_saturating_unsigned_int_seq {
             Saturating<u128>,
             Saturating<usize>
         );
+    };
+}
+
+macro_rules! for_all_unsigned_ints {
+    ($m:ident) => {
+        for_unsigned_ints!($m);
+        for_wrapping_unsigned_ints!($m);
+        for_saturating_unsigned_ints!($m);
+    };
+    ($m:ident, $suffix:ident) => {
+        for_unsigned_ints!($m, $suffix);
+        for_wrapping_unsigned_ints!($m, $suffix);
+        for_saturating_unsigned_ints!($m, $suffix);
+    };
+}
+
+macro_rules! for_all_unsigned_int_seq {
+    ($m:ident) => {
+        for_unsigned_int_seq!($m);
+        for_wrapping_unsigned_int_seq!($m);
+        for_saturating_unsigned_int_seq!($m);
+    };
+    ($m:ident, $($prefix:tt)+) => {
+        for_unsigned_int_seq!($m);
+        for_wrapping_unsigned_int_seq!($m, $($prefix)+);
+        for_saturating_unsigned_int_seq!($m, $($prefix)+);
     };
 }

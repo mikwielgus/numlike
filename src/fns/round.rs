@@ -388,17 +388,9 @@ macro_rules! test_round_traits_negative {
     };
 }
 
-for_signed_ints!(impl_round_traits_for_int);
+for_all_signed_ints!(impl_round_traits_for_int);
 
-for_unsigned_ints!(impl_round_traits_for_int);
-
-for_wrapping_signed_ints!(impl_round_traits_for_int);
-
-for_wrapping_unsigned_ints!(impl_round_traits_for_int);
-
-for_saturating_signed_ints!(impl_round_traits_for_int);
-
-for_saturating_unsigned_ints!(impl_round_traits_for_int);
+for_all_unsigned_ints!(impl_round_traits_for_int);
 
 #[cfg(feature = "std")]
 impl_round_traits_for_float!(

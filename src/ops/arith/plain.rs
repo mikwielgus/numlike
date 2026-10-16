@@ -337,12 +337,8 @@ macro_rules! impl_plain_arith_traits_for_floats {
     };
 }
 
-for_signed_int_seq!(impl_plain_arith_traits_for_signed_ints);
-for_wrapping_signed_int_seq!(impl_plain_arith_traits_for_signed_ints, no_euclid:);
-for_saturating_signed_int_seq!(impl_plain_arith_traits_for_signed_ints, no_euclid:);
-for_unsigned_int_seq!(impl_plain_arith_traits_for_unsigned_ints);
-for_wrapping_unsigned_int_seq!(impl_plain_arith_traits_for_unsigned_ints, no_euclid:);
-for_saturating_unsigned_int_seq!(impl_plain_arith_traits_for_unsigned_ints, no_euclid:);
+for_all_signed_int_seq!(impl_plain_arith_traits_for_signed_ints, no_euclid:);
+for_all_unsigned_int_seq!(impl_plain_arith_traits_for_unsigned_ints, no_euclid:);
 impl_plain_arith_traits_for_floats!(f32, f64);
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
