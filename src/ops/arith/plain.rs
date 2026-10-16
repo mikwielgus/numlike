@@ -338,43 +338,11 @@ macro_rules! impl_plain_arith_traits_for_floats {
 }
 
 for_signed_int_seq!(impl_plain_arith_traits_for_signed_ints);
-impl_plain_arith_traits_for_signed_ints!(
-    no_euclid:
-    Wrapping<i8>,
-    Wrapping<i16>,
-    Wrapping<i32>,
-    Wrapping<i64>,
-    Wrapping<i128>,
-    Wrapping<isize>
-);
-impl_plain_arith_traits_for_signed_ints!(
-    no_euclid:
-    Saturating<i8>,
-    Saturating<i16>,
-    Saturating<i32>,
-    Saturating<i64>,
-    Saturating<i128>,
-    Saturating<isize>
-);
+for_wrapping_signed_int_seq!(impl_plain_arith_traits_for_signed_ints, no_euclid:);
+for_saturating_signed_int_seq!(impl_plain_arith_traits_for_signed_ints, no_euclid:);
 for_unsigned_int_seq!(impl_plain_arith_traits_for_unsigned_ints);
-impl_plain_arith_traits_for_unsigned_ints!(
-    no_euclid:
-    Wrapping<u8>,
-    Wrapping<u16>,
-    Wrapping<u32>,
-    Wrapping<u64>,
-    Wrapping<u128>,
-    Wrapping<usize>
-);
-impl_plain_arith_traits_for_unsigned_ints!(
-    no_euclid:
-    Saturating<u8>,
-    Saturating<u16>,
-    Saturating<u32>,
-    Saturating<u64>,
-    Saturating<u128>,
-    Saturating<usize>
-);
+for_wrapping_unsigned_int_seq!(impl_plain_arith_traits_for_unsigned_ints, no_euclid:);
+for_saturating_unsigned_int_seq!(impl_plain_arith_traits_for_unsigned_ints, no_euclid:);
 impl_plain_arith_traits_for_floats!(f32, f64);
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]

@@ -647,34 +647,10 @@ macro_rules! impl_checked_arith_traits_for_floats {
 
 for_signed_int_seq!(impl_checked_arith_traits_for_signed_ints);
 for_unsigned_int_seq!(impl_checked_arith_traits_for_unsigned_ints);
-impl_checked_arith_traits_via_inner!(
-    Wrapping<i8>,
-    Wrapping<i16>,
-    Wrapping<i32>,
-    Wrapping<i64>,
-    Wrapping<i128>,
-    Wrapping<isize>,
-    Wrapping<u8>,
-    Wrapping<u16>,
-    Wrapping<u32>,
-    Wrapping<u64>,
-    Wrapping<u128>,
-    Wrapping<usize>
-);
-impl_checked_arith_traits_via_inner!(
-    Saturating<i8>,
-    Saturating<i16>,
-    Saturating<i32>,
-    Saturating<i64>,
-    Saturating<i128>,
-    Saturating<isize>,
-    Saturating<u8>,
-    Saturating<u16>,
-    Saturating<u32>,
-    Saturating<u64>,
-    Saturating<u128>,
-    Saturating<usize>
-);
+for_wrapping_signed_int_seq!(impl_checked_arith_traits_via_inner);
+for_wrapping_unsigned_int_seq!(impl_checked_arith_traits_via_inner);
+for_saturating_signed_int_seq!(impl_checked_arith_traits_via_inner);
+for_saturating_unsigned_int_seq!(impl_checked_arith_traits_via_inner);
 impl_checked_arith_traits_for_floats!(f32, f64);
 
 impl_checked_mul_add_trait_for_floats!(f32, f64);

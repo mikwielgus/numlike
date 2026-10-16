@@ -581,12 +581,7 @@ impl_limits_traits_for_int!(
     saturating_isize_negative_tests
 );
 
-impl_limits_traits_for_int!(Saturating<u8>, saturating_u8_tests);
-impl_limits_traits_for_int!(Saturating<u16>, saturating_u16_tests);
-impl_limits_traits_for_int!(Saturating<u32>, saturating_u32_tests);
-impl_limits_traits_for_int!(Saturating<u64>, saturating_u64_tests);
-impl_limits_traits_for_int!(Saturating<u128>, saturating_u128_tests);
-impl_limits_traits_for_int!(Saturating<usize>, saturating_usize_tests);
+for_saturating_unsigned_ints!(impl_limits_traits_for_int);
 
 macro_rules! impl_limits_traits_for_float {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {

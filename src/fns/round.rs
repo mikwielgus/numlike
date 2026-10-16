@@ -392,33 +392,13 @@ for_signed_ints!(impl_round_traits_for_int);
 
 for_unsigned_ints!(impl_round_traits_for_int);
 
-impl_round_traits_for_int!(Wrapping<i8>, wrapping_i8_tests);
-impl_round_traits_for_int!(Wrapping<i16>, wrapping_i16_tests);
-impl_round_traits_for_int!(Wrapping<i32>, wrapping_i32_tests);
-impl_round_traits_for_int!(Wrapping<i64>, wrapping_i64_tests);
-impl_round_traits_for_int!(Wrapping<i128>, wrapping_i128_tests);
-impl_round_traits_for_int!(Wrapping<isize>, wrapping_isize_tests);
+for_wrapping_signed_ints!(impl_round_traits_for_int);
 
-impl_round_traits_for_int!(Wrapping<u8>, wrapping_u8_tests);
-impl_round_traits_for_int!(Wrapping<u16>, wrapping_u16_tests);
-impl_round_traits_for_int!(Wrapping<u32>, wrapping_u32_tests);
-impl_round_traits_for_int!(Wrapping<u64>, wrapping_u64_tests);
-impl_round_traits_for_int!(Wrapping<u128>, wrapping_u128_tests);
-impl_round_traits_for_int!(Wrapping<usize>, wrapping_usize_tests);
+for_wrapping_unsigned_ints!(impl_round_traits_for_int);
 
-impl_round_traits_for_int!(Saturating<i8>, saturating_i8_tests);
-impl_round_traits_for_int!(Saturating<i16>, saturating_i16_tests);
-impl_round_traits_for_int!(Saturating<i32>, saturating_i32_tests);
-impl_round_traits_for_int!(Saturating<i64>, saturating_i64_tests);
-impl_round_traits_for_int!(Saturating<i128>, saturating_i128_tests);
-impl_round_traits_for_int!(Saturating<isize>, saturating_isize_tests);
+for_saturating_signed_ints!(impl_round_traits_for_int);
 
-impl_round_traits_for_int!(Saturating<u8>, saturating_u8_tests);
-impl_round_traits_for_int!(Saturating<u16>, saturating_u16_tests);
-impl_round_traits_for_int!(Saturating<u32>, saturating_u32_tests);
-impl_round_traits_for_int!(Saturating<u64>, saturating_u64_tests);
-impl_round_traits_for_int!(Saturating<u128>, saturating_u128_tests);
-impl_round_traits_for_int!(Saturating<usize>, saturating_usize_tests);
+for_saturating_unsigned_ints!(impl_round_traits_for_int);
 
 #[cfg(feature = "std")]
 impl_round_traits_for_float!(

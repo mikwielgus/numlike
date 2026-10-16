@@ -679,81 +679,13 @@ for_signed_ints!(impl_nanfix_eq_traits_for_ord);
 
 for_unsigned_ints!(impl_nanfix_eq_traits_for_ord);
 
-impl_nanfix_eq_traits_for_ord!(
-    Wrapping<i8>,
-    wrapping_i8_nonnegative_tests,
-    wrapping_i8_negative_tests
-);
-impl_nanfix_eq_traits_for_ord!(
-    Wrapping<i16>,
-    wrapping_i16_nonnegative_tests,
-    wrapping_i16_negative_tests
-);
-impl_nanfix_eq_traits_for_ord!(
-    Wrapping<i32>,
-    wrapping_i32_nonnegative_tests,
-    wrapping_i32_negative_tests
-);
-impl_nanfix_eq_traits_for_ord!(
-    Wrapping<i64>,
-    wrapping_i64_nonnegative_tests,
-    wrapping_i64_negative_tests
-);
-impl_nanfix_eq_traits_for_ord!(
-    Wrapping<i128>,
-    wrapping_i128_nonnegative_tests,
-    wrapping_i128_negative_tests
-);
-impl_nanfix_eq_traits_for_ord!(
-    Wrapping<isize>,
-    wrapping_isize_nonnegative_tests,
-    wrapping_isize_negative_tests
-);
+for_wrapping_signed_ints!(impl_nanfix_eq_traits_for_ord);
 
-impl_nanfix_eq_traits_for_ord!(Wrapping<u8>, wrapping_u8_tests);
-impl_nanfix_eq_traits_for_ord!(Wrapping<u16>, wrapping_u16_tests);
-impl_nanfix_eq_traits_for_ord!(Wrapping<u32>, wrapping_u32_tests);
-impl_nanfix_eq_traits_for_ord!(Wrapping<u64>, wrapping_u64_tests);
-impl_nanfix_eq_traits_for_ord!(Wrapping<u128>, wrapping_u128_tests);
-impl_nanfix_eq_traits_for_ord!(Wrapping<usize>, wrapping_usize_tests);
+for_wrapping_unsigned_ints!(impl_nanfix_eq_traits_for_ord);
 
-impl_nanfix_eq_traits_for_ord!(
-    Saturating<i8>,
-    saturating_i8_nonnegative_tests,
-    saturating_i8_negative_tests
-);
-impl_nanfix_eq_traits_for_ord!(
-    Saturating<i16>,
-    saturating_i16_nonnegative_tests,
-    saturating_i16_negative_tests
-);
-impl_nanfix_eq_traits_for_ord!(
-    Saturating<i32>,
-    saturating_i32_nonnegative_tests,
-    saturating_i32_negative_tests
-);
-impl_nanfix_eq_traits_for_ord!(
-    Saturating<i64>,
-    saturating_i64_nonnegative_tests,
-    saturating_i64_negative_tests
-);
-impl_nanfix_eq_traits_for_ord!(
-    Saturating<i128>,
-    saturating_i128_nonnegative_tests,
-    saturating_i128_negative_tests
-);
-impl_nanfix_eq_traits_for_ord!(
-    Saturating<isize>,
-    saturating_isize_nonnegative_tests,
-    saturating_isize_negative_tests
-);
+for_saturating_signed_ints!(impl_nanfix_eq_traits_for_ord);
 
-impl_nanfix_eq_traits_for_ord!(Saturating<u8>, saturating_u8_tests);
-impl_nanfix_eq_traits_for_ord!(Saturating<u16>, saturating_u16_tests);
-impl_nanfix_eq_traits_for_ord!(Saturating<u32>, saturating_u32_tests);
-impl_nanfix_eq_traits_for_ord!(Saturating<u64>, saturating_u64_tests);
-impl_nanfix_eq_traits_for_ord!(Saturating<u128>, saturating_u128_tests);
-impl_nanfix_eq_traits_for_ord!(Saturating<usize>, saturating_usize_tests);
+for_saturating_unsigned_ints!(impl_nanfix_eq_traits_for_ord);
 
 impl_nanfix_eq_traits_for_ord!(char);
 impl_nanfix_eq_traits_for_ord!(bool);
@@ -763,81 +695,13 @@ for_signed_ints!(impl_nanmin_nanmax_ord_traits_for_ord, ord);
 
 for_unsigned_ints!(impl_nanmin_nanmax_ord_traits_for_ord, ord);
 
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Wrapping<i8>,
-    wrapping_i8_ord_nonnegative_tests,
-    wrapping_i8_ord_negative_tests
-);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Wrapping<i16>,
-    wrapping_i16_ord_nonnegative_tests,
-    wrapping_i16_ord_negative_tests
-);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Wrapping<i32>,
-    wrapping_i32_ord_nonnegative_tests,
-    wrapping_i32_ord_negative_tests
-);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Wrapping<i64>,
-    wrapping_i64_ord_nonnegative_tests,
-    wrapping_i64_ord_negative_tests
-);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Wrapping<i128>,
-    wrapping_i128_ord_nonnegative_tests,
-    wrapping_i128_ord_negative_tests
-);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Wrapping<isize>,
-    wrapping_isize_ord_nonnegative_tests,
-    wrapping_isize_ord_negative_tests
-);
+for_wrapping_signed_ints!(impl_nanmin_nanmax_ord_traits_for_ord, ord);
 
-impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<u8>, wrapping_u8_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<u16>, wrapping_u16_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<u32>, wrapping_u32_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<u64>, wrapping_u64_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<u128>, wrapping_u128_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(Wrapping<usize>, wrapping_usize_ord_tests);
+for_wrapping_unsigned_ints!(impl_nanmin_nanmax_ord_traits_for_ord, ord);
 
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Saturating<i8>,
-    saturating_i8_ord_nonnegative_tests,
-    saturating_i8_ord_negative_tests
-);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Saturating<i16>,
-    saturating_i16_ord_nonnegative_tests,
-    saturating_i16_ord_negative_tests
-);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Saturating<i32>,
-    saturating_i32_ord_nonnegative_tests,
-    saturating_i32_ord_negative_tests
-);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Saturating<i64>,
-    saturating_i64_ord_nonnegative_tests,
-    saturating_i64_ord_negative_tests
-);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Saturating<i128>,
-    saturating_i128_ord_nonnegative_tests,
-    saturating_i128_ord_negative_tests
-);
-impl_nanmin_nanmax_ord_traits_for_ord!(
-    Saturating<isize>,
-    saturating_isize_ord_nonnegative_tests,
-    saturating_isize_ord_negative_tests
-);
+for_saturating_signed_ints!(impl_nanmin_nanmax_ord_traits_for_ord, ord);
 
-impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<u8>, saturating_u8_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<u16>, saturating_u16_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<u32>, saturating_u32_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<u64>, saturating_u64_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<u128>, saturating_u128_ord_tests);
-impl_nanmin_nanmax_ord_traits_for_ord!(Saturating<usize>, saturating_usize_ord_tests);
+for_saturating_unsigned_ints!(impl_nanmin_nanmax_ord_traits_for_ord, ord);
 
 impl_nanmin_nanmax_ord_traits_for_ord!(char);
 impl_nanmin_nanmax_ord_traits_for_ord!(bool);

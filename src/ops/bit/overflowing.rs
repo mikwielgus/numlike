@@ -88,34 +88,10 @@ macro_rules! impl_overflowing_shift_traits_via_inner {
 
 for_signed_int_seq!(impl_overflowing_shift_traits_for_ints);
 for_unsigned_int_seq!(impl_overflowing_shift_traits_for_ints);
-impl_overflowing_shift_traits_via_inner!(
-    Wrapping<i8>,
-    Wrapping<i16>,
-    Wrapping<i32>,
-    Wrapping<i64>,
-    Wrapping<i128>,
-    Wrapping<isize>,
-    Wrapping<u8>,
-    Wrapping<u16>,
-    Wrapping<u32>,
-    Wrapping<u64>,
-    Wrapping<u128>,
-    Wrapping<usize>
-);
-impl_overflowing_shift_traits_via_inner!(
-    Saturating<i8>,
-    Saturating<i16>,
-    Saturating<i32>,
-    Saturating<i64>,
-    Saturating<i128>,
-    Saturating<isize>,
-    Saturating<u8>,
-    Saturating<u16>,
-    Saturating<u32>,
-    Saturating<u64>,
-    Saturating<u128>,
-    Saturating<usize>
-);
+for_wrapping_signed_int_seq!(impl_overflowing_shift_traits_via_inner);
+for_wrapping_unsigned_int_seq!(impl_overflowing_shift_traits_via_inner);
+for_saturating_signed_int_seq!(impl_overflowing_shift_traits_via_inner);
+for_saturating_unsigned_int_seq!(impl_overflowing_shift_traits_via_inner);
 
 macro_rules! test_overflowing_bitshift_traits_int_nonnegative {
     ($ty:ty, $tests_mod:ident) => {
