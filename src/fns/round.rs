@@ -348,7 +348,10 @@ macro_rules! test_round_traits_negative {
 
                 assert_eq!(RoundTiesEven::round_ties_even(-one), -one);
                 assert_eq!(RoundTiesEven::round_ties_even(-two), -two);
-                assert_eq!(RoundTiesEven::round_ties_even(-half), <$ty as ConstZero>::ZERO);
+                assert_eq!(
+                    RoundTiesEven::round_ties_even(-half),
+                    <$ty as ConstZero>::ZERO
+                );
                 assert_eq!(RoundTiesEven::round_ties_even(-one_and_half), -two);
                 assert_eq!(RoundTiesEven::round_ties_even(-two_and_half), -two);
             }

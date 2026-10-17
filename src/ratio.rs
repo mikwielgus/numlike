@@ -11,7 +11,7 @@ use core::{
 
 use crate::{
     cmp::{NanfixEq, NanfixPartialEq, NanmaxOrd, NanmaxPartialOrd, NanminOrd, NanminPartialOrd},
-    elem::{IsNan, MinusInfinity, ConstNan, ConstOne, PlusInfinity, ConstZero},
+    elem::{ConstNan, ConstOne, ConstZero, IsNan, MinusInfinity, Nan, One, PlusInfinity, Zero},
     fns::{Abs, CheckedAbs, Gcd, IsNegative, IsPositive, Lcm, Sgn, SignFns},
     limits::{
         MaxExactInteger, MaxExtended, MaxFinite, MaxNegative, MaximizerDenom, MinExactInteger,
@@ -52,7 +52,14 @@ impl<T> Ratio<T> {
 }
 
 impl<
-    T: Clone + Div<Output = T> + Gcd<Output = T> + Neg<Output = T> + ConstOne + PartialEq + SignFns + ConstZero,
+    T: Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + Neg<Output = T>
+        + ConstOne
+        + PartialEq
+        + SignFns
+        + ConstZero,
 > Ratio<T>
 {
     /// Creates a new ratio. The numerator and denominator will be reduced.
@@ -818,11 +825,31 @@ impl<T: MaxNegative + MaxFinite + ConstOne> MaxNegative for Ratio<T> {
     };
 }
 
+impl<T: Zero + One> Zero for Ratio<T> {
+    #[inline]
+    fn zero() -> Self {
+        Ratio {
+            numer: Zero::zero(),
+            denom: One::one(),
+        }
+    }
+}
+
 impl<T: ConstZero + ConstOne> ConstZero for Ratio<T> {
     const ZERO: Self = Ratio {
         numer: ConstZero::ZERO,
         denom: ConstOne::ONE,
     };
+}
+
+impl<T: One> One for Ratio<T> {
+    #[inline]
+    fn one() -> Self {
+        Ratio {
+            numer: One::one(),
+            denom: One::one(),
+        }
+    }
 }
 
 impl<T: ConstOne> ConstOne for Ratio<T> {
@@ -844,6 +871,16 @@ impl<T: ConstOne + PlusInfinity> PlusInfinity for Ratio<T> {
         numer: PlusInfinity::PLUS_INFINITY,
         denom: ConstOne::ONE,
     };
+}
+
+impl<T: Nan + One> Nan for Ratio<T> {
+    #[inline]
+    fn nan() -> Self {
+        Ratio {
+            numer: Nan::nan(),
+            denom: One::one(),
+        }
+    }
 }
 
 impl<T: ConstNan + ConstOne> ConstNan for Ratio<T> {

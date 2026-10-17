@@ -13,6 +13,13 @@ use core::num::{Saturating, Wrapping};
 /// it commonly is in definitions of absorption magmas and absorption monoids,
 /// or an element that maps to the classical real zero, as it sometimes is in
 /// descriptions of tropical semirings.
+pub trait Zero {
+    /// Returns a distinguished `0` value.
+    fn zero() -> Self;
+}
+
+/// Defines a distinguished `0` value like [`Zero`] does, but as an associated
+/// constant.
 pub trait ConstZero {
     /// A distinguished `0` value.
     const ZERO: Self;
@@ -24,6 +31,13 @@ pub trait ConstZero {
 /// so. It may also merely be the generating element (generator) of addition,
 /// or an element that maps to the classical real one, as it sometimes is in
 /// descriptions of tropical semirings.
+pub trait One {
+    /// Returns a distinguished `1` value.
+    fn one() -> Self;
+}
+
+/// Defines a distinguished `1` value like [`One`] does, but as an associated
+/// constant.
 pub trait ConstOne {
     /// A distinguished `1` value.
     const ONE: Self;
@@ -50,8 +64,16 @@ pub trait PlusInfinity {
 }
 
 /// Not a Number (NaN) value for a floating-point type.
+pub trait Nan {
+    /// Returns a Not a Number (NaN) value for a floating-point type.
+    fn nan() -> Self;
+}
+
+/// Not a Number (NaN) value for a floating-point type as an associated
+/// constant.
 pub trait ConstNan {
-    /// Not a Number (NaN) value for a floating-point type.
+    /// Not a Number (NaN) value for a floating-point type as an associated
+    /// constant.
     const NAN: Self;
 }
 
@@ -79,8 +101,22 @@ macro_rules! impl_elem_traits_for_int {
         test_elem_traits_negative!($ty, $negative_tests_mod);
     };
     ($ty:ty, $zero:expr, $one:expr) => {
+        impl Zero for $ty {
+            #[inline]
+            fn zero() -> Self {
+                $zero
+            }
+        }
+
         impl ConstZero for $ty {
             const ZERO: Self = $zero;
+        }
+
+        impl One for $ty {
+            #[inline]
+            fn one() -> Self {
+                $one
+            }
         }
 
         impl ConstOne for $ty {
@@ -123,6 +159,9 @@ macro_rules! test_elem_traits_nonnegative {
             fn test_zero_one() {
                 let zero = <$ty as ConstZero>::ZERO;
                 let one = <$ty as ConstOne>::ONE;
+
+                assert_eq!(<$ty as Zero>::zero(), zero);
+                assert_eq!(<$ty as One>::one(), one);
 
                 assert_eq!(one - one, zero);
                 assert_eq!(one + zero, one);
@@ -312,8 +351,22 @@ impl_elem_traits_for_int!(
 
 macro_rules! impl_elem_traits_for_float {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl Zero for $ty {
+            #[inline]
+            fn zero() -> Self {
+                0.0
+            }
+        }
+
         impl ConstZero for $ty {
             const ZERO: Self = 0.0;
+        }
+
+        impl One for $ty {
+            #[inline]
+            fn one() -> Self {
+                1.0
+            }
         }
 
         impl ConstOne for $ty {
@@ -326,6 +379,13 @@ macro_rules! impl_elem_traits_for_float {
 
         impl PlusInfinity for $ty {
             const PLUS_INFINITY: Self = <$ty>::INFINITY;
+        }
+
+        impl Nan for $ty {
+            #[inline]
+            fn nan() -> Self {
+                <$ty>::NAN
+            }
         }
 
         impl ConstNan for $ty {
