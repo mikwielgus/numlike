@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use core::num::{Saturating, Wrapping};
+
 /// Bundle of sign-related functions.
 pub trait SignFns: IsPositive + IsNegative + Sgn + Abs {}
 impl<T: IsPositive + IsNegative + Sgn + Abs> SignFns for T {}
@@ -187,6 +189,56 @@ macro_rules! sign_traits_nonnegative_tests {
 
 for_unsigned_ints!(impl_sign_traits_for_unsigned_int);
 
+macro_rules! impl_sign_traits_for_unsigned_int_via_inner {
+    ($ty:ty, $tests_mod:ident) => {
+        impl IsPositive for $ty {
+            #[inline]
+            fn is_positive(self) -> bool {
+                IsPositive::is_positive(self.0)
+            }
+        }
+
+        impl IsNegative for $ty {
+            #[inline]
+            fn is_negative(self) -> bool {
+                IsNegative::is_negative(self.0)
+            }
+        }
+
+        impl Sgn for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn sgn(self) -> Self::Output {
+                Self(Sgn::sgn(self.0))
+            }
+        }
+
+        impl Abs for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn abs(self) -> Self::Output {
+                Self(Abs::abs(self.0))
+            }
+        }
+
+        impl CheckedAbs for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn checked_abs(self) -> Option<Self::Output> {
+                CheckedAbs::checked_abs(self.0).map(Self)
+            }
+        }
+
+        sign_traits_nonnegative_tests!($ty, $tests_mod);
+    };
+}
+
+for_wrapping_unsigned_ints!(impl_sign_traits_for_unsigned_int_via_inner);
+for_saturating_unsigned_ints!(impl_sign_traits_for_unsigned_int_via_inner);
+
 macro_rules! impl_sign_traits_for_signed_int {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
         impl IsPositive for $ty {
@@ -311,6 +363,57 @@ macro_rules! sign_traits_negative_tests {
 }
 
 for_signed_ints!(impl_sign_traits_for_signed_int);
+
+macro_rules! impl_sign_traits_for_signed_int_via_inner {
+    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl IsPositive for $ty {
+            #[inline]
+            fn is_positive(self) -> bool {
+                IsPositive::is_positive(self.0)
+            }
+        }
+
+        impl IsNegative for $ty {
+            #[inline]
+            fn is_negative(self) -> bool {
+                IsNegative::is_negative(self.0)
+            }
+        }
+
+        impl Sgn for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn sgn(self) -> Self::Output {
+                Self(Sgn::sgn(self.0))
+            }
+        }
+
+        impl Abs for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn abs(self) -> Self::Output {
+                Self(Abs::abs(self.0))
+            }
+        }
+
+        impl CheckedAbs for $ty {
+            type Output = $ty;
+
+            #[inline]
+            fn checked_abs(self) -> Option<Self::Output> {
+                CheckedAbs::checked_abs(self.0).map(Self)
+            }
+        }
+
+        sign_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
+        sign_traits_negative_tests!($ty, $negative_tests_mod);
+    };
+}
+
+for_wrapping_signed_ints!(impl_sign_traits_for_signed_int_via_inner);
+for_saturating_signed_ints!(impl_sign_traits_for_signed_int_via_inner);
 
 macro_rules! impl_sign_traits_for_float {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
