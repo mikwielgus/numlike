@@ -4,8 +4,83 @@
 
 //! Equality and ordering with defined NaN behavior.
 
+use crate::fns::{IsNegative, IsPositive};
 use core::cmp::Ordering;
-use core::num::{Saturating, Wrapping};
+
+/// Compare the value to zero. This is just `sgn` function, but returns
+/// `Ordering`.
+pub trait Cmp0 {
+    /// Compare the value to zero. This is just `sgn` function, but returns
+    /// `Ordering`.
+    fn cmp0(&self) -> Ordering;
+}
+
+macro_rules! impl_cmp0_trait_for_signed {
+    ($ty:ty) => {
+        impl Cmp0 for $ty {
+            #[inline]
+            fn cmp0(&self) -> Ordering {
+                if <$ty as IsPositive>::is_positive(*self) {
+                    Ordering::Greater
+                } else if <$ty as IsNegative>::is_negative(*self) {
+                    Ordering::Less
+                } else {
+                    Ordering::Equal
+                }
+            }
+        }
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident) => {
+        impl_cmp0_trait_for_signed!($ty);
+
+        test_cmp0_trait_nonnegative!($ty, $nonnegative_tests_mod);
+    };
+    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
+        impl_cmp0_trait_for_signed!($ty, $nonnegative_tests_mod);
+
+        test_cmp0_trait_negative!($ty, $negative_tests_mod);
+    };
+}
+
+macro_rules! test_cmp0_trait_nonnegative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::cmp::*;
+            use crate::elem::*;
+
+            #[test]
+            fn test_cmp0() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+
+                assert_eq!(Cmp0::cmp0(&zero), Ordering::Equal);
+                assert_eq!(Cmp0::cmp0(&one), Ordering::Greater);
+                assert_eq!(Cmp0::cmp0(&two), Ordering::Greater);
+            }
+        }
+    };
+}
+
+macro_rules! test_cmp0_trait_negative {
+    ($ty:ty, $tests_mod:ident) => {
+        #[cfg(test)]
+        mod $tests_mod {
+            use crate::cmp::*;
+            use crate::elem::*;
+
+            #[test]
+            fn test_cmp0() {
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+
+                assert_eq!(Cmp0::cmp0(&-one), Ordering::Less);
+                assert_eq!(Cmp0::cmp0(&-two), Ordering::Less);
+            }
+        }
+    };
+}
 
 /// Trait for partial equality, identical to [`PartialEq`], except that `NaN` is
 /// treated as equal to itself, in contradiction to the IEEE 754 floating point
@@ -674,6 +749,8 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
         }
     };
 }
+
+for_all_signed_ints!(impl_cmp0_trait_for_signed, cmp0);
 
 for_all_signed_ints!(impl_nanfix_eq_traits_for_ord);
 for_all_unsigned_ints!(impl_nanfix_eq_traits_for_ord);

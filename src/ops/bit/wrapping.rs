@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use core::num::{Saturating, Wrapping};
-
 /// Panic-free bitwise shift-left; yields `self << mask(rhs)`, where `mask`
 /// removes any high-order bits of `rhs` that would cause the shift to
 /// exceed the bitwidth of the type.

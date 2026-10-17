@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use core::num::{Saturating, Wrapping};
-
 /// Bundle of overflowing arithmetic and fused arithmetic operations.
 pub trait FullOverflowingArithOps<Rhs = Self>:
     OverflowingArithOps<Rhs> + OverflowingFusedArithOps<Rhs>

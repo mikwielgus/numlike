@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use core::num::{Saturating, Wrapping};
-
 /// Bundle of rounding functions.
 pub trait RoundFns: Round + Trunc + RoundTiesEven + Floor + Ceil {}
 impl<T: Round + Trunc + RoundTiesEven + Floor + Ceil> RoundFns for T {}

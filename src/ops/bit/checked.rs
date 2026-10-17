@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use core::num::{Saturating, Wrapping};
-
 /// Bundle of checked bitwise shift operations.
 pub trait CheckedBitOps: CheckedShl + CheckedShr {}
 impl<T: CheckedShl + CheckedShr> CheckedBitOps for T {}

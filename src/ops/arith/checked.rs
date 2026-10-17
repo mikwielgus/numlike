@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use core::num::{Saturating, Wrapping};
-
 use crate::ops::MulAdd;
 #[cfg(any(feature = "std", feature = "libm"))]
 use crate::ops::{DivEuclid, RemEuclid};

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use core::num::{Saturating, Wrapping};
-
 /// Bundle of sign-related functions.
 pub trait SignFns: IsPositive + IsNegative + Sgn + Abs {}
 impl<T: IsPositive + IsNegative + Sgn + Abs> SignFns for T {}
