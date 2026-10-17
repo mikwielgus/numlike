@@ -160,8 +160,8 @@ macro_rules! test_exp_traits_nonnegative {
 
             #[test]
             fn test_exp() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert_eq!(Exp::exp(zero), one);
@@ -174,8 +174,8 @@ macro_rules! test_exp_traits_nonnegative {
 
             #[test]
             fn test_exp2() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -186,8 +186,8 @@ macro_rules! test_exp_traits_nonnegative {
 
             #[test]
             fn test_exp_m1() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -204,8 +204,8 @@ macro_rules! test_exp_traits_nonnegative {
 
             #[test]
             fn test_checked_exp() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert_eq!(CheckedExp::checked_exp(zero), Some(one));
@@ -223,8 +223,8 @@ macro_rules! test_exp_traits_nonnegative {
 
             #[test]
             fn test_checked_exp2() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -240,8 +240,8 @@ macro_rules! test_exp_traits_nonnegative {
 
             #[test]
             fn test_checked_exp_m1() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert_eq!(CheckedExpM1::checked_exp_m1(zero), Some(zero));
@@ -270,8 +270,8 @@ macro_rules! test_exp_traits_negative {
 
             #[test]
             fn test_exp() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -286,7 +286,7 @@ macro_rules! test_exp_traits_negative {
 
             #[test]
             fn test_exp2() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -298,8 +298,8 @@ macro_rules! test_exp_traits_negative {
 
             #[test]
             fn test_exp_m1() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -313,8 +313,8 @@ macro_rules! test_exp_traits_negative {
 
             #[test]
             fn test_checked_exp() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
 
                 let inv_e = CheckedExp::checked_exp(-one).unwrap();
                 assert!(inv_e > zero);
@@ -323,7 +323,7 @@ macro_rules! test_exp_traits_negative {
 
             #[test]
             fn test_checked_exp2() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -335,8 +335,8 @@ macro_rules! test_exp_traits_negative {
 
             #[test]
             fn test_checked_exp_m1() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
 
                 let inv_e_m1 = CheckedExpM1::checked_exp_m1(-one).unwrap();
                 assert!(inv_e_m1 < zero);

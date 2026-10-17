@@ -5,7 +5,7 @@
 //! Abstract algebraic structures.
 
 use crate::{
-    elem::{One, Zero},
+    elem::{ConstOne, ConstZero},
     ops::{FieldOps, RingOps},
 };
 
@@ -18,8 +18,8 @@ pub trait PofieldBundle: Clone + PartialOrd + FieldBundle {}
 impl<T: Clone + PartialOrd + FieldBundle> PofieldBundle for T {}
 
 /// Cloneable, has field operations.
-pub trait FieldBundle: Clone + Zero + One + FieldOps + Sized {}
-impl<T: Clone + Zero + One + FieldOps + Sized> FieldBundle for T {}
+pub trait FieldBundle: Clone + ConstZero + ConstOne + FieldOps + Sized {}
+impl<T: Clone + ConstZero + ConstOne + FieldOps + Sized> FieldBundle for T {}
 
 /// Cloneable, has total order, has ring operations.
 pub trait ToringBundle: Clone + Ord + RingBundle {}
@@ -30,5 +30,5 @@ pub trait PoringBundle: Clone + PartialOrd + RingBundle {}
 impl<T: Clone + PartialOrd + RingBundle> PoringBundle for T {}
 
 /// Cloneable, has ring operations.
-pub trait RingBundle: Clone + Zero + One + RingOps + Sized {}
-impl<T: Clone + Zero + One + RingOps + Sized> RingBundle for T {}
+pub trait RingBundle: Clone + ConstZero + ConstOne + RingOps + Sized {}
+impl<T: Clone + ConstZero + ConstOne + RingOps + Sized> RingBundle for T {}

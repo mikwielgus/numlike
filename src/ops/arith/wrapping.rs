@@ -671,8 +671,8 @@ macro_rules! test_wrapping_arith_traits_int_nonnegative {
 
             #[test]
             fn test_div_rem() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -685,7 +685,7 @@ macro_rules! test_wrapping_arith_traits_int_nonnegative {
 
             #[test]
             fn test_div_euclid() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -698,8 +698,8 @@ macro_rules! test_wrapping_arith_traits_int_nonnegative {
 
             #[test]
             fn test_rem_euclid() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -712,8 +712,8 @@ macro_rules! test_wrapping_arith_traits_int_nonnegative {
 
             #[test]
             fn test_div_rem_euclid() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let five = four + one;
@@ -730,8 +730,8 @@ macro_rules! test_wrapping_arith_traits_int_nonnegative {
 
             #[test]
             fn test_mul_add() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -753,8 +753,8 @@ macro_rules! test_wrapping_arith_traits_int_negative {
 
             #[test]
             fn test_div_rem() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let five = four + one;
@@ -769,7 +769,7 @@ macro_rules! test_wrapping_arith_traits_int_negative {
 
             #[test]
             fn test_div_euclid() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let five = two + two + one;
@@ -780,8 +780,8 @@ macro_rules! test_wrapping_arith_traits_int_negative {
 
             #[test]
             fn test_rem_euclid() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let five = four + one;
@@ -792,7 +792,7 @@ macro_rules! test_wrapping_arith_traits_int_negative {
 
             #[test]
             fn test_div_rem_euclid() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let five = two + two + one;
@@ -805,8 +805,8 @@ macro_rules! test_wrapping_arith_traits_int_negative {
 
             #[test]
             fn test_neg() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(WrappingNeg::wrapping_neg(one), -one);
                 assert_eq!(WrappingNeg::wrapping_neg(-one), one);

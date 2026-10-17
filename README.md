@@ -81,12 +81,6 @@ decisions in the venerable `num-traits` crate.
     two lengths gives you area, which is a different dimension.
     - `numlike` does not have these problems because it does not have any
       supertraits for its `Zero` and `One`.
-  - Moreover, `num-traits`'s `Zero` and `One` do not provide `ZERO` and `ONE`
-    associated constants, but instead return them from `::zero()` and `::one()`
-    functions. These constants were only later added through new separate
-    traits, `ConstZero` and `ConstOne`, presumably to avoid breaking changes.
-    - `numlike`'s `Zero` and `One` provide `ZERO` and `ONE` associated
-      constants directly.
 - `num-traits`'s
   [`Bounded`](https://docs.rs/num-traits/latest/num_traits/bounds/trait.Bounded.html)
   trait only returns **finite** minimum and maximum values. This makes no

@@ -102,8 +102,8 @@ macro_rules! test_pow_traits_for_int_nonnegative {
 
             #[test]
             fn test_pow() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
@@ -123,8 +123,8 @@ macro_rules! test_pow_traits_for_int_nonnegative {
 
             #[test]
             fn test_checked_pow() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
@@ -153,7 +153,7 @@ macro_rules! test_pow_traits_for_int_negative {
 
             #[test]
             fn test_pow() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
@@ -170,7 +170,7 @@ macro_rules! test_pow_traits_for_int_negative {
 
             #[test]
             fn test_checked_pow() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
@@ -260,8 +260,8 @@ macro_rules! test_pow_traits_float_nonnegative {
 
             #[test]
             fn test_pow() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
@@ -282,8 +282,8 @@ macro_rules! test_pow_traits_float_nonnegative {
 
             #[test]
             fn test_checked_pow() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
@@ -312,7 +312,7 @@ macro_rules! test_pow_traits_float_negative {
 
             #[test]
             fn test_pow() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
@@ -333,7 +333,7 @@ macro_rules! test_pow_traits_float_negative {
 
             #[test]
             fn test_checked_pow() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;

@@ -227,8 +227,8 @@ macro_rules! test_bytes_traits_nonnegative {
 
             #[test]
             fn test_roundtrip() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -286,7 +286,7 @@ macro_rules! test_bytes_traits_nonnegative {
 
             #[test]
             fn test_be_to_le() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -315,7 +315,7 @@ macro_rules! test_bytes_traits_negative {
 
             #[test]
             fn test_roundtrip() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -361,7 +361,7 @@ macro_rules! test_bytes_traits_negative {
 
             #[test]
             fn test_be_to_le() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 

@@ -51,8 +51,8 @@ macro_rules! test_cmp0_trait_nonnegative {
 
             #[test]
             fn test_cmp0() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert_eq!(Cmp0::cmp0(&zero), Ordering::Equal);
@@ -72,7 +72,7 @@ macro_rules! test_cmp0_trait_negative {
 
             #[test]
             fn test_cmp0() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert_eq!(Cmp0::cmp0(&-one), Ordering::Less);
@@ -238,8 +238,8 @@ macro_rules! test_nanfix_eq_traits_nonnegative {
 
             #[test]
             fn test_nanfix_eq() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -255,8 +255,8 @@ macro_rules! test_nanfix_eq_traits_nonnegative {
 
             #[test]
             fn test_nanfix_ne() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -282,7 +282,7 @@ macro_rules! test_nanfix_eq_traits_negative {
 
             #[test]
             fn test_nanfix_eq() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -297,7 +297,7 @@ macro_rules! test_nanfix_eq_traits_negative {
 
             #[test]
             fn test_nanfix_ne() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -426,7 +426,7 @@ macro_rules! test_nanfix_eq_traits_nan {
 
             #[test]
             fn test_nan_nanfix_eq() {
-                let zero = <$ty as Zero>::ZERO;
+                let zero = <$ty as ConstZero>::ZERO;
                 let nan = <$ty>::NAN;
 
                 assert!(NanfixPartialEq::nanfix_eq(&nan, &nan));
@@ -437,7 +437,7 @@ macro_rules! test_nanfix_eq_traits_nan {
 
             #[test]
             fn test_nan_nanfix_ne() {
-                let zero = <$ty as Zero>::ZERO;
+                let zero = <$ty as ConstZero>::ZERO;
                 let nan = <$ty>::NAN;
 
                 assert!(!NanfixPartialEq::nanfix_ne(&nan, &nan));
@@ -460,8 +460,8 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
 
             #[test]
             fn test_nanmin_cmp() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -481,8 +481,8 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
 
             #[test]
             fn test_nanmax_cmp() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -502,8 +502,8 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
 
             #[test]
             fn test_nanmin_lt_le_gt_ge() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert!(NanminPartialOrd::nanmin_lt(&zero, &one));
@@ -521,8 +521,8 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
 
             #[test]
             fn test_nanmax_lt_le_gt_ge() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert!(NanmaxPartialOrd::nanmax_lt(&zero, &one));
@@ -540,8 +540,8 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
 
             #[test]
             fn test_nanmin_partial_cmp() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(
                     NanminPartialOrd::nanmin_partial_cmp(&zero, &zero),
@@ -559,8 +559,8 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
 
             #[test]
             fn test_nanmax_partial_cmp() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(
                     NanmaxPartialOrd::nanmax_partial_cmp(&zero, &zero),
@@ -590,7 +590,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
 
             #[test]
             fn test_nanmin_cmp() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -609,7 +609,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
 
             #[test]
             fn test_nanmax_cmp() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -628,7 +628,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
 
             #[test]
             fn test_nanmin_lt_le_gt_ge() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert!(NanminPartialOrd::nanmin_lt(&(-two), &(-one)));
@@ -646,7 +646,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
 
             #[test]
             fn test_nanmax_lt_le_gt_ge() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert!(NanmaxPartialOrd::nanmax_lt(&(-two), &(-one)));
@@ -676,7 +676,7 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
 
             #[test]
             fn test_nan_nanmin_cmp() {
-                let zero = <$ty as Zero>::ZERO;
+                let zero = <$ty as ConstZero>::ZERO;
                 let nan = <$ty>::NAN;
                 let neg_infinity = <$ty>::NEG_INFINITY;
                 let infinity = <$ty>::INFINITY;
@@ -695,7 +695,7 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
 
             #[test]
             fn test_nan_nanmax_cmp() {
-                let zero = <$ty as Zero>::ZERO;
+                let zero = <$ty as ConstZero>::ZERO;
                 let nan = <$ty>::NAN;
                 let neg_infinity = <$ty>::NEG_INFINITY;
                 let infinity = <$ty>::INFINITY;
@@ -714,7 +714,7 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
 
             #[test]
             fn test_nan_nanmin_lt_le_gt_ge() {
-                let zero = <$ty as Zero>::ZERO;
+                let zero = <$ty as ConstZero>::ZERO;
                 let nan = <$ty>::NAN;
                 let neg_infinity = <$ty>::NEG_INFINITY;
 
@@ -731,7 +731,7 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
 
             #[test]
             fn test_nan_nanmax_lt_le_gt_ge() {
-                let zero = <$ty as Zero>::ZERO;
+                let zero = <$ty as ConstZero>::ZERO;
                 let nan = <$ty>::NAN;
                 let infinity = <$ty>::INFINITY;
 

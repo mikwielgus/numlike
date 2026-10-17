@@ -297,8 +297,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_sin() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -316,8 +316,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_cos() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -335,8 +335,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_tan() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -353,8 +353,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_sin_cos() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -371,8 +371,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_asin() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -390,8 +390,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_acos() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -409,8 +409,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_atan() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -428,8 +428,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_atan2() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -447,8 +447,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_checked_tan() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -469,8 +469,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_checked_asin() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
 
@@ -481,8 +481,8 @@ macro_rules! test_trig_traits_nonnegative {
 
             #[test]
             fn test_checked_acos() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
 
@@ -505,7 +505,7 @@ macro_rules! test_trig_traits_negative {
 
             #[test]
             fn test_sin() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -517,7 +517,7 @@ macro_rules! test_trig_traits_negative {
 
             #[test]
             fn test_cos() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -529,7 +529,7 @@ macro_rules! test_trig_traits_negative {
 
             #[test]
             fn test_tan() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -541,7 +541,7 @@ macro_rules! test_trig_traits_negative {
 
             #[test]
             fn test_sin_cos() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -556,7 +556,7 @@ macro_rules! test_trig_traits_negative {
 
             #[test]
             fn test_asin() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -568,8 +568,8 @@ macro_rules! test_trig_traits_negative {
 
             #[test]
             fn test_acos() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -587,7 +587,7 @@ macro_rules! test_trig_traits_negative {
 
             #[test]
             fn test_atan() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -599,8 +599,8 @@ macro_rules! test_trig_traits_negative {
 
             #[test]
             fn test_atan2() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -615,7 +615,7 @@ macro_rules! test_trig_traits_negative {
 
             #[test]
             fn test_checked_tan() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -633,17 +633,17 @@ macro_rules! test_trig_traits_negative {
 
             #[test]
             fn test_checked_asin() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
 
-                assert!(CheckedAsin::checked_asin(-half).unwrap() < <$ty as Zero>::ZERO);
+                assert!(CheckedAsin::checked_asin(-half).unwrap() < <$ty as ConstZero>::ZERO);
                 assert_eq!(CheckedAsin::checked_asin(-two), None);
             }
 
             #[test]
             fn test_checked_acos() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert!(CheckedAcos::checked_acos(-one).unwrap() > one);

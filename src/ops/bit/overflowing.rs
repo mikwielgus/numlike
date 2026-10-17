@@ -96,8 +96,8 @@ macro_rules! test_overflowing_bitshift_traits_int_nonnegative {
 
             #[test]
             fn test_shl() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -113,8 +113,8 @@ macro_rules! test_overflowing_bitshift_traits_int_nonnegative {
 
             #[test]
             fn test_shr() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -141,7 +141,7 @@ macro_rules! test_overflowing_bitshift_traits_int_negative {
 
             #[test]
             fn test_shl() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -155,7 +155,7 @@ macro_rules! test_overflowing_bitshift_traits_int_negative {
 
             #[test]
             fn test_shr() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 

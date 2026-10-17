@@ -19,7 +19,7 @@ pub trait IsNegative {
 }
 
 /// Returns `true` if `self` is zero and `false` otherwise.
-pub trait IsZero {
+pub trait IsConstZero {
     /// Returns `true` if `self` is zero and `false` otherwise.
     fn is_zero(self) -> bool;
 }
@@ -81,7 +81,7 @@ macro_rules! impl_sign_traits_for_unsigned_int {
             }
         }
 
-        impl IsZero for $ty {
+        impl IsConstZero for $ty {
             #[inline]
             fn is_zero(self) -> bool {
                 self == 0
@@ -128,8 +128,8 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_is_positive() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -141,8 +141,8 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_is_negative() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -154,19 +154,19 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_is_zero() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
-                assert!(IsZero::is_zero(zero));
-                assert!(!IsZero::is_zero(one));
-                assert!(!IsZero::is_zero(two));
+                assert!(IsConstZero::is_zero(zero));
+                assert!(!IsConstZero::is_zero(one));
+                assert!(!IsConstZero::is_zero(two));
             }
 
             #[test]
             fn test_sgn() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -178,8 +178,8 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_abs() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -191,8 +191,8 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_checked_abs() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -223,10 +223,10 @@ macro_rules! impl_sign_traits_for_unsigned_int_via_inner {
             }
         }
 
-        impl IsZero for $ty {
+        impl IsConstZero for $ty {
             #[inline]
             fn is_zero(self) -> bool {
-                IsZero::is_zero(self.0)
+                IsConstZero::is_zero(self.0)
             }
         }
 
@@ -280,7 +280,7 @@ macro_rules! impl_sign_traits_for_signed_int {
             }
         }
 
-        impl IsZero for $ty {
+        impl IsConstZero for $ty {
             #[inline]
             fn is_zero(self) -> bool {
                 self == 0
@@ -328,8 +328,8 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_is_positive() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -341,8 +341,8 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_is_negative() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -354,19 +354,19 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_is_zero() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
-                assert!(IsZero::is_zero(-zero));
-                assert!(!IsZero::is_zero(-one));
-                assert!(!IsZero::is_zero(-two));
+                assert!(IsConstZero::is_zero(-zero));
+                assert!(!IsConstZero::is_zero(-one));
+                assert!(!IsConstZero::is_zero(-two));
             }
 
             #[test]
             fn test_sgn() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -380,7 +380,7 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_abs() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -391,7 +391,7 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_checked_abs() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -423,10 +423,10 @@ macro_rules! impl_sign_traits_for_signed_int_via_inner {
             }
         }
 
-        impl IsZero for $ty {
+        impl IsConstZero for $ty {
             #[inline]
             fn is_zero(self) -> bool {
-                IsZero::is_zero(self.0)
+                IsConstZero::is_zero(self.0)
             }
         }
 
@@ -481,7 +481,7 @@ macro_rules! impl_sign_traits_for_float {
             }
         }
 
-        impl IsZero for $ty {
+        impl IsConstZero for $ty {
             #[inline]
             fn is_zero(self) -> bool {
                 self == 0.0

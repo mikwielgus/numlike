@@ -360,8 +360,8 @@ macro_rules! test_log_traits_float_nonnegative {
 
             #[test]
             fn test_ln() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -375,8 +375,8 @@ macro_rules! test_log_traits_float_nonnegative {
 
             #[test]
             fn test_log2() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
@@ -389,8 +389,8 @@ macro_rules! test_log_traits_float_nonnegative {
 
             #[test]
             fn test_log10() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let ten = 10 as $ty;
 
                 assert_eq!(Log10::log10(one), zero);
@@ -400,12 +400,12 @@ macro_rules! test_log_traits_float_nonnegative {
 
             #[test]
             fn test_log() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
 
-                assert_eq!(Log::log(one, two), <$ty as Zero>::ZERO);
+                assert_eq!(Log::log(one, two), <$ty as ConstZero>::ZERO);
                 assert_eq!(Log::log(two, two), one);
                 assert_eq!(Log::log(four, two), two);
                 assert_eq!(Log::log(eight, two), two + one);
@@ -414,8 +414,8 @@ macro_rules! test_log_traits_float_nonnegative {
 
             #[test]
             fn test_ln_1p() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -432,8 +432,8 @@ macro_rules! test_log_traits_float_nonnegative {
 
             #[test]
             fn test_checked_ln() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(CheckedLn::checked_ln(one), Some(zero));
                 assert_eq!(CheckedLn::checked_ln(zero), None);
@@ -441,8 +441,8 @@ macro_rules! test_log_traits_float_nonnegative {
 
             #[test]
             fn test_checked_log2() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -454,8 +454,8 @@ macro_rules! test_log_traits_float_nonnegative {
 
             #[test]
             fn test_checked_log10() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let ten = 10 as $ty;
 
                 assert_eq!(CheckedLog10::checked_log10(one), Some(zero));
@@ -465,8 +465,8 @@ macro_rules! test_log_traits_float_nonnegative {
 
             #[test]
             fn test_checked_log() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -476,8 +476,8 @@ macro_rules! test_log_traits_float_nonnegative {
 
             #[test]
             fn test_checked_ln_1p() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(CheckedLn1p::checked_ln_1p(zero), Some(zero));
                 assert!(CheckedLn1p::checked_ln_1p(one).unwrap() > zero);
@@ -497,8 +497,8 @@ macro_rules! test_log_traits_float_negative {
 
             #[test]
             fn test_ln() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -513,7 +513,7 @@ macro_rules! test_log_traits_float_negative {
 
             #[test]
             fn test_log2() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -525,7 +525,7 @@ macro_rules! test_log_traits_float_negative {
 
             #[test]
             fn test_log10() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let ten = 10 as $ty;
                 let tenth = one / ten;
 
@@ -534,7 +534,7 @@ macro_rules! test_log_traits_float_negative {
 
             #[test]
             fn test_log() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -547,8 +547,8 @@ macro_rules! test_log_traits_float_negative {
 
             #[test]
             fn test_ln_1p() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -563,14 +563,14 @@ macro_rules! test_log_traits_float_negative {
 
             #[test]
             fn test_checked_ln() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(CheckedLn::checked_ln(-one), None);
             }
 
             #[test]
             fn test_checked_log2() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
 
@@ -580,7 +580,7 @@ macro_rules! test_log_traits_float_negative {
 
             #[test]
             fn test_checked_log10() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let ten = 10 as $ty;
                 let tenth = one / ten;
 
@@ -590,7 +590,7 @@ macro_rules! test_log_traits_float_negative {
 
             #[test]
             fn test_checked_log() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
 
@@ -600,8 +600,8 @@ macro_rules! test_log_traits_float_negative {
 
             #[test]
             fn test_checked_ln_1p() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
 
@@ -730,7 +730,7 @@ macro_rules! test_ilog_traits_nonnegative {
 
             #[test]
             fn test_ilog2() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -745,7 +745,7 @@ macro_rules! test_ilog_traits_nonnegative {
 
             #[test]
             fn test_ilog10() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let ten = 10 as $ty;
                 let hundred = ten * ten;
 
@@ -756,7 +756,7 @@ macro_rules! test_ilog_traits_nonnegative {
 
             #[test]
             fn test_ilog() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -772,8 +772,8 @@ macro_rules! test_ilog_traits_nonnegative {
 
             #[test]
             fn test_checked_ilog2() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -785,8 +785,8 @@ macro_rules! test_ilog_traits_nonnegative {
 
             #[test]
             fn test_checked_ilog10() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let ten = 10 as $ty;
 
                 assert_eq!(CheckedIlog10::checked_ilog10(one), Some(0));
@@ -796,8 +796,8 @@ macro_rules! test_ilog_traits_nonnegative {
 
             #[test]
             fn test_checked_ilog() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let eight = (one + one) * (one + one) * (one + one);
 
@@ -818,21 +818,21 @@ macro_rules! test_ilog_traits_negative {
 
             #[test]
             fn test_checked_ilog2() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(CheckedIlog2::checked_ilog2(-one), None);
             }
 
             #[test]
             fn test_checked_ilog10() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(CheckedIlog10::checked_ilog10(-one), None);
             }
 
             #[test]
             fn test_checked_ilog() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
                 assert_eq!(CheckedIlog::checked_ilog(-one, two), None);

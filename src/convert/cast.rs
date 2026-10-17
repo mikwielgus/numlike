@@ -89,8 +89,8 @@ macro_rules! convert_traits_nonnegative_tests {
 
             #[test]
             fn test_cast_into_self() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -102,8 +102,8 @@ macro_rules! convert_traits_nonnegative_tests {
 
             #[test]
             fn test_cast_from_self() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -115,8 +115,8 @@ macro_rules! convert_traits_nonnegative_tests {
 
             #[test]
             fn test_cast_into_other() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -138,8 +138,8 @@ macro_rules! convert_traits_nonnegative_tests {
 
             #[test]
             fn test_cast_from_other() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -171,7 +171,7 @@ macro_rules! convert_traits_negative_tests {
 
             #[test]
             fn test_cast_into_self() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -182,7 +182,7 @@ macro_rules! convert_traits_negative_tests {
 
             #[test]
             fn test_cast_from_self() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -193,7 +193,7 @@ macro_rules! convert_traits_negative_tests {
 
             #[test]
             fn test_cast_into_other() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -212,7 +212,7 @@ macro_rules! convert_traits_negative_tests {
 
             #[test]
             fn test_cast_from_other() {
-                let one = <$ty as One>::ONE;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 

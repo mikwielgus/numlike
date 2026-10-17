@@ -136,8 +136,8 @@ macro_rules! test_gcd_lcm_traits_int_nonnegative {
 
             #[test]
             fn test_gcd() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -162,8 +162,8 @@ macro_rules! test_gcd_lcm_traits_int_nonnegative {
 
             #[test]
             fn test_lcm() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -190,8 +190,8 @@ macro_rules! test_gcd_lcm_traits_int_nonnegative {
 
             #[test]
             fn test_gcd_lcm() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -228,8 +228,8 @@ macro_rules! test_gcd_lcm_traits_int_negative {
 
             #[test]
             fn test_gcd() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -254,8 +254,8 @@ macro_rules! test_gcd_lcm_traits_int_negative {
 
             #[test]
             fn test_lcm() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -282,8 +282,8 @@ macro_rules! test_gcd_lcm_traits_int_negative {
 
             #[test]
             fn test_gcd_lcm() {
-                let zero = <$ty as Zero>::ZERO;
-                let one = <$ty as One>::ONE;
+                let zero = <$ty as ConstZero>::ZERO;
+                let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
