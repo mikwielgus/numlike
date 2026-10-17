@@ -6,20 +6,22 @@
 pub trait SignFns: IsPositive + IsNegative + Sgn + Abs {}
 impl<T: IsPositive + IsNegative + Sgn + Abs> SignFns for T {}
 
-/// Returns `true` if `self` is positive and `false` if the number is zero or
-/// negative.
+/// Returns `true` if `self` is positive and `false` otherwise.
 pub trait IsPositive {
-    /// Returns `true` if `self` is positive and `false` if the number is zero
-    /// or negative.
+    /// Returns `true` if `self` is positive and `false` otherwise.
     fn is_positive(self) -> bool;
 }
 
-/// Returns `true` if `self` is negative and `false` if the number is zero or
-/// positive.
+/// Returns `true` if `self` is negative and `false` otherwise.
 pub trait IsNegative {
-    /// Returns `true` if `self` is negative and `false` if the number is zero
-    /// or positive.
+    /// Returns `true` if `self` is negative and `false` otherwise.
     fn is_negative(self) -> bool;
+}
+
+/// Returns `true` if `self` is zero and `false` otherwise.
+pub trait IsZero {
+    /// Returns `true` if `self` is zero and `false` otherwise.
+    fn is_zero(self) -> bool;
 }
 
 /// Returns a number representing sign of `self`.
@@ -76,6 +78,13 @@ macro_rules! impl_sign_traits_for_unsigned_int {
             #[inline]
             fn is_negative(self) -> bool {
                 false
+            }
+        }
+
+        impl IsZero for $ty {
+            #[inline]
+            fn is_zero(self) -> bool {
+                self == 0
             }
         }
 
@@ -144,6 +153,17 @@ macro_rules! sign_traits_nonnegative_tests {
             }
 
             #[test]
+            fn test_is_zero() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+
+                assert!(IsZero::is_zero(zero));
+                assert!(!IsZero::is_zero(one));
+                assert!(!IsZero::is_zero(two));
+            }
+
+            #[test]
             fn test_sgn() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
@@ -203,6 +223,13 @@ macro_rules! impl_sign_traits_for_unsigned_int_via_inner {
             }
         }
 
+        impl IsZero for $ty {
+            #[inline]
+            fn is_zero(self) -> bool {
+                IsZero::is_zero(self.0)
+            }
+        }
+
         impl Sgn for $ty {
             type Output = $ty;
 
@@ -250,6 +277,13 @@ macro_rules! impl_sign_traits_for_signed_int {
             #[inline]
             fn is_negative(self) -> bool {
                 <$ty>::is_negative(self)
+            }
+        }
+
+        impl IsZero for $ty {
+            #[inline]
+            fn is_zero(self) -> bool {
+                self == 0
             }
         }
 
@@ -319,6 +353,17 @@ macro_rules! sign_traits_negative_tests {
             }
 
             #[test]
+            fn test_is_zero() {
+                let zero = <$ty as Zero>::ZERO;
+                let one = <$ty as One>::ONE;
+                let two = one + one;
+
+                assert!(IsZero::is_zero(-zero));
+                assert!(!IsZero::is_zero(-one));
+                assert!(!IsZero::is_zero(-two));
+            }
+
+            #[test]
             fn test_sgn() {
                 let zero = <$ty as Zero>::ZERO;
                 let one = <$ty as One>::ONE;
@@ -378,6 +423,13 @@ macro_rules! impl_sign_traits_for_signed_int_via_inner {
             }
         }
 
+        impl IsZero for $ty {
+            #[inline]
+            fn is_zero(self) -> bool {
+                IsZero::is_zero(self.0)
+            }
+        }
+
         impl Sgn for $ty {
             type Output = $ty;
 
@@ -426,6 +478,13 @@ macro_rules! impl_sign_traits_for_float {
             #[inline]
             fn is_negative(self) -> bool {
                 self < 0.0
+            }
+        }
+
+        impl IsZero for $ty {
+            #[inline]
+            fn is_zero(self) -> bool {
+                self == 0.0
             }
         }
 
