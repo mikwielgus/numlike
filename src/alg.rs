@@ -9,26 +9,26 @@ use crate::{
     ops::{FieldOps, RingOps},
 };
 
-/// Cloneable, has total order, has field operations.
-pub trait TofieldBundle: Clone + Ord + FieldBundle {}
-impl<T: Clone + Ord + FieldBundle> TofieldBundle for T {}
+/// Has total order, has field operations.
+pub trait TofieldBundle: Ord + FieldBundle {}
+impl<T: Ord + FieldBundle> TofieldBundle for T {}
 
-/// Cloneable, has partial order, has field operations.
-pub trait PofieldBundle: Clone + PartialOrd + FieldBundle {}
-impl<T: Clone + PartialOrd + FieldBundle> PofieldBundle for T {}
+/// Has partial order, has field operations.
+pub trait PofieldBundle: PartialOrd + FieldBundle {}
+impl<T: PartialOrd + FieldBundle> PofieldBundle for T {}
 
-/// Cloneable, has field operations.
-pub trait FieldBundle: Clone + ConstZero + ConstOne + FieldOps + Sized {}
-impl<T: Clone + ConstZero + ConstOne + FieldOps + Sized> FieldBundle for T {}
+/// Has field operations.
+pub trait FieldBundle: ConstZero + ConstOne + FieldOps + Sized {}
+impl<T: ConstZero + ConstOne + FieldOps + Sized> FieldBundle for T {}
 
-/// Cloneable, has total order, has ring operations.
-pub trait ToringBundle: Clone + Ord + RingBundle {}
-impl<T: Clone + Ord + RingBundle> ToringBundle for T {}
+/// Has total order, has ring operations.
+pub trait ToringBundle: Ord + RingBundle {}
+impl<T: Ord + RingBundle> ToringBundle for T {}
 
-/// Cloneable, has partial order, has ring operations.
-pub trait PoringBundle: Clone + PartialOrd + RingBundle {}
-impl<T: Clone + PartialOrd + RingBundle> PoringBundle for T {}
+/// Has partial order, has ring operations.
+pub trait PoringBundle: PartialOrd + RingBundle {}
+impl<T: PartialOrd + RingBundle> PoringBundle for T {}
 
-/// Cloneable, has ring operations.
-pub trait RingBundle: Clone + ConstZero + ConstOne + RingOps + Sized {}
-impl<T: Clone + ConstZero + ConstOne + RingOps + Sized> RingBundle for T {}
+/// Has ring operations.
+pub trait RingBundle: ConstZero + ConstOne + RingOps + Sized {}
+impl<T: ConstZero + ConstOne + RingOps + Sized> RingBundle for T {}
