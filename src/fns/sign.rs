@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 /// Bundle of sign-related functions.
-pub trait SignFns: IsPositive + IsNegative + Sgn + Abs {}
-impl<T: IsPositive + IsNegative + Sgn + Abs> SignFns for T {}
+pub trait SignFns: IsPositive + IsNegative + IsZero + Sgn + Abs {}
+impl<T: IsPositive + IsNegative + IsZero + Sgn + Abs> SignFns for T {}
 
 /// Returns `true` if `self` is positive and `false` otherwise.
 pub trait IsPositive {
@@ -19,7 +19,7 @@ pub trait IsNegative {
 }
 
 /// Returns `true` if `self` is zero and `false` otherwise.
-pub trait IsConstZero {
+pub trait IsZero {
     /// Returns `true` if `self` is zero and `false` otherwise.
     fn is_zero(self) -> bool;
 }
@@ -81,7 +81,7 @@ macro_rules! impl_sign_traits_for_unsigned_int {
             }
         }
 
-        impl IsConstZero for $ty {
+        impl IsZero for $ty {
             #[inline]
             fn is_zero(self) -> bool {
                 self == 0
@@ -158,9 +158,9 @@ macro_rules! sign_traits_nonnegative_tests {
                 let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
-                assert!(IsConstZero::is_zero(zero));
-                assert!(!IsConstZero::is_zero(one));
-                assert!(!IsConstZero::is_zero(two));
+                assert!(IsZero::is_zero(zero));
+                assert!(!IsZero::is_zero(one));
+                assert!(!IsZero::is_zero(two));
             }
 
             #[test]
@@ -223,10 +223,10 @@ macro_rules! impl_sign_traits_for_unsigned_int_via_inner {
             }
         }
 
-        impl IsConstZero for $ty {
+        impl IsZero for $ty {
             #[inline]
             fn is_zero(self) -> bool {
-                IsConstZero::is_zero(self.0)
+                IsZero::is_zero(self.0)
             }
         }
 
@@ -280,7 +280,7 @@ macro_rules! impl_sign_traits_for_signed_int {
             }
         }
 
-        impl IsConstZero for $ty {
+        impl IsZero for $ty {
             #[inline]
             fn is_zero(self) -> bool {
                 self == 0
@@ -358,9 +358,9 @@ macro_rules! sign_traits_negative_tests {
                 let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
-                assert!(IsConstZero::is_zero(-zero));
-                assert!(!IsConstZero::is_zero(-one));
-                assert!(!IsConstZero::is_zero(-two));
+                assert!(IsZero::is_zero(-zero));
+                assert!(!IsZero::is_zero(-one));
+                assert!(!IsZero::is_zero(-two));
             }
 
             #[test]
@@ -423,10 +423,10 @@ macro_rules! impl_sign_traits_for_signed_int_via_inner {
             }
         }
 
-        impl IsConstZero for $ty {
+        impl IsZero for $ty {
             #[inline]
             fn is_zero(self) -> bool {
-                IsConstZero::is_zero(self.0)
+                IsZero::is_zero(self.0)
             }
         }
 
@@ -481,7 +481,7 @@ macro_rules! impl_sign_traits_for_float {
             }
         }
 
-        impl IsConstZero for $ty {
+        impl IsZero for $ty {
             #[inline]
             fn is_zero(self) -> bool {
                 self == 0.0
