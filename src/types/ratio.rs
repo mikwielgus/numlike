@@ -22,6 +22,7 @@ use crate::{
 
 /// A ratio between two numbers.
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Ratio<T> {
     numer: T,
     denom: T,

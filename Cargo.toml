@@ -21,13 +21,17 @@ default = ["std"]
 ## Disable for `no_std` compatibility.
 std = []
 
-## Use `libm` to implement some operations if `std` is disabled.
+## Use `libm` to implement transcendental functions if `std` is disabled.
 libm = ["dep:libm"]
+
+## Enables `serde` support (by deriving `Serialize` and `Deserialize` traits).
+serde = ["dep:serde"]
 
 [dependencies]
 document-features = { version = "0.2", optional = true }
 libm = { version = "0.2", optional = true }
 pastey = "0.2"
+serde = { version = "1.0", optional = true, default-features = false, features = ["derive"] }
 
 [package.metadata.release]
 pre-release-replacements = [
