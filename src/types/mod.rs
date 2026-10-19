@@ -4,6 +4,8 @@
 
 //! Various types defined by `numlike` besides traits.
 
+mod object;
 mod ratio;
 
+pub use object::*;
 pub use ratio::*;
