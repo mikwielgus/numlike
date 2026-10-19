@@ -12,4 +12,4 @@ pub use crate::elem::*;
 pub use crate::fns::*;
 pub use crate::limits::*;
 pub use crate::ops::*;
-pub use crate::ratio::*;
+pub use crate::types::*;
