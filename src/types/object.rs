@@ -5,7 +5,8 @@
 //! A wrapper to turn this library's trait methods into inherent methods.
 
 use core::ops::{
-    Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
+    Add, AddAssign, BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Div, DivAssign,
+    Mul, MulAssign, Neg, Not, Rem, RemAssign, Shl, ShlAssign, Shr, ShrAssign, Sub, SubAssign,
 };
 
 /// A wrapper to turn this library's trait methods into inherent methods.
@@ -100,5 +101,83 @@ impl<B: Neg<Output = B>> Neg for Object<B> {
 
     fn neg(self) -> Self::Output {
         Self(-self.0)
+    }
+}
+
+impl<B: BitAnd<Output = B>> BitAnd for Object<B> {
+    type Output = Self;
+
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl<B: BitAndAssign> BitAndAssign for Object<B> {
+    fn bitand_assign(&mut self, rhs: Self) {
+        self.0 &= rhs.0;
+    }
+}
+
+impl<B: BitOr<Output = B>> BitOr for Object<B> {
+    type Output = Self;
+
+    fn bitor(self, rhs: Self) -> Self::Output {
+        Self(self.0 | rhs.0)
+    }
+}
+
+impl<B: BitOrAssign> BitOrAssign for Object<B> {
+    fn bitor_assign(&mut self, rhs: Self) {
+        self.0 |= rhs.0;
+    }
+}
+
+impl<B: BitXor<Output = B>> BitXor for Object<B> {
+    type Output = Self;
+
+    fn bitxor(self, rhs: Self) -> Self::Output {
+        Self(self.0 ^ rhs.0)
+    }
+}
+
+impl<B: BitXorAssign> BitXorAssign for Object<B> {
+    fn bitxor_assign(&mut self, rhs: Self) {
+        self.0 ^= rhs.0;
+    }
+}
+
+impl<B: Not<Output = B>> Not for Object<B> {
+    type Output = Self;
+
+    fn not(self) -> Self::Output {
+        Self(!self.0)
+    }
+}
+
+impl<B: Shl<Output = B>> Shl for Object<B> {
+    type Output = Self;
+
+    fn shl(self, rhs: Self) -> Self::Output {
+        Self(self.0 << rhs.0)
+    }
+}
+
+impl<B: ShlAssign> ShlAssign for Object<B> {
+    fn shl_assign(&mut self, rhs: Self) {
+        self.0 <<= rhs.0;
+    }
+}
+
+impl<B: Shr<Output = B>> Shr for Object<B> {
+    type Output = Self;
+
+    fn shr(self, rhs: Self) -> Self::Output {
+        Self(self.0 >> rhs.0)
+    }
+}
+
+impl<B: ShrAssign> ShrAssign for Object<B> {
+    fn shr_assign(&mut self, rhs: Self) {
+        self.0 >>= rhs.0;
     }
 }

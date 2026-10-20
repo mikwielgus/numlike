@@ -7,6 +7,8 @@ use core::ops::{
     ShrAssign,
 };
 
+use crate::types::Object;
+
 /// Bundle of bitwise operations, including assign variants.
 pub trait FullBitOps<Rhs = Self>: BitOps<Rhs> + BitAssignOps<Rhs> {}
 
@@ -45,6 +47,19 @@ pub trait NotAssign {
     fn not_assign(&mut self);
 }
 
+impl<B: NotAssign> NotAssign for Object<B> {
+    fn not_assign(&mut self) {
+        <B as NotAssign>::not_assign(&mut self.0)
+    }
+}
+
+impl<B: NotAssign> Object<B> {
+    /// Inverts all bits of `self` in place.
+    pub fn not_assign(&mut self) {
+        <B as NotAssign>::not_assign(&mut self.0)
+    }
+}
+
 macro_rules! impl_not_assign_for_bitwisables {
     ($ty:ty $(, $rest:ident)*) => {
         impl NotAssign for $ty {
@@ -67,6 +82,7 @@ macro_rules! test_plain_bitshift_traits_int_nonnegative {
             use core::ops::{Shl, ShlAssign, Shr, ShrAssign};
 
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_shl() {
@@ -79,6 +95,10 @@ macro_rules! test_plain_bitshift_traits_int_nonnegative {
                 assert_eq!(Shl::shl(one, one), two);
                 assert_eq!(Shl::shl(two, one), four);
                 assert_eq!(Shl::shl(one, two), four);
+                assert_eq!(
+                    Shl::shl(Object::new(one), Object::new(one)),
+                    Object::new(Shl::shl(one, one))
+                );
             }
 
             #[test]
@@ -93,6 +113,10 @@ macro_rules! test_plain_bitshift_traits_int_nonnegative {
                 assert_eq!(Shr::shr(two, one), one);
                 assert_eq!(Shr::shr(four, one), two);
                 assert_eq!(Shr::shr(four, two), one);
+                assert_eq!(
+                    Shr::shr(Object::new(four), Object::new(two)),
+                    Object::new(Shr::shr(four, two))
+                );
             }
 
             #[test]
@@ -107,6 +131,12 @@ macro_rules! test_plain_bitshift_traits_int_nonnegative {
 
                 ShlAssign::shl_assign(&mut value, one);
                 assert_eq!(value, four);
+
+                let mut object_value = Object::new(one);
+
+                ShlAssign::shl_assign(&mut object_value, Object::new(one));
+
+                assert_eq!(object_value, Object::new(two));
             }
 
             #[test]
@@ -121,6 +151,12 @@ macro_rules! test_plain_bitshift_traits_int_nonnegative {
 
                 ShrAssign::shr_assign(&mut value, one);
                 assert_eq!(value, one);
+
+                let mut object_value = Object::new(four);
+
+                ShrAssign::shr_assign(&mut object_value, Object::new(one));
+
+                assert_eq!(object_value, Object::new(two));
             }
         }
     };
@@ -133,6 +169,7 @@ macro_rules! test_plain_bitshift_traits_int_negative {
             use core::ops::{Shl, ShlAssign, Shr, ShrAssign};
 
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_shl() {
@@ -142,6 +179,10 @@ macro_rules! test_plain_bitshift_traits_int_negative {
 
                 assert_eq!(Shl::shl(-one, one), -two);
                 assert_eq!(Shl::shl(-two, one), -four);
+                assert_eq!(
+                    Shl::shl(Object::new(-one), Object::new(one)),
+                    Object::new(Shl::shl(-one, one))
+                );
             }
 
             #[test]
@@ -153,6 +194,10 @@ macro_rules! test_plain_bitshift_traits_int_negative {
                 assert_eq!(Shr::shr(-two, one), -one);
                 assert_eq!(Shr::shr(-four, one), -two);
                 assert_eq!(Shr::shr(-four, two), -one);
+                assert_eq!(
+                    Shr::shr(Object::new(-four), Object::new(two)),
+                    Object::new(Shr::shr(-four, two))
+                );
             }
 
             #[test]
@@ -167,6 +212,12 @@ macro_rules! test_plain_bitshift_traits_int_negative {
 
                 ShlAssign::shl_assign(&mut value, one);
                 assert_eq!(value, -four);
+
+                let mut object_value = Object::new(-one);
+
+                ShlAssign::shl_assign(&mut object_value, Object::new(one));
+
+                assert_eq!(object_value, Object::new(-two));
             }
 
             #[test]
@@ -181,6 +232,12 @@ macro_rules! test_plain_bitshift_traits_int_negative {
 
                 ShrAssign::shr_assign(&mut value, one);
                 assert_eq!(value, -one);
+
+                let mut object_value = Object::new(-four);
+
+                ShrAssign::shr_assign(&mut object_value, Object::new(one));
+
+                assert_eq!(object_value, Object::new(-two));
             }
         }
     };

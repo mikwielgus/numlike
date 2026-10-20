@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use crate::types::Object;
+
 /// Bundle of overflowing bitwise shift operations.
 pub trait OverflowingBitOps: OverflowingShl + OverflowingShr {}
 impl<T: OverflowingShl + OverflowingShr> OverflowingBitOps for T {}
@@ -19,6 +21,25 @@ pub trait OverflowingShl {
     fn overflowing_shl(self, rhs: u32) -> (Self::Output, bool);
 }
 
+impl<B: OverflowingShl<Output = B>> OverflowingShl for Object<B> {
+    type Output = Self;
+
+    fn overflowing_shl(self, rhs: u32) -> (Self::Output, bool) {
+        let (value, overflow) = <B as OverflowingShl>::overflowing_shl(self.0, rhs);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingShl<Output = B>> Object<B> {
+    /// Shifts self left by `rhs` bits.
+    pub fn overflowing_shl(self, rhs: u32) -> (Self, bool) {
+        let (value, overflow) = <B as OverflowingShl>::overflowing_shl(self.0, rhs);
+
+        (Object(value), overflow)
+    }
+}
+
 /// Shifts self right by `rhs` bits.
 ///
 /// Returns a tuple of the shifted version of self along with a boolean indicating whether the shift
@@ -30,6 +51,25 @@ pub trait OverflowingShr {
 
     /// Shifts self right by `rhs` bits.
     fn overflowing_shr(self, rhs: u32) -> (Self::Output, bool);
+}
+
+impl<B: OverflowingShr<Output = B>> OverflowingShr for Object<B> {
+    type Output = Self;
+
+    fn overflowing_shr(self, rhs: u32) -> (Self::Output, bool) {
+        let (value, overflow) = <B as OverflowingShr>::overflowing_shr(self.0, rhs);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingShr<Output = B>> Object<B> {
+    /// Shifts self right by `rhs` bits.
+    pub fn overflowing_shr(self, rhs: u32) -> (Self, bool) {
+        let (value, overflow) = <B as OverflowingShr>::overflowing_shr(self.0, rhs);
+
+        (Object(value), overflow)
+    }
 }
 
 macro_rules! impl_overflowing_shift_traits_for_ints {
@@ -93,6 +133,7 @@ macro_rules! test_overflowing_bitshift_traits_int_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_shl() {
@@ -109,6 +150,11 @@ macro_rules! test_overflowing_bitshift_traits_int_nonnegative {
                     OverflowingShl::overflowing_shl(one, <$ty>::BITS),
                     (one, true)
                 );
+                assert_eq!(Object::new(one).overflowing_shl(1), {
+                    let (value, overflow) = OverflowingShl::overflowing_shl(one, 1);
+
+                    (Object::new(value), overflow)
+                });
             }
 
             #[test]
@@ -127,6 +173,11 @@ macro_rules! test_overflowing_bitshift_traits_int_nonnegative {
                     OverflowingShr::overflowing_shr(one, <$ty>::BITS),
                     (one, true)
                 );
+                assert_eq!(Object::new(four).overflowing_shr(2), {
+                    let (value, overflow) = OverflowingShr::overflowing_shr(four, 2);
+
+                    (Object::new(value), overflow)
+                });
             }
         }
     };
@@ -138,6 +189,7 @@ macro_rules! test_overflowing_bitshift_traits_int_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_shl() {
@@ -151,6 +203,11 @@ macro_rules! test_overflowing_bitshift_traits_int_negative {
                     OverflowingShl::overflowing_shl(-one, <$ty>::BITS),
                     (-one, true)
                 );
+                assert_eq!(Object::new(-one).overflowing_shl(1), {
+                    let (value, overflow) = OverflowingShl::overflowing_shl(-one, 1);
+
+                    (Object::new(value), overflow)
+                });
             }
 
             #[test]
@@ -166,6 +223,11 @@ macro_rules! test_overflowing_bitshift_traits_int_negative {
                     OverflowingShr::overflowing_shr(-one, <$ty>::BITS),
                     (-one, true)
                 );
+                assert_eq!(Object::new(-four).overflowing_shr(2), {
+                    let (value, overflow) = OverflowingShr::overflowing_shr(-four, 2);
+
+                    (Object::new(value), overflow)
+                });
             }
         }
     };

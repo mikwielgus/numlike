@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use crate::types::Object;
+
 /// Panic-free bitwise shift-left; yields `self << mask(rhs)`, where `mask`
 /// removes any high-order bits of `rhs` that would cause the shift to
 /// exceed the bitwidth of the type.
@@ -25,6 +27,23 @@ pub trait WrappingShl {
     fn wrapping_shl(self, rhs: u32) -> Self::Output;
 }
 
+impl<B: WrappingShl<Output = B>> WrappingShl for Object<B> {
+    type Output = Self;
+
+    fn wrapping_shl(self, rhs: u32) -> Self::Output {
+        Object(<B as WrappingShl>::wrapping_shl(self.0, rhs))
+    }
+}
+
+impl<B: WrappingShl<Output = B>> Object<B> {
+    /// Panic-free bitwise shift-left; yields `self << mask(rhs)`, where `mask`
+    /// removes any high-order bits of `rhs` that would cause the shift to exceed
+    /// the bitwidth of the type.
+    pub fn wrapping_shl(self, rhs: u32) -> Self {
+        Object(<B as WrappingShl>::wrapping_shl(self.0, rhs))
+    }
+}
+
 /// Panic-free bitwise shift-right; yields `self >> mask(rhs)`, where `mask`
 /// removes any high-order bits of `rhs` that would cause the shift to
 /// exceed the bitwidth of the type.
@@ -46,6 +65,23 @@ pub trait WrappingShr {
     /// removes any high-order bits of `rhs` that would cause the shift to exceed
     /// the bitwidth of the type.
     fn wrapping_shr(self, rhs: u32) -> Self::Output;
+}
+
+impl<B: WrappingShr<Output = B>> WrappingShr for Object<B> {
+    type Output = Self;
+
+    fn wrapping_shr(self, rhs: u32) -> Self::Output {
+        Object(<B as WrappingShr>::wrapping_shr(self.0, rhs))
+    }
+}
+
+impl<B: WrappingShr<Output = B>> Object<B> {
+    /// Panic-free bitwise shift-right; yields `self >> mask(rhs)`, where `mask`
+    /// removes any high-order bits of `rhs` that would cause the shift to exceed
+    /// the bitwidth of the type.
+    pub fn wrapping_shr(self, rhs: u32) -> Self {
+        Object(<B as WrappingShr>::wrapping_shr(self.0, rhs))
+    }
 }
 
 macro_rules! impl_wrapping_shift_traits_for_ints {
@@ -105,6 +141,7 @@ macro_rules! test_wrapping_bitshift_traits_int_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_shl() {
@@ -118,6 +155,10 @@ macro_rules! test_wrapping_bitshift_traits_int_nonnegative {
                 assert_eq!(WrappingShl::wrapping_shl(two, 1), four);
                 assert_eq!(WrappingShl::wrapping_shl(one, 2), four);
                 assert_eq!(WrappingShl::wrapping_shl(one, <$ty>::BITS), one);
+                assert_eq!(
+                    Object::new(one).wrapping_shl(1),
+                    Object::new(WrappingShl::wrapping_shl(one, 1))
+                );
             }
 
             #[test]
@@ -133,6 +174,10 @@ macro_rules! test_wrapping_bitshift_traits_int_nonnegative {
                 assert_eq!(WrappingShr::wrapping_shr(four, 1), two);
                 assert_eq!(WrappingShr::wrapping_shr(four, 2), one);
                 assert_eq!(WrappingShr::wrapping_shr(one, <$ty>::BITS), one);
+                assert_eq!(
+                    Object::new(four).wrapping_shr(2),
+                    Object::new(WrappingShr::wrapping_shr(four, 2))
+                );
             }
         }
     };
@@ -144,6 +189,7 @@ macro_rules! test_wrapping_bitshift_traits_int_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_shl() {
@@ -154,6 +200,10 @@ macro_rules! test_wrapping_bitshift_traits_int_negative {
                 assert_eq!(WrappingShl::wrapping_shl(-one, 1), -two);
                 assert_eq!(WrappingShl::wrapping_shl(-two, 1), -four);
                 assert_eq!(WrappingShl::wrapping_shl(-one, <$ty>::BITS), -one);
+                assert_eq!(
+                    Object::new(-one).wrapping_shl(1),
+                    Object::new(WrappingShl::wrapping_shl(-one, 1))
+                );
             }
 
             #[test]
@@ -166,6 +216,10 @@ macro_rules! test_wrapping_bitshift_traits_int_negative {
                 assert_eq!(WrappingShr::wrapping_shr(-four, 1), -two);
                 assert_eq!(WrappingShr::wrapping_shr(-four, 2), -one);
                 assert_eq!(WrappingShr::wrapping_shr(-one, <$ty>::BITS), -one);
+                assert_eq!(
+                    Object::new(-four).wrapping_shr(2),
+                    Object::new(WrappingShr::wrapping_shr(-four, 2))
+                );
             }
         }
     };
