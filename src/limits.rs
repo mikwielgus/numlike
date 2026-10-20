@@ -6,6 +6,8 @@
 
 use core::num::{Saturating, Wrapping};
 
+use crate::types::Object;
+
 /// Bundle of limits for a floating-point numeric type.
 pub trait FloatLimits:
     Limits
@@ -46,6 +48,15 @@ pub trait Digits {
     const DIGITS: u32;
 }
 
+impl<B: Digits> Digits for Object<B> {
+    const DIGITS: u32 = <B as Digits>::DIGITS;
+}
+
+impl<B: Digits> Object<B> {
+    /// Approximate number of significant digits in base 10 of a floating-point type.
+    pub const DIGITS: u32 = <B as Digits>::DIGITS;
+}
+
 /// Number of significant digits in base 2 of a floating-point type.
 ///
 /// Note that the size of the mantissa in the bitwise representation is one
@@ -57,6 +68,15 @@ pub trait Digits {
 pub trait MantissaDigits {
     /// Number of significant digits in base 2 of a floating-point type.
     const MANTISSA_DIGITS: u32;
+}
+
+impl<B: MantissaDigits> MantissaDigits for Object<B> {
+    const MANTISSA_DIGITS: u32 = <B as MantissaDigits>::MANTISSA_DIGITS;
+}
+
+impl<B: MantissaDigits> Object<B> {
+    /// Number of significant digits in base 2 of a floating-point type.
+    pub const MANTISSA_DIGITS: u32 = <B as MantissaDigits>::MANTISSA_DIGITS;
 }
 
 /// [Machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value for
@@ -73,6 +93,16 @@ pub trait Epsilon {
     const EPSILON: Self;
 }
 
+impl<B: Epsilon> Epsilon for Object<B> {
+    const EPSILON: Self = Object(<B as Epsilon>::EPSILON);
+}
+
+impl<B: Epsilon> Object<B> {
+    /// [Machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) value
+    /// for this floating-point type.
+    pub const EPSILON: Self = Object(<B as Epsilon>::EPSILON);
+}
+
 /// The minimum base-2 exponent according to the C definition.
 ///
 /// ConstOne greater than the minimum possible normal power of 2 exponent for a
@@ -85,6 +115,15 @@ pub trait Epsilon {
 pub trait MinExponent {
     /// The minimum base-2 exponent according to C definition.
     const MIN_EXPONENT: i32;
+}
+
+impl<B: MinExponent> MinExponent for Object<B> {
+    const MIN_EXPONENT: i32 = <B as MinExponent>::MIN_EXPONENT;
+}
+
+impl<B: MinExponent> Object<B> {
+    /// The minimum base-2 exponent according to C definition.
+    pub const MIN_EXPONENT: i32 = <B as MinExponent>::MIN_EXPONENT;
 }
 
 /// The maximum base-2 exponent according to the C definition.
@@ -101,16 +140,43 @@ pub trait MaxExponent {
     const MAX_EXPONENT: i32;
 }
 
+impl<B: MaxExponent> MaxExponent for Object<B> {
+    const MAX_EXPONENT: i32 = <B as MaxExponent>::MAX_EXPONENT;
+}
+
+impl<B: MaxExponent> Object<B> {
+    /// The maximum base-2 exponent according to the C definition.
+    pub const MAX_EXPONENT: i32 = <B as MaxExponent>::MAX_EXPONENT;
+}
+
 /// Minimum possible normal power of 10 exponent.
 pub trait MinBase10Exponent {
     /// Minimum possible normal power of 10 exponent.
     const MIN_BASE_10_EXPONENT: i32;
 }
 
+impl<B: MinBase10Exponent> MinBase10Exponent for Object<B> {
+    const MIN_BASE_10_EXPONENT: i32 = <B as MinBase10Exponent>::MIN_BASE_10_EXPONENT;
+}
+
+impl<B: MinBase10Exponent> Object<B> {
+    /// Minimum possible normal power of 10 exponent.
+    pub const MIN_BASE_10_EXPONENT: i32 = <B as MinBase10Exponent>::MIN_BASE_10_EXPONENT;
+}
+
 /// Maximum possible power of 10 exponent.
 pub trait MaxBase10Exponent {
     /// Maximum possible power of 10 exponent.
     const MAX_BASE_10_EXPONENT: i32;
+}
+
+impl<B: MaxBase10Exponent> MaxBase10Exponent for Object<B> {
+    const MAX_BASE_10_EXPONENT: i32 = <B as MaxBase10Exponent>::MAX_BASE_10_EXPONENT;
+}
+
+impl<B: MaxBase10Exponent> Object<B> {
+    /// Maximum possible power of 10 exponent.
+    pub const MAX_BASE_10_EXPONENT: i32 = <B as MaxBase10Exponent>::MAX_BASE_10_EXPONENT;
 }
 
 /// Bundle of all defined limits for a numeric type.
@@ -121,6 +187,15 @@ impl<T: Bounds + Bits> Limits for T {}
 pub trait Bits {
     /// The size of this type in bits.
     const BITS: u32;
+}
+
+impl<B: Bits> Bits for Object<B> {
+    const BITS: u32 = <B as Bits>::BITS;
+}
+
+impl<B: Bits> Object<B> {
+    /// The size of this type in bits.
+    pub const BITS: u32 = <B as Bits>::BITS;
 }
 
 /// Bundle of all defined minimum and maximum value limits for a numeric type.
@@ -137,10 +212,28 @@ pub trait MinFinite {
     const MIN_FINITE: Self;
 }
 
+impl<B: MinFinite> MinFinite for Object<B> {
+    const MIN_FINITE: Self = Object(<B as MinFinite>::MIN_FINITE);
+}
+
+impl<B: MinFinite> Object<B> {
+    /// Smallest finite value.
+    pub const MIN_FINITE: Self = Object(<B as MinFinite>::MIN_FINITE);
+}
+
 /// Largest finite value.
 pub trait MaxFinite {
     /// Largest finite value.
     const MAX_FINITE: Self;
+}
+
+impl<B: MaxFinite> MaxFinite for Object<B> {
+    const MAX_FINITE: Self = Object(<B as MaxFinite>::MAX_FINITE);
+}
+
+impl<B: MaxFinite> Object<B> {
+    /// Largest finite value.
+    pub const MAX_FINITE: Self = Object(<B as MaxFinite>::MAX_FINITE);
 }
 
 /// Bundle of the extended (i.e. also containing negative and positive
@@ -154,10 +247,28 @@ pub trait MinExtended {
     const MIN_EXTENDED: Self;
 }
 
+impl<B: MinExtended> MinExtended for Object<B> {
+    const MIN_EXTENDED: Self = Object(<B as MinExtended>::MIN_EXTENDED);
+}
+
+impl<B: MinExtended> Object<B> {
+    /// Negative infinity if present in the type, otherwise smallest finite value.
+    pub const MIN_EXTENDED: Self = Object(<B as MinExtended>::MIN_EXTENDED);
+}
+
 /// Positive infinity if present in the type, otherwise greatest finite value.
 pub trait MaxExtended {
     /// Positive infinity if present in the type, otherwise greatest finite value.
     const MAX_EXTENDED: Self;
+}
+
+impl<B: MaxExtended> MaxExtended for Object<B> {
+    const MAX_EXTENDED: Self = Object(<B as MaxExtended>::MAX_EXTENDED);
+}
+
+impl<B: MaxExtended> Object<B> {
+    /// Positive infinity if present in the type, otherwise greatest finite value.
+    pub const MAX_EXTENDED: Self = Object(<B as MaxExtended>::MAX_EXTENDED);
 }
 
 /// Bundle of the minimum and maximum exact integer values of a numeric type.
@@ -182,6 +293,16 @@ pub trait MinExactInteger {
     const MIN_EXACT_INTEGER: Self;
 }
 
+impl<B: MinExactInteger> MinExactInteger for Object<B> {
+    const MIN_EXACT_INTEGER: Self = Object(<B as MinExactInteger>::MIN_EXACT_INTEGER);
+}
+
+impl<B: MinExactInteger> Object<B> {
+    /// Minimum integer that can be represented exactly in this type, with no
+    /// other integer converting to the same value.
+    pub const MIN_EXACT_INTEGER: Self = Object(<B as MinExactInteger>::MIN_EXACT_INTEGER);
+}
+
 /// Maximum integer that can be represented exactly in this type, with no other
 /// integer converting to the same value.
 ///
@@ -199,6 +320,16 @@ pub trait MaxExactInteger {
     const MAX_EXACT_INTEGER: Self;
 }
 
+impl<B: MaxExactInteger> MaxExactInteger for Object<B> {
+    const MAX_EXACT_INTEGER: Self = Object(<B as MaxExactInteger>::MAX_EXACT_INTEGER);
+}
+
+impl<B: MaxExactInteger> Object<B> {
+    /// Maximum integer that can be represented exactly in this type, with no
+    /// other integer converting to the same value.
+    pub const MAX_EXACT_INTEGER: Self = Object(<B as MaxExactInteger>::MAX_EXACT_INTEGER);
+}
+
 /// Bundle of the minimum positive and maximum negative values of a numeric
 /// type.
 pub trait NearestsToConstZero: MinPositive + MaxNegative {}
@@ -213,6 +344,15 @@ pub trait MinPositive {
     const MIN_POSITIVE: Self;
 }
 
+impl<B: MinPositive> MinPositive for Object<B> {
+    const MIN_POSITIVE: Self = Object(<B as MinPositive>::MIN_POSITIVE);
+}
+
+impl<B: MinPositive> Object<B> {
+    /// The minimum positive value of a numeric type.
+    pub const MIN_POSITIVE: Self = Object(<B as MinPositive>::MIN_POSITIVE);
+}
+
 /// The maximum negative value of a numeric type.
 ///
 /// For signed integers, this is equal to -1. For floats, this is equal to
@@ -220,6 +360,15 @@ pub trait MinPositive {
 pub trait MaxNegative {
     /// The maximum negative value of a numeric type.
     const MAX_NEGATIVE: Self;
+}
+
+impl<B: MaxNegative> MaxNegative for Object<B> {
+    const MAX_NEGATIVE: Self = Object(<B as MaxNegative>::MAX_NEGATIVE);
+}
+
+impl<B: MaxNegative> Object<B> {
+    /// The maximum negative value of a numeric type.
+    pub const MAX_NEGATIVE: Self = Object(<B as MaxNegative>::MAX_NEGATIVE);
 }
 
 /// Bundle of the ratio-minimizing and -maximizing denominator values of a
@@ -242,6 +391,16 @@ pub trait MinimizerDenom {
     const MINIMIZER_DENOM: Self;
 }
 
+impl<B: MinimizerDenom> MinimizerDenom for Object<B> {
+    const MINIMIZER_DENOM: Self = Object(<B as MinimizerDenom>::MINIMIZER_DENOM);
+}
+
+impl<B: MinimizerDenom> Object<B> {
+    /// Denominator of the minimum possible ratio with numerator and denominator of
+    /// this type.
+    pub const MINIMIZER_DENOM: Self = Object(<B as MinimizerDenom>::MINIMIZER_DENOM);
+}
+
 /// Denominator of the maximum possible ratio with numerator and denominator of
 /// this type.
 ///
@@ -251,6 +410,16 @@ pub trait MaximizerDenom {
     /// Denominator of the maximum possible ratio with numerator and denominator
     /// of this type.
     const MAXIMIZER_DENOM: Self;
+}
+
+impl<B: MaximizerDenom> MaximizerDenom for Object<B> {
+    const MAXIMIZER_DENOM: Self = Object(<B as MaximizerDenom>::MAXIMIZER_DENOM);
+}
+
+impl<B: MaximizerDenom> Object<B> {
+    /// Denominator of the maximum possible ratio with numerator and denominator
+    /// of this type.
+    pub const MAXIMIZER_DENOM: Self = Object(<B as MaximizerDenom>::MAXIMIZER_DENOM);
 }
 
 macro_rules! impl_limits_traits_for_int {
@@ -364,6 +533,7 @@ macro_rules! test_limits_traits_int_nonnegative {
         #[cfg(test)]
         mod $tests_mod {
             use crate::limits::*;
+            use crate::types::Object;
 
             #[test]
             fn test_limits() {
@@ -394,6 +564,44 @@ macro_rules! test_limits_traits_int_nonnegative {
                     <$ty as MaximizerDenom>::MAXIMIZER_DENOM,
                     <$ty as MinPositive>::MIN_POSITIVE
                 );
+
+                assert_eq!(Object::<$ty>::BITS, <$ty as Bits>::BITS);
+                assert_eq!(
+                    Object::<$ty>::MIN_FINITE,
+                    Object::new(<$ty as MinFinite>::MIN_FINITE)
+                );
+                assert_eq!(
+                    Object::<$ty>::MAX_FINITE,
+                    Object::new(<$ty as MaxFinite>::MAX_FINITE)
+                );
+                assert_eq!(
+                    Object::<$ty>::MIN_EXTENDED,
+                    Object::new(<$ty as MinExtended>::MIN_EXTENDED)
+                );
+                assert_eq!(
+                    Object::<$ty>::MAX_EXTENDED,
+                    Object::new(<$ty as MaxExtended>::MAX_EXTENDED)
+                );
+                assert_eq!(
+                    Object::<$ty>::MIN_EXACT_INTEGER,
+                    Object::new(<$ty as MinExactInteger>::MIN_EXACT_INTEGER)
+                );
+                assert_eq!(
+                    Object::<$ty>::MAX_EXACT_INTEGER,
+                    Object::new(<$ty as MaxExactInteger>::MAX_EXACT_INTEGER)
+                );
+                assert_eq!(
+                    Object::<$ty>::MIN_POSITIVE,
+                    Object::new(<$ty as MinPositive>::MIN_POSITIVE)
+                );
+                assert_eq!(
+                    Object::<$ty>::MINIMIZER_DENOM,
+                    Object::new(<$ty as MinimizerDenom>::MINIMIZER_DENOM)
+                );
+                assert_eq!(
+                    Object::<$ty>::MAXIMIZER_DENOM,
+                    Object::new(<$ty as MaximizerDenom>::MAXIMIZER_DENOM)
+                );
             }
         }
     };
@@ -407,6 +615,7 @@ macro_rules! test_limits_traits_int_negative {
         #[cfg(test)]
         mod $tests_mod {
             use crate::limits::*;
+            use crate::types::Object;
 
             #[test]
             fn test_limits() {
@@ -428,6 +637,11 @@ macro_rules! test_limits_traits_int_negative {
                 assert_eq!(
                     <$ty as MaxNegative>::MAX_NEGATIVE,
                     -<$ty as crate::elem::ConstOne>::ONE
+                );
+
+                assert_eq!(
+                    Object::<$ty>::MAX_NEGATIVE,
+                    Object::new(<$ty as MaxNegative>::MAX_NEGATIVE)
                 );
             }
         }
@@ -670,6 +884,7 @@ macro_rules! test_limits_traits_float_nonnegative {
         #[cfg(test)]
         mod $tests_mod {
             use crate::limits::*;
+            use crate::types::Object;
 
             #[test]
             fn test_limits() {
@@ -721,6 +936,57 @@ macro_rules! test_limits_traits_float_nonnegative {
                     <$ty as MaximizerDenom>::MAXIMIZER_DENOM,
                     <$ty>::MIN_POSITIVE
                 );
+
+                assert_eq!(Object::<$ty>::BITS, <$ty as Bits>::BITS);
+                assert_eq!(Object::<$ty>::DIGITS, <$ty as Digits>::DIGITS);
+                assert_eq!(
+                    Object::<$ty>::MANTISSA_DIGITS,
+                    <$ty as MantissaDigits>::MANTISSA_DIGITS
+                );
+                assert_eq!(
+                    Object::<$ty>::EPSILON,
+                    Object::new(<$ty as Epsilon>::EPSILON)
+                );
+                assert_eq!(
+                    Object::<$ty>::MIN_EXPONENT,
+                    <$ty as MinExponent>::MIN_EXPONENT
+                );
+                assert_eq!(
+                    Object::<$ty>::MAX_EXPONENT,
+                    <$ty as MaxExponent>::MAX_EXPONENT
+                );
+                assert_eq!(
+                    Object::<$ty>::MIN_BASE_10_EXPONENT,
+                    <$ty as MinBase10Exponent>::MIN_BASE_10_EXPONENT
+                );
+                assert_eq!(
+                    Object::<$ty>::MAX_BASE_10_EXPONENT,
+                    <$ty as MaxBase10Exponent>::MAX_BASE_10_EXPONENT
+                );
+                assert_eq!(
+                    Object::<$ty>::MAX_FINITE,
+                    Object::new(<$ty as MaxFinite>::MAX_FINITE)
+                );
+                assert_eq!(
+                    Object::<$ty>::MAX_EXTENDED,
+                    Object::new(<$ty as MaxExtended>::MAX_EXTENDED)
+                );
+                assert_eq!(
+                    Object::<$ty>::MAX_EXACT_INTEGER,
+                    Object::new(<$ty as MaxExactInteger>::MAX_EXACT_INTEGER)
+                );
+                assert_eq!(
+                    Object::<$ty>::MIN_POSITIVE,
+                    Object::new(<$ty as MinPositive>::MIN_POSITIVE)
+                );
+                assert_eq!(
+                    Object::<$ty>::MINIMIZER_DENOM,
+                    Object::new(<$ty as MinimizerDenom>::MINIMIZER_DENOM)
+                );
+                assert_eq!(
+                    Object::<$ty>::MAXIMIZER_DENOM,
+                    Object::new(<$ty as MaximizerDenom>::MAXIMIZER_DENOM)
+                );
             }
 
             #[test]
@@ -746,6 +1012,7 @@ macro_rules! test_limits_traits_float_negative {
         #[cfg(test)]
         mod $tests_mod {
             use crate::limits::*;
+            use crate::types::Object;
 
             #[test]
             fn test_limits() {
@@ -766,6 +1033,23 @@ macro_rules! test_limits_traits_float_negative {
                 );
 
                 assert_eq!(<$ty as MaxNegative>::MAX_NEGATIVE, -<$ty>::MIN_POSITIVE);
+
+                assert_eq!(
+                    Object::<$ty>::MIN_FINITE,
+                    Object::new(<$ty as MinFinite>::MIN_FINITE)
+                );
+                assert_eq!(
+                    Object::<$ty>::MIN_EXTENDED,
+                    Object::new(<$ty as MinExtended>::MIN_EXTENDED)
+                );
+                assert_eq!(
+                    Object::<$ty>::MIN_EXACT_INTEGER,
+                    Object::new(<$ty as MinExactInteger>::MIN_EXACT_INTEGER)
+                );
+                assert_eq!(
+                    Object::<$ty>::MAX_NEGATIVE,
+                    Object::new(<$ty as MaxNegative>::MAX_NEGATIVE)
+                );
             }
 
             #[test]

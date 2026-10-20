@@ -6,6 +6,8 @@
 
 use core::num::{Saturating, Wrapping};
 
+use crate::types::Object;
+
 /// Defines a distinguished `0` value.
 ///
 /// This is usually the additive identity, but it does not have to be so. It
@@ -25,6 +27,15 @@ pub trait ConstZero {
     const ZERO: Self;
 }
 
+impl<B: ConstZero> ConstZero for Object<B> {
+    const ZERO: Self = Object(B::ZERO);
+}
+
+impl<B: ConstZero> Object<B> {
+    /// A distinguished `0` value.
+    pub const ZERO: Self = Object(B::ZERO);
+}
+
 /// Defines a distinguished `1` value.
 ///
 /// This is usually the multiplicative identity, but it does not have to be
@@ -41,6 +52,15 @@ pub trait One {
 pub trait ConstOne {
     /// A distinguished `1` value.
     const ONE: Self;
+}
+
+impl<B: ConstOne> ConstOne for Object<B> {
+    const ONE: Self = Object(B::ONE);
+}
+
+impl<B: ConstOne> Object<B> {
+    /// A distinguished `1` value.
+    pub const ONE: Self = Object(B::ONE);
 }
 
 /// Negative infinity (-∞).
