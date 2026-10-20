@@ -23,6 +23,17 @@ pub trait Log<Rhs = Self> {
     fn log(self, base: Rhs) -> Self::Output;
 }
 
+impl<B, Rhs> Log<Rhs> for Object<B>
+where
+    B: Log<Rhs>,
+{
+    type Output = Object<<B as Log<Rhs>>::Output>;
+
+    fn log(self, base: Rhs) -> Self::Output {
+        Object(<B as Log<Rhs>>::log(self.0, base))
+    }
+}
+
 impl<B> Object<B> {
     /// Returns the logarithm of the number with respect to an arbitrary base.
     pub fn log<Rhs>(self, base: Rhs) -> Object<<B as Log<Rhs>>::Output>
@@ -44,6 +55,14 @@ pub trait Ln {
     fn ln(self) -> Self::Output;
 }
 
+impl<B: Ln> Ln for Object<B> {
+    type Output = Object<<B as Ln>::Output>;
+
+    fn ln(self) -> Self::Output {
+        Object(<B as Ln>::ln(self.0))
+    }
+}
+
 impl<B: Ln> Object<B> {
     /// Returns the natural logarithm of the number.
     pub fn ln(self) -> Object<<B as Ln>::Output> {
@@ -60,6 +79,14 @@ pub trait Log2 {
 
     /// Returns the base 2 logarithm of the number.
     fn log2(self) -> Self::Output;
+}
+
+impl<B: Log2> Log2 for Object<B> {
+    type Output = Object<<B as Log2>::Output>;
+
+    fn log2(self) -> Self::Output {
+        Object(<B as Log2>::log2(self.0))
+    }
 }
 
 impl<B: Log2> Object<B> {
@@ -80,6 +107,14 @@ pub trait Log10 {
     fn log10(self) -> Self::Output;
 }
 
+impl<B: Log10> Log10 for Object<B> {
+    type Output = Object<<B as Log10>::Output>;
+
+    fn log10(self) -> Self::Output {
+        Object(<B as Log10>::log10(self.0))
+    }
+}
+
 impl<B: Log10> Object<B> {
     /// Returns the base 10 logarithm of the number.
     pub fn log10(self) -> Object<<B as Log10>::Output> {
@@ -98,6 +133,14 @@ pub trait Ln1p {
     /// Returns `ln(1+n)` (natural logarithm) more accurately than if
     /// the operations were performed separately.
     fn ln_1p(self) -> Self::Output;
+}
+
+impl<B: Ln1p> Ln1p for Object<B> {
+    type Output = Object<<B as Ln1p>::Output>;
+
+    fn ln_1p(self) -> Self::Output {
+        Object(<B as Ln1p>::ln_1p(self.0))
+    }
 }
 
 impl<B: Ln1p> Object<B> {
@@ -133,6 +176,17 @@ pub trait CheckedLog<Rhs = Self> {
     fn checked_log(self, base: Rhs) -> Option<Self::Output>;
 }
 
+impl<B, Rhs> CheckedLog<Rhs> for Object<B>
+where
+    B: CheckedLog<Rhs>,
+{
+    type Output = Object<<B as CheckedLog<Rhs>>::Output>;
+
+    fn checked_log(self, base: Rhs) -> Option<Self::Output> {
+        <B as CheckedLog<Rhs>>::checked_log(self.0, base).map(Object)
+    }
+}
+
 impl<B> Object<B> {
     /// Returns the logarithm of the number with respect to an arbitrary base.
     ///
@@ -156,6 +210,14 @@ pub trait CheckedLn {
     fn checked_ln(self) -> Option<Self::Output>;
 }
 
+impl<B: CheckedLn> CheckedLn for Object<B> {
+    type Output = Object<<B as CheckedLn>::Output>;
+
+    fn checked_ln(self) -> Option<Self::Output> {
+        <B as CheckedLn>::checked_ln(self.0).map(Object)
+    }
+}
+
 impl<B: CheckedLn> Object<B> {
     /// Returns the natural logarithm of the number.
     ///
@@ -174,6 +236,14 @@ pub trait CheckedLog2 {
 
     /// Returns the base 2 logarithm of the number.
     fn checked_log2(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedLog2> CheckedLog2 for Object<B> {
+    type Output = Object<<B as CheckedLog2>::Output>;
+
+    fn checked_log2(self) -> Option<Self::Output> {
+        <B as CheckedLog2>::checked_log2(self.0).map(Object)
+    }
 }
 
 impl<B: CheckedLog2> Object<B> {
@@ -196,6 +266,14 @@ pub trait CheckedLog10 {
     fn checked_log10(self) -> Option<Self::Output>;
 }
 
+impl<B: CheckedLog10> CheckedLog10 for Object<B> {
+    type Output = Object<<B as CheckedLog10>::Output>;
+
+    fn checked_log10(self) -> Option<Self::Output> {
+        <B as CheckedLog10>::checked_log10(self.0).map(Object)
+    }
+}
+
 impl<B: CheckedLog10> Object<B> {
     /// Returns the base 10 logarithm of the number.
     ///
@@ -216,6 +294,14 @@ pub trait CheckedLn1p {
     /// Returns `ln(1+n)` (natural logarithm) more accurately than if
     /// the operations were performed separately.
     fn checked_ln_1p(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedLn1p> CheckedLn1p for Object<B> {
+    type Output = Object<<B as CheckedLn1p>::Output>;
+
+    fn checked_ln_1p(self) -> Option<Self::Output> {
+        <B as CheckedLn1p>::checked_ln_1p(self.0).map(Object)
+    }
 }
 
 impl<B: CheckedLn1p> Object<B> {
@@ -252,6 +338,17 @@ pub trait Ilog<Rhs = Self> {
     fn ilog(self, base: Rhs) -> Self::Output;
 }
 
+impl<B, Rhs> Ilog<Rhs> for Object<B>
+where
+    B: Ilog<Rhs>,
+{
+    type Output = Object<<B as Ilog<Rhs>>::Output>;
+
+    fn ilog(self, base: Rhs) -> Self::Output {
+        Object(<B as Ilog<Rhs>>::ilog(self.0, base))
+    }
+}
+
 impl<B> Object<B> {
     /// Returns the logarithm of the number with respect to an arbitrary base,
     /// rounded down.
@@ -276,6 +373,14 @@ pub trait Ilog2 {
     fn ilog2(self) -> Self::Output;
 }
 
+impl<B: Ilog2> Ilog2 for Object<B> {
+    type Output = Object<<B as Ilog2>::Output>;
+
+    fn ilog2(self) -> Self::Output {
+        Object(<B as Ilog2>::ilog2(self.0))
+    }
+}
+
 impl<B: Ilog2> Object<B> {
     /// Returns the base 2 logarithm of the number, rounded down.
     pub fn ilog2(self) -> Object<<B as Ilog2>::Output> {
@@ -294,6 +399,14 @@ pub trait Ilog10 {
 
     /// Returns the base 10 logarithm of the number, rounded down.
     fn ilog10(self) -> Self::Output;
+}
+
+impl<B: Ilog10> Ilog10 for Object<B> {
+    type Output = Object<<B as Ilog10>::Output>;
+
+    fn ilog10(self) -> Self::Output {
+        Object(<B as Ilog10>::ilog10(self.0))
+    }
 }
 
 impl<B: Ilog10> Object<B> {
@@ -324,6 +437,17 @@ pub trait CheckedIlog<Rhs = Self> {
     fn checked_ilog(self, base: Rhs) -> Option<Self::Output>;
 }
 
+impl<B, Rhs> CheckedIlog<Rhs> for Object<B>
+where
+    B: CheckedIlog<Rhs>,
+{
+    type Output = Object<<B as CheckedIlog<Rhs>>::Output>;
+
+    fn checked_ilog(self, base: Rhs) -> Option<Self::Output> {
+        <B as CheckedIlog<Rhs>>::checked_ilog(self.0, base).map(Object)
+    }
+}
+
 impl<B> Object<B> {
     /// Returns the logarithm of the number with respect to an arbitrary base,
     /// rounded down.
@@ -348,6 +472,14 @@ pub trait CheckedIlog2 {
     fn checked_ilog2(self) -> Option<Self::Output>;
 }
 
+impl<B: CheckedIlog2> CheckedIlog2 for Object<B> {
+    type Output = Object<<B as CheckedIlog2>::Output>;
+
+    fn checked_ilog2(self) -> Option<Self::Output> {
+        <B as CheckedIlog2>::checked_ilog2(self.0).map(Object)
+    }
+}
+
 impl<B: CheckedIlog2> Object<B> {
     /// Returns the base 2 logarithm of the number, rounded down.
     ///
@@ -366,6 +498,14 @@ pub trait CheckedIlog10 {
 
     /// Returns the base 10 logarithm of the number, rounded down.
     fn checked_ilog10(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedIlog10> CheckedIlog10 for Object<B> {
+    type Output = Object<<B as CheckedIlog10>::Output>;
+
+    fn checked_ilog10(self) -> Option<Self::Output> {
+        <B as CheckedIlog10>::checked_ilog10(self.0).map(Object)
+    }
 }
 
 impl<B: CheckedIlog10> Object<B> {

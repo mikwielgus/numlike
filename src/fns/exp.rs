@@ -17,6 +17,14 @@ pub trait Exp {
     fn exp(self) -> Self::Output;
 }
 
+impl<B: Exp> Exp for Object<B> {
+    type Output = Object<<B as Exp>::Output>;
+
+    fn exp(self) -> Self::Output {
+        Object(<B as Exp>::exp(self.0))
+    }
+}
+
 impl<B: Exp> Object<B> {
     /// Returns `e^(self)` (the exponential function).
     pub fn exp(self) -> Object<<B as Exp>::Output> {
@@ -31,6 +39,14 @@ pub trait Exp2 {
 
     /// Returns `2^(self)`.
     fn exp2(self) -> Self::Output;
+}
+
+impl<B: Exp2> Exp2 for Object<B> {
+    type Output = Object<<B as Exp2>::Output>;
+
+    fn exp2(self) -> Self::Output {
+        Object(<B as Exp2>::exp2(self.0))
+    }
 }
 
 impl<B: Exp2> Object<B> {
@@ -49,6 +65,14 @@ pub trait ExpM1 {
     /// Returns `e^(self) - 1` in a way that is accurate even if the
     /// number is close to zero.
     fn exp_m1(self) -> Self::Output;
+}
+
+impl<B: ExpM1> ExpM1 for Object<B> {
+    type Output = Object<<B as ExpM1>::Output>;
+
+    fn exp_m1(self) -> Self::Output {
+        Object(<B as ExpM1>::exp_m1(self.0))
+    }
 }
 
 impl<B: ExpM1> Object<B> {
@@ -74,6 +98,14 @@ pub trait CheckedExp {
     fn checked_exp(self) -> Option<Self::Output>;
 }
 
+impl<B: CheckedExp> CheckedExp for Object<B> {
+    type Output = Object<<B as CheckedExp>::Output>;
+
+    fn checked_exp(self) -> Option<Self::Output> {
+        <B as CheckedExp>::checked_exp(self.0).map(Object)
+    }
+}
+
 impl<B: CheckedExp> Object<B> {
     /// Returns `e^(self)`, (the exponential function).
     ///
@@ -92,6 +124,14 @@ pub trait CheckedExp2 {
 
     /// Returns `2^(self)`.
     fn checked_exp2(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedExp2> CheckedExp2 for Object<B> {
+    type Output = Object<<B as CheckedExp2>::Output>;
+
+    fn checked_exp2(self) -> Option<Self::Output> {
+        <B as CheckedExp2>::checked_exp2(self.0).map(Object)
+    }
 }
 
 impl<B: CheckedExp2> Object<B> {
@@ -114,6 +154,14 @@ pub trait CheckedExpM1 {
     /// Returns `e^(self) - 1` in a way that is accurate even if the
     /// number is close to zero.
     fn checked_exp_m1(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedExpM1> CheckedExpM1 for Object<B> {
+    type Output = Object<<B as CheckedExpM1>::Output>;
+
+    fn checked_exp_m1(self) -> Option<Self::Output> {
+        <B as CheckedExpM1>::checked_exp_m1(self.0).map(Object)
+    }
 }
 
 impl<B: CheckedExpM1> Object<B> {

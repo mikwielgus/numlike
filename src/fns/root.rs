@@ -21,6 +21,14 @@ pub trait Sqrt {
     fn sqrt(self) -> Self::Output;
 }
 
+impl<B: Sqrt> Sqrt for Object<B> {
+    type Output = Object<<B as Sqrt>::Output>;
+
+    fn sqrt(self) -> Self::Output {
+        Object(<B as Sqrt>::sqrt(self.0))
+    }
+}
+
 impl<B: Sqrt> Object<B> {
     /// Returns the square root of a number.
     pub fn sqrt(self) -> Object<<B as Sqrt>::Output> {
@@ -35,6 +43,14 @@ pub trait Cbrt {
 
     /// Returns the cube root of a number.
     fn cbrt(self) -> Self::Output;
+}
+
+impl<B: Cbrt> Cbrt for Object<B> {
+    type Output = Object<<B as Cbrt>::Output>;
+
+    fn cbrt(self) -> Self::Output {
+        Object(<B as Cbrt>::cbrt(self.0))
+    }
 }
 
 impl<B: Cbrt> Object<B> {
@@ -54,6 +70,14 @@ pub trait CheckedSqrt {
 
     /// Returns the square root of a number.
     fn checked_sqrt(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedSqrt> CheckedSqrt for Object<B> {
+    type Output = Object<<B as CheckedSqrt>::Output>;
+
+    fn checked_sqrt(self) -> Option<Self::Output> {
+        <B as CheckedSqrt>::checked_sqrt(self.0).map(Object)
+    }
 }
 
 impl<B: CheckedSqrt> Object<B> {
@@ -83,6 +107,14 @@ pub trait Isqrt {
     fn isqrt(self) -> Self::Output;
 }
 
+impl<B: Isqrt> Isqrt for Object<B> {
+    type Output = Object<<B as Isqrt>::Output>;
+
+    fn isqrt(self) -> Self::Output {
+        Object(<B as Isqrt>::isqrt(self.0))
+    }
+}
+
 impl<B: Isqrt> Object<B> {
     /// Returns the integer square root of the number, rounded down.
     pub fn isqrt(self) -> Object<<B as Isqrt>::Output> {
@@ -103,6 +135,14 @@ pub trait CheckedIsqrt {
 
     /// Returns the integer square root of the number, rounded down.
     fn checked_isqrt(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedIsqrt> CheckedIsqrt for Object<B> {
+    type Output = Object<<B as CheckedIsqrt>::Output>;
+
+    fn checked_isqrt(self) -> Option<Self::Output> {
+        <B as CheckedIsqrt>::checked_isqrt(self.0).map(Object)
+    }
 }
 
 impl<B: CheckedIsqrt> Object<B> {

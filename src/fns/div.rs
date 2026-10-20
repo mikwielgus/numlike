@@ -19,6 +19,19 @@ pub trait GcdLcm<Rhs = Self> {
     fn gcd_lcm(self, rhs: Rhs) -> (Self::Output, Self::Output);
 }
 
+impl<B, Rhs> GcdLcm<Rhs> for Object<B>
+where
+    B: GcdLcm<Rhs>,
+{
+    type Output = Object<<B as GcdLcm<Rhs>>::Output>;
+
+    fn gcd_lcm(self, rhs: Rhs) -> (Self::Output, Self::Output) {
+        let (gcd, lcm) = <B as GcdLcm<Rhs>>::gcd_lcm(self.0, rhs);
+
+        (Object(gcd), Object(lcm))
+    }
+}
+
 impl<B> Object<B> {
     /// Calculate the greatest common divisor (GCD) and least common multiple
     /// (LCM) together.
@@ -47,6 +60,17 @@ pub trait Gcd<Rhs = Self> {
     fn gcd(self, rhs: Rhs) -> Self::Output;
 }
 
+impl<B, Rhs> Gcd<Rhs> for Object<B>
+where
+    B: Gcd<Rhs>,
+{
+    type Output = Object<<B as Gcd<Rhs>>::Output>;
+
+    fn gcd(self, rhs: Rhs) -> Self::Output {
+        Object(<B as Gcd<Rhs>>::gcd(self.0, rhs))
+    }
+}
+
 impl<B> Object<B> {
     /// Calculate the greatest common divisor (GCD).
     pub fn gcd<Rhs>(self, rhs: Rhs) -> Object<<B as Gcd<Rhs>>::Output>
@@ -64,6 +88,17 @@ pub trait Lcm<Rhs = Self> {
 
     /// Calculate the least common multiple (LCM).
     fn lcm(self, rhs: Rhs) -> Self::Output;
+}
+
+impl<B, Rhs> Lcm<Rhs> for Object<B>
+where
+    B: Lcm<Rhs>,
+{
+    type Output = Object<<B as Lcm<Rhs>>::Output>;
+
+    fn lcm(self, rhs: Rhs) -> Self::Output {
+        Object(<B as Lcm<Rhs>>::lcm(self.0, rhs))
+    }
 }
 
 impl<B> Object<B> {

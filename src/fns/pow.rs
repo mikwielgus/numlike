@@ -27,22 +27,19 @@ pub trait Pow<Rhs = Self> {
     fn pow(self, rhs: Rhs) -> Self::Output;
 }
 
+impl<B, Rhs> Pow<Rhs> for Object<B>
+where
+    B: Pow<Rhs>,
+{
+    type Output = Object<<B as Pow<Rhs>>::Output>;
+
+    fn pow(self, rhs: Rhs) -> Self::Output {
+        Object(<B as Pow<Rhs>>::pow(self.0, rhs))
+    }
+}
+
 impl<B> Object<B> {
     /// Raises `self` to the power of `rhs`.
-    ///
-    /// For integers, this uses exponentiation by squaring.
-    ///
-    /// For floats, this may use an integer or floating-point power depending on
-    /// the exponent type. Using an integer power is generally faster than using
-    /// a floating-point power. It might have a different sequence of rounding
-    /// operations than a floating-point power, so the results are not
-    /// guaranteed to agree.
-    ///
-    /// Note that the floating-point power is special in that it can return
-    /// non-NaN results for NaN inputs. For example, `f32::NAN.pow(0.0)` returns
-    /// `1.0`. However, if an input is a *signaling* NaN, then the result is
-    /// non-deterministically either a NaN or the result that the corresponding
-    /// quiet NaN would produce.
     pub fn pow<Rhs>(self, rhs: Rhs) -> Object<<B as Pow<Rhs>>::Output>
     where
         B: Pow<Rhs>,
@@ -60,6 +57,17 @@ pub trait CheckedPow<Rhs = Self> {
     /// Checked exponentiation. Computes `self.pow(rhs)`, returning `None` if
     /// overflow occurred or the result is not finite.
     fn checked_pow(self, rhs: Rhs) -> Option<Self::Output>;
+}
+
+impl<B, Rhs> CheckedPow<Rhs> for Object<B>
+where
+    B: CheckedPow<Rhs>,
+{
+    type Output = Object<<B as CheckedPow<Rhs>>::Output>;
+
+    fn checked_pow(self, rhs: Rhs) -> Option<Self::Output> {
+        <B as CheckedPow<Rhs>>::checked_pow(self.0, rhs).map(Object)
+    }
 }
 
 impl<B> Object<B> {

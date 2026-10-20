@@ -22,6 +22,16 @@ pub trait SinCos {
     fn sin_cos(self) -> (Self::Output, Self::Output);
 }
 
+impl<B: SinCos> SinCos for Object<B> {
+    type Output = Object<<B as SinCos>::Output>;
+
+    fn sin_cos(self) -> (Self::Output, Self::Output) {
+        let (sin, cos) = <B as SinCos>::sin_cos(self.0);
+
+        (Object(sin), Object(cos))
+    }
+}
+
 impl<B: SinCos> Object<B> {
     /// Simultaneously computes the sine and cosine of the number, `x`. Returns
     /// `(sin(x), cos(x))`.
@@ -45,6 +55,14 @@ pub trait Sin {
     fn sin(self) -> Self::Output;
 }
 
+impl<B: Sin> Sin for Object<B> {
+    type Output = Object<<B as Sin>::Output>;
+
+    fn sin(self) -> Self::Output {
+        Object(<B as Sin>::sin(self.0))
+    }
+}
+
 impl<B: Sin> Object<B> {
     /// Computes the sine of a number (in radians).
     pub fn sin(self) -> Object<<B as Sin>::Output> {
@@ -59,6 +77,14 @@ pub trait Cos {
 
     /// Computes the cosine of a number (in radians).
     fn cos(self) -> Self::Output;
+}
+
+impl<B: Cos> Cos for Object<B> {
+    type Output = Object<<B as Cos>::Output>;
+
+    fn cos(self) -> Self::Output {
+        Object(<B as Cos>::cos(self.0))
+    }
 }
 
 impl<B: Cos> Object<B> {
@@ -77,6 +103,14 @@ pub trait Tan {
     fn tan(self) -> Self::Output;
 }
 
+impl<B: Tan> Tan for Object<B> {
+    type Output = Object<<B as Tan>::Output>;
+
+    fn tan(self) -> Self::Output {
+        Object(<B as Tan>::tan(self.0))
+    }
+}
+
 impl<B: Tan> Object<B> {
     /// Computes the tangent of a number (in radians).
     pub fn tan(self) -> Object<<B as Tan>::Output> {
@@ -93,6 +127,14 @@ pub trait CheckedTan {
 
     /// Computes the tangent of a number (in radians).
     fn checked_tan(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedTan> CheckedTan for Object<B> {
+    type Output = Object<<B as CheckedTan>::Output>;
+
+    fn checked_tan(self) -> Option<Self::Output> {
+        <B as CheckedTan>::checked_tan(self.0).map(Object)
+    }
 }
 
 impl<B: CheckedTan> Object<B> {
@@ -115,6 +157,17 @@ pub trait Atan2<Rhs> {
 
     /// Computes the four quadrant arctangent of `self` (`y`) and `rhs` (`x`) in radians.
     fn atan2(self, rhs: Rhs) -> Self::Output;
+}
+
+impl<B, Rhs> Atan2<Rhs> for Object<B>
+where
+    B: Atan2<Rhs>,
+{
+    type Output = Object<<B as Atan2<Rhs>>::Output>;
+
+    fn atan2(self, rhs: Rhs) -> Self::Output {
+        Object(<B as Atan2<Rhs>>::atan2(self.0, rhs))
+    }
 }
 
 impl<B> Object<B> {
@@ -144,6 +197,14 @@ pub trait Asin {
     fn asin(self) -> Self::Output;
 }
 
+impl<B: Asin> Asin for Object<B> {
+    type Output = Object<<B as Asin>::Output>;
+
+    fn asin(self) -> Self::Output {
+        Object(<B as Asin>::asin(self.0))
+    }
+}
+
 impl<B: Asin> Object<B> {
     /// Computes the arcsine of a number. Return value is in radians in
     /// the range [-pi/2, pi/2] or NaN if the number is outside the range
@@ -166,6 +227,14 @@ pub trait Acos {
     fn acos(self) -> Self::Output;
 }
 
+impl<B: Acos> Acos for Object<B> {
+    type Output = Object<<B as Acos>::Output>;
+
+    fn acos(self) -> Self::Output {
+        Object(<B as Acos>::acos(self.0))
+    }
+}
+
 impl<B: Acos> Object<B> {
     /// Computes the arccosine of a number. Return value is in radians in
     /// the range [0, pi] or NaN if the number is outside the range
@@ -184,6 +253,14 @@ pub trait Atan {
     /// Computes the arctangent of a number. Return value is in radians in the
     /// range [-pi/2, pi/2];
     fn atan(self) -> Self::Output;
+}
+
+impl<B: Atan> Atan for Object<B> {
+    type Output = Object<<B as Atan>::Output>;
+
+    fn atan(self) -> Self::Output {
+        Object(<B as Atan>::atan(self.0))
+    }
 }
 
 impl<B: Atan> Object<B> {
@@ -212,6 +289,14 @@ pub trait CheckedAsin {
     fn checked_asin(self) -> Option<Self::Output>;
 }
 
+impl<B: CheckedAsin> CheckedAsin for Object<B> {
+    type Output = Object<<B as CheckedAsin>::Output>;
+
+    fn checked_asin(self) -> Option<Self::Output> {
+        <B as CheckedAsin>::checked_asin(self.0).map(Object)
+    }
+}
+
 impl<B: CheckedAsin> Object<B> {
     /// Computes the arcsine of a number. Return value is in radians in
     /// the range [-pi/2, pi/2].
@@ -235,6 +320,14 @@ pub trait CheckedAcos {
     /// Computes the arccosine of a number. Return value is in radians in
     /// the range [0, pi].
     fn checked_acos(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedAcos> CheckedAcos for Object<B> {
+    type Output = Object<<B as CheckedAcos>::Output>;
+
+    fn checked_acos(self) -> Option<Self::Output> {
+        <B as CheckedAcos>::checked_acos(self.0).map(Object)
+    }
 }
 
 impl<B: CheckedAcos> Object<B> {

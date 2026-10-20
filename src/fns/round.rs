@@ -21,6 +21,14 @@ pub trait Round {
     fn round(self) -> Self::Output;
 }
 
+impl<B: Round> Round for Object<B> {
+    type Output = Object<<B as Round>::Output>;
+
+    fn round(self) -> Self::Output {
+        Object(<B as Round>::round(self.0))
+    }
+}
+
 impl<B: Round> Object<B> {
     /// Returns the nearest integer to `self`. If a value is half-way between two
     /// integers, round away from `0.0`.
@@ -40,6 +48,14 @@ pub trait Trunc {
     /// Returns the integer part of `self`.
     /// This means that non-integer numbers are always truncated towards zero.
     fn trunc(self) -> Self::Output;
+}
+
+impl<B: Trunc> Trunc for Object<B> {
+    type Output = Object<<B as Trunc>::Output>;
+
+    fn trunc(self) -> Self::Output {
+        Object(<B as Trunc>::trunc(self.0))
+    }
 }
 
 impl<B: Trunc> Object<B> {
@@ -63,6 +79,14 @@ pub trait RoundTiesEven {
     fn round_ties_even(self) -> Self::Output;
 }
 
+impl<B: RoundTiesEven> RoundTiesEven for Object<B> {
+    type Output = Object<<B as RoundTiesEven>::Output>;
+
+    fn round_ties_even(self) -> Self::Output {
+        Object(<B as RoundTiesEven>::round_ties_even(self.0))
+    }
+}
+
 impl<B: RoundTiesEven> Object<B> {
     /// Returns the nearest integer to a number. Rounds half-way cases to the number
     /// with an even least significant digit.
@@ -82,6 +106,14 @@ pub trait Floor {
     fn floor(self) -> Self::Output;
 }
 
+impl<B: Floor> Floor for Object<B> {
+    type Output = Object<<B as Floor>::Output>;
+
+    fn floor(self) -> Self::Output {
+        Object(<B as Floor>::floor(self.0))
+    }
+}
+
 impl<B: Floor> Object<B> {
     /// Returns the largest integer that is less than or equal to `self`.
     pub fn floor(self) -> Object<<B as Floor>::Output> {
@@ -98,6 +130,14 @@ pub trait Ceil {
 
     /// Returns the smallest integer that is greater than or equal to `self`.
     fn ceil(self) -> Self::Output;
+}
+
+impl<B: Ceil> Ceil for Object<B> {
+    type Output = Object<<B as Ceil>::Output>;
+
+    fn ceil(self) -> Self::Output {
+        Object(<B as Ceil>::ceil(self.0))
+    }
 }
 
 impl<B: Ceil> Object<B> {
