@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use crate::types::Object;
+
 /// Bundle of floating-point logarithm functions.
 pub trait LogFns<Rhs = Self>: Log<Rhs> + Ln + Log2 + Log10 + Ln1p {}
 impl<Rhs, T: Log<Rhs> + Ln + Log2 + Log10 + Ln1p> LogFns<Rhs> for T {}
@@ -21,6 +23,16 @@ pub trait Log<Rhs = Self> {
     fn log(self, base: Rhs) -> Self::Output;
 }
 
+impl<B> Object<B> {
+    /// Returns the logarithm of the number with respect to an arbitrary base.
+    fn log<Rhs>(self, base: Rhs) -> Object<<B as Log<Rhs>>::Output>
+    where
+        B: Log<Rhs>,
+    {
+        Object(<B as Log<Rhs>>::log(self.0, base))
+    }
+}
+
 /// Returns the natural logarithm of the number.
 ///
 /// This returns NaN when the number is negative, and negative infinity when number is zero.
@@ -30,6 +42,13 @@ pub trait Ln {
 
     /// Returns the natural logarithm of the number.
     fn ln(self) -> Self::Output;
+}
+
+impl<B: Ln> Object<B> {
+    /// Returns the natural logarithm of the number.
+    fn ln(self) -> Object<<B as Ln>::Output> {
+        Object(<B as Ln>::ln(self.0))
+    }
 }
 
 /// Returns the base 2 logarithm of the number.
@@ -43,6 +62,13 @@ pub trait Log2 {
     fn log2(self) -> Self::Output;
 }
 
+impl<B: Log2> Object<B> {
+    /// Returns the base 2 logarithm of the number.
+    fn log2(self) -> Object<<B as Log2>::Output> {
+        Object(<B as Log2>::log2(self.0))
+    }
+}
+
 /// Returns the base 10 logarithm of the number.
 ///
 /// This returns NaN when the number is negative, and negative infinity when number is zero.
@@ -52,6 +78,13 @@ pub trait Log10 {
 
     /// Returns the base 10 logarithm of the number.
     fn log10(self) -> Self::Output;
+}
+
+impl<B: Log10> Object<B> {
+    /// Returns the base 10 logarithm of the number.
+    fn log10(self) -> Object<<B as Log10>::Output> {
+        Object(<B as Log10>::log10(self.0))
+    }
 }
 
 /// Returns `ln(1+n)` (natural logarithm) more accurately than if
@@ -65,6 +98,14 @@ pub trait Ln1p {
     /// Returns `ln(1+n)` (natural logarithm) more accurately than if
     /// the operations were performed separately.
     fn ln_1p(self) -> Self::Output;
+}
+
+impl<B: Ln1p> Object<B> {
+    /// Returns `ln(1+n)` (natural logarithm) more accurately than if
+    /// the operations were performed separately.
+    fn ln_1p(self) -> Object<<B as Ln1p>::Output> {
+        Object(<B as Ln1p>::ln_1p(self.0))
+    }
 }
 
 /// Bundle of checked floating-point logarithm functions.
@@ -92,6 +133,18 @@ pub trait CheckedLog<Rhs = Self> {
     fn checked_log(self, base: Rhs) -> Option<Self::Output>;
 }
 
+impl<B> Object<B> {
+    /// Returns the logarithm of the number with respect to an arbitrary base.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_log<Rhs>(self, base: Rhs) -> Option<Object<<B as CheckedLog<Rhs>>::Output>>
+    where
+        B: CheckedLog<Rhs>,
+    {
+        <B as CheckedLog<Rhs>>::checked_log(self.0, base).map(Object)
+    }
+}
+
 /// Returns the natural logarithm of the number.
 ///
 /// Returns `None` if the result is not finite.
@@ -101,6 +154,15 @@ pub trait CheckedLn {
 
     /// Returns the natural logarithm of the number.
     fn checked_ln(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedLn> Object<B> {
+    /// Returns the natural logarithm of the number.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_ln(self) -> Option<Object<<B as CheckedLn>::Output>> {
+        <B as CheckedLn>::checked_ln(self.0).map(Object)
+    }
 }
 
 /// Returns the base 2 logarithm of the number.
@@ -114,6 +176,15 @@ pub trait CheckedLog2 {
     fn checked_log2(self) -> Option<Self::Output>;
 }
 
+impl<B: CheckedLog2> Object<B> {
+    /// Returns the base 2 logarithm of the number.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_log2(self) -> Option<Object<<B as CheckedLog2>::Output>> {
+        <B as CheckedLog2>::checked_log2(self.0).map(Object)
+    }
+}
+
 /// Returns the base 10 logarithm of the number.
 ///
 /// Returns `None` if the result is not finite.
@@ -123,6 +194,15 @@ pub trait CheckedLog10 {
 
     /// Returns the base 10 logarithm of the number.
     fn checked_log10(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedLog10> Object<B> {
+    /// Returns the base 10 logarithm of the number.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_log10(self) -> Option<Object<<B as CheckedLog10>::Output>> {
+        <B as CheckedLog10>::checked_log10(self.0).map(Object)
+    }
 }
 
 /// Returns `ln(1+n)` (natural logarithm) more accurately than if
@@ -136,6 +216,16 @@ pub trait CheckedLn1p {
     /// Returns `ln(1+n)` (natural logarithm) more accurately than if
     /// the operations were performed separately.
     fn checked_ln_1p(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedLn1p> Object<B> {
+    /// Returns `ln(1+n)` (natural logarithm) more accurately than if
+    /// the operations were performed separately.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_ln_1p(self) -> Option<Object<<B as CheckedLn1p>::Output>> {
+        <B as CheckedLn1p>::checked_ln_1p(self.0).map(Object)
+    }
 }
 
 /// Bundle of integer logarithm functions.
@@ -162,6 +252,17 @@ pub trait Ilog<Rhs = Self> {
     fn ilog(self, base: Rhs) -> Self::Output;
 }
 
+impl<B> Object<B> {
+    /// Returns the logarithm of the number with respect to an arbitrary base,
+    /// rounded down.
+    fn ilog<Rhs>(self, base: Rhs) -> Object<<B as Ilog<Rhs>>::Output>
+    where
+        B: Ilog<Rhs>,
+    {
+        Object(<B as Ilog<Rhs>>::ilog(self.0, base))
+    }
+}
+
 /// Returns the base 2 logarithm of the number, rounded down.
 ///
 /// # Panics
@@ -175,6 +276,13 @@ pub trait Ilog2 {
     fn ilog2(self) -> Self::Output;
 }
 
+impl<B: Ilog2> Object<B> {
+    /// Returns the base 2 logarithm of the number, rounded down.
+    fn ilog2(self) -> Object<<B as Ilog2>::Output> {
+        Object(<B as Ilog2>::ilog2(self.0))
+    }
+}
+
 /// Returns the base 10 logarithm of the number, rounded down.
 ///
 /// # Panics
@@ -186,6 +294,13 @@ pub trait Ilog10 {
 
     /// Returns the base 10 logarithm of the number, rounded down.
     fn ilog10(self) -> Self::Output;
+}
+
+impl<B: Ilog10> Object<B> {
+    /// Returns the base 10 logarithm of the number, rounded down.
+    fn ilog10(self) -> Object<<B as Ilog10>::Output> {
+        Object(<B as Ilog10>::ilog10(self.0))
+    }
 }
 
 /// Bundle of checked integer logarithm functions.
@@ -209,6 +324,19 @@ pub trait CheckedIlog<Rhs = Self> {
     fn checked_ilog(self, base: Rhs) -> Option<Self::Output>;
 }
 
+impl<B> Object<B> {
+    /// Returns the logarithm of the number with respect to an arbitrary base,
+    /// rounded down.
+    ///
+    /// Returns `None` if `self` is less than or equal to zero, or if the base is not at least 2.
+    fn checked_ilog<Rhs>(self, base: Rhs) -> Option<Object<<B as CheckedIlog<Rhs>>::Output>>
+    where
+        B: CheckedIlog<Rhs>,
+    {
+        <B as CheckedIlog<Rhs>>::checked_ilog(self.0, base).map(Object)
+    }
+}
+
 /// Returns the base 2 logarithm of the number, rounded down.
 ///
 /// Returns `None` if `self` is less than or equal to zero.
@@ -220,6 +348,15 @@ pub trait CheckedIlog2 {
     fn checked_ilog2(self) -> Option<Self::Output>;
 }
 
+impl<B: CheckedIlog2> Object<B> {
+    /// Returns the base 2 logarithm of the number, rounded down.
+    ///
+    /// Returns `None` if `self` is less than or equal to zero.
+    fn checked_ilog2(self) -> Option<Object<<B as CheckedIlog2>::Output>> {
+        <B as CheckedIlog2>::checked_ilog2(self.0).map(Object)
+    }
+}
+
 /// Returns the base 10 logarithm of the number, rounded down.
 ///
 /// Returns `None` if `self` is less than or equal to zero.
@@ -229,6 +366,15 @@ pub trait CheckedIlog10 {
 
     /// Returns the base 10 logarithm of the number, rounded down.
     fn checked_ilog10(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedIlog10> Object<B> {
+    /// Returns the base 10 logarithm of the number, rounded down.
+    ///
+    /// Returns `None` if `self` is less than or equal to zero.
+    fn checked_ilog10(self) -> Option<Object<<B as CheckedIlog10>::Output>> {
+        <B as CheckedIlog10>::checked_ilog10(self.0).map(Object)
+    }
 }
 
 #[cfg(any(feature = "std", feature = "libm"))]
@@ -357,6 +503,7 @@ macro_rules! test_log_traits_float_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_ln() {
@@ -368,6 +515,7 @@ macro_rules! test_log_traits_float_nonnegative {
                 let sixteenth = one / sixteen;
 
                 assert_eq!(Ln::ln(one), zero);
+                assert_eq!(Object::new(one).ln(), Object::new(Ln::ln(one)));
 
                 let ln_e = Ln::ln(Exp::exp(one));
                 assert!(Abs::abs(ln_e - one) < sixteenth);
@@ -382,6 +530,7 @@ macro_rules! test_log_traits_float_nonnegative {
                 let eight = four + four;
 
                 assert_eq!(Log2::log2(one), zero);
+                assert_eq!(Object::new(one).log2(), Object::new(Log2::log2(one)));
                 assert_eq!(Log2::log2(two), one);
                 assert_eq!(Log2::log2(four), two);
                 assert_eq!(Log2::log2(eight), two + one);
@@ -394,6 +543,7 @@ macro_rules! test_log_traits_float_nonnegative {
                 let ten = 10 as $ty;
 
                 assert_eq!(Log10::log10(one), zero);
+                assert_eq!(Object::new(one).log10(), Object::new(Log10::log10(one)));
                 assert_eq!(Log10::log10(ten), one);
                 assert_eq!(Log10::log10(ten * ten), one + one);
             }
@@ -406,6 +556,7 @@ macro_rules! test_log_traits_float_nonnegative {
                 let eight = four + four;
 
                 assert_eq!(Log::log(one, two), <$ty as ConstZero>::ZERO);
+                assert_eq!(Object::new(one).log(two), Object::new(Log::log(one, two)));
                 assert_eq!(Log::log(two, two), one);
                 assert_eq!(Log::log(four, two), two);
                 assert_eq!(Log::log(eight, two), two + one);
@@ -422,6 +573,7 @@ macro_rules! test_log_traits_float_nonnegative {
                 let sixteenth = one / sixteen;
 
                 assert_eq!(Ln1p::ln_1p(zero), zero);
+                assert_eq!(Object::new(zero).ln_1p(), Object::new(Ln1p::ln_1p(zero)));
 
                 let ln_2 = Ln1p::ln_1p(one);
 
@@ -436,6 +588,10 @@ macro_rules! test_log_traits_float_nonnegative {
                 let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(CheckedLn::checked_ln(one), Some(zero));
+                assert_eq!(
+                    Object::new(one).checked_ln(),
+                    CheckedLn::checked_ln(one).map(Object::new)
+                );
                 assert_eq!(CheckedLn::checked_ln(zero), None);
             }
 
@@ -447,6 +603,10 @@ macro_rules! test_log_traits_float_nonnegative {
                 let four = two + two;
 
                 assert_eq!(CheckedLog2::checked_log2(one), Some(zero));
+                assert_eq!(
+                    Object::new(one).checked_log2(),
+                    CheckedLog2::checked_log2(one).map(Object::new)
+                );
                 assert_eq!(CheckedLog2::checked_log2(two), Some(one));
                 assert_eq!(CheckedLog2::checked_log2(four), Some(two));
                 assert_eq!(CheckedLog2::checked_log2(zero), None);
@@ -459,6 +619,10 @@ macro_rules! test_log_traits_float_nonnegative {
                 let ten = 10 as $ty;
 
                 assert_eq!(CheckedLog10::checked_log10(one), Some(zero));
+                assert_eq!(
+                    Object::new(one).checked_log10(),
+                    CheckedLog10::checked_log10(one).map(Object::new)
+                );
                 assert_eq!(CheckedLog10::checked_log10(ten), Some(one));
                 assert_eq!(CheckedLog10::checked_log10(zero), None);
             }
@@ -471,6 +635,10 @@ macro_rules! test_log_traits_float_nonnegative {
                 let four = two + two;
 
                 assert_eq!(CheckedLog::checked_log(four, two), Some(two));
+                assert_eq!(
+                    Object::new(four).checked_log(two),
+                    CheckedLog::checked_log(four, two).map(Object::new)
+                );
                 assert_eq!(CheckedLog::checked_log(zero, two), None);
             }
 
@@ -480,6 +648,10 @@ macro_rules! test_log_traits_float_nonnegative {
                 let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(CheckedLn1p::checked_ln_1p(zero), Some(zero));
+                assert_eq!(
+                    Object::new(zero).checked_ln_1p(),
+                    CheckedLn1p::checked_ln_1p(zero).map(Object::new)
+                );
                 assert!(CheckedLn1p::checked_ln_1p(one).unwrap() > zero);
                 assert_eq!(CheckedLn1p::checked_ln_1p(-one), None);
             }
@@ -494,6 +666,7 @@ macro_rules! test_log_traits_float_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_ln() {
@@ -507,6 +680,7 @@ macro_rules! test_log_traits_float_negative {
 
                 let ln_half = Ln::ln(half);
 
+                assert_eq!(Object::new(half).ln(), Object::new(Ln::ln(half)));
                 assert!(ln_half < zero);
                 assert!(Abs::abs(ln_half + Ln::ln(two)) < sixteenth);
             }
@@ -520,6 +694,7 @@ macro_rules! test_log_traits_float_negative {
                 let quarter = one / four;
 
                 assert_eq!(Log2::log2(half), -one);
+                assert_eq!(Object::new(half).log2(), Object::new(Log2::log2(half)));
                 assert_eq!(Log2::log2(quarter), -two);
             }
 
@@ -530,6 +705,7 @@ macro_rules! test_log_traits_float_negative {
                 let tenth = one / ten;
 
                 assert_eq!(Log10::log10(tenth), -one);
+                assert_eq!(Object::new(tenth).log10(), Object::new(Log10::log10(tenth)));
             }
 
             #[test]
@@ -541,6 +717,7 @@ macro_rules! test_log_traits_float_negative {
                 let quarter = one / four;
 
                 assert_eq!(Log::log(half, two), -one);
+                assert_eq!(Object::new(half).log(two), Object::new(Log::log(half, two)));
                 assert_eq!(Log::log(quarter, two), -two);
                 assert_eq!(Log::log(half, four), -one / two);
             }
@@ -557,6 +734,7 @@ macro_rules! test_log_traits_float_negative {
 
                 let ln_1p = Ln1p::ln_1p(-half);
 
+                assert_eq!(Object::new(-half).ln_1p(), Object::new(Ln1p::ln_1p(-half)));
                 assert!(ln_1p < zero);
                 assert!(Abs::abs(ln_1p - Ln::ln(half)) < sixteenth);
             }
@@ -565,6 +743,10 @@ macro_rules! test_log_traits_float_negative {
             fn test_checked_ln() {
                 let one = <$ty as ConstOne>::ONE;
 
+                assert_eq!(
+                    Object::new(-one).checked_ln(),
+                    CheckedLn::checked_ln(-one).map(Object::new)
+                );
                 assert_eq!(CheckedLn::checked_ln(-one), None);
             }
 
@@ -575,6 +757,10 @@ macro_rules! test_log_traits_float_negative {
                 let half = one / two;
 
                 assert_eq!(CheckedLog2::checked_log2(half), Some(-one));
+                assert_eq!(
+                    Object::new(half).checked_log2(),
+                    CheckedLog2::checked_log2(half).map(Object::new)
+                );
                 assert_eq!(CheckedLog2::checked_log2(-one), None);
             }
 
@@ -585,6 +771,10 @@ macro_rules! test_log_traits_float_negative {
                 let tenth = one / ten;
 
                 assert_eq!(CheckedLog10::checked_log10(tenth), Some(-one));
+                assert_eq!(
+                    Object::new(tenth).checked_log10(),
+                    CheckedLog10::checked_log10(tenth).map(Object::new)
+                );
                 assert_eq!(CheckedLog10::checked_log10(-one), None);
             }
 
@@ -595,6 +785,10 @@ macro_rules! test_log_traits_float_negative {
                 let half = one / two;
 
                 assert_eq!(CheckedLog::checked_log(half, two), Some(-one));
+                assert_eq!(
+                    Object::new(half).checked_log(two),
+                    CheckedLog::checked_log(half, two).map(Object::new)
+                );
                 assert_eq!(CheckedLog::checked_log(-one, two), None);
             }
 
@@ -605,6 +799,10 @@ macro_rules! test_log_traits_float_negative {
                 let two = one + one;
                 let half = one / two;
 
+                assert_eq!(
+                    Object::new(-half).checked_ln_1p(),
+                    CheckedLn1p::checked_ln_1p(-half).map(Object::new)
+                );
                 assert!(CheckedLn1p::checked_ln_1p(-half).unwrap() < zero);
                 assert_eq!(CheckedLn1p::checked_ln_1p(-two), None);
             }
@@ -727,6 +925,7 @@ macro_rules! test_ilog_traits_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_ilog2() {
@@ -737,6 +936,7 @@ macro_rules! test_ilog_traits_nonnegative {
                 let eight = four + four;
 
                 assert_eq!(Ilog2::ilog2(one), 0);
+                assert_eq!(Object::new(one).ilog2(), Object::new(Ilog2::ilog2(one)));
                 assert_eq!(Ilog2::ilog2(two), 1);
                 assert_eq!(Ilog2::ilog2(three), 1);
                 assert_eq!(Ilog2::ilog2(four), 2);
@@ -750,6 +950,7 @@ macro_rules! test_ilog_traits_nonnegative {
                 let hundred = ten * ten;
 
                 assert_eq!(Ilog10::ilog10(one), 0);
+                assert_eq!(Object::new(one).ilog10(), Object::new(Ilog10::ilog10(one)));
                 assert_eq!(Ilog10::ilog10(ten), 1);
                 assert_eq!(Ilog10::ilog10(hundred), 2);
             }
@@ -763,6 +964,10 @@ macro_rules! test_ilog_traits_nonnegative {
                 let eight = four + four;
 
                 assert_eq!(Ilog::ilog(one, two), 0);
+                assert_eq!(
+                    Object::new(one).ilog(two),
+                    Object::new(Ilog::ilog(one, two))
+                );
                 assert_eq!(Ilog::ilog(two, two), 1);
                 assert_eq!(Ilog::ilog(three, two), 1);
                 assert_eq!(Ilog::ilog(four, two), 2);
@@ -778,6 +983,10 @@ macro_rules! test_ilog_traits_nonnegative {
                 let four = two + two;
 
                 assert_eq!(CheckedIlog2::checked_ilog2(one), Some(0));
+                assert_eq!(
+                    Object::new(one).checked_ilog2(),
+                    CheckedIlog2::checked_ilog2(one).map(Object::new)
+                );
                 assert_eq!(CheckedIlog2::checked_ilog2(two), Some(1));
                 assert_eq!(CheckedIlog2::checked_ilog2(four), Some(2));
                 assert_eq!(CheckedIlog2::checked_ilog2(zero), None);
@@ -790,6 +999,10 @@ macro_rules! test_ilog_traits_nonnegative {
                 let ten = 10 as $ty;
 
                 assert_eq!(CheckedIlog10::checked_ilog10(one), Some(0));
+                assert_eq!(
+                    Object::new(one).checked_ilog10(),
+                    CheckedIlog10::checked_ilog10(one).map(Object::new)
+                );
                 assert_eq!(CheckedIlog10::checked_ilog10(ten), Some(1));
                 assert_eq!(CheckedIlog10::checked_ilog10(zero), None);
             }
@@ -802,6 +1015,10 @@ macro_rules! test_ilog_traits_nonnegative {
                 let eight = (one + one) * (one + one) * (one + one);
 
                 assert_eq!(CheckedIlog::checked_ilog(eight, two), Some(3));
+                assert_eq!(
+                    Object::new(eight).checked_ilog(two),
+                    CheckedIlog::checked_ilog(eight, two).map(Object::new)
+                );
                 assert_eq!(CheckedIlog::checked_ilog(zero, two), None);
                 assert_eq!(CheckedIlog::checked_ilog(two, one), None);
             }
@@ -815,11 +1032,16 @@ macro_rules! test_ilog_traits_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_checked_ilog2() {
                 let one = <$ty as ConstOne>::ONE;
 
+                assert_eq!(
+                    Object::new(-one).checked_ilog2(),
+                    CheckedIlog2::checked_ilog2(-one).map(Object::new)
+                );
                 assert_eq!(CheckedIlog2::checked_ilog2(-one), None);
             }
 
@@ -827,6 +1049,10 @@ macro_rules! test_ilog_traits_negative {
             fn test_checked_ilog10() {
                 let one = <$ty as ConstOne>::ONE;
 
+                assert_eq!(
+                    Object::new(-one).checked_ilog10(),
+                    CheckedIlog10::checked_ilog10(-one).map(Object::new)
+                );
                 assert_eq!(CheckedIlog10::checked_ilog10(-one), None);
             }
 
@@ -835,6 +1061,10 @@ macro_rules! test_ilog_traits_negative {
                 let one = <$ty as ConstOne>::ONE;
                 let two = one + one;
 
+                assert_eq!(
+                    Object::new(-one).checked_ilog(two),
+                    CheckedIlog::checked_ilog(-one, two).map(Object::new)
+                );
                 assert_eq!(CheckedIlog::checked_ilog(-one, two), None);
             }
         }

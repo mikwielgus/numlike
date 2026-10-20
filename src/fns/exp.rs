@@ -2,17 +2,26 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use crate::types::Object;
+
 /// Bundle of exponential functions.
 pub trait ExpFns: Exp + Exp2 + ExpM1 {}
 impl<T: Exp + Exp2 + ExpM1> ExpFns for T {}
 
-/// Returns `e^(self)`, (the exponential function).
+/// Returns `e^(self)` (the exponential function).
 pub trait Exp {
     /// The resulting type after evaluating the function.
     type Output;
 
-    /// Returns `e^(self)`, (the exponential function).
+    /// Returns `e^(self)` (the exponential function).
     fn exp(self) -> Self::Output;
+}
+
+impl<B: Exp> Object<B> {
+    /// Returns `e^(self)` (the exponential function).
+    fn exp(self) -> Object<<B as Exp>::Output> {
+        Object(<B as Exp>::exp(self.0))
+    }
 }
 
 /// Returns `2^(self)`.
@@ -24,6 +33,13 @@ pub trait Exp2 {
     fn exp2(self) -> Self::Output;
 }
 
+impl<B: Exp2> Object<B> {
+    /// Returns `2^(self)`.
+    fn exp2(self) -> Object<<B as Exp2>::Output> {
+        Object(<B as Exp2>::exp2(self.0))
+    }
+}
+
 /// Returns `e^(self) - 1` in a way that is accurate even if the
 /// number is close to zero.
 pub trait ExpM1 {
@@ -33,6 +49,14 @@ pub trait ExpM1 {
     /// Returns `e^(self) - 1` in a way that is accurate even if the
     /// number is close to zero.
     fn exp_m1(self) -> Self::Output;
+}
+
+impl<B: ExpM1> Object<B> {
+    /// Returns `e^(self) - 1` in a way that is accurate even if the
+    /// number is close to zero.
+    fn exp_m1(self) -> Object<<B as ExpM1>::Output> {
+        Object(<B as ExpM1>::exp_m1(self.0))
+    }
 }
 
 /// Bundle of checked exponential functions.
@@ -50,6 +74,15 @@ pub trait CheckedExp {
     fn checked_exp(self) -> Option<Self::Output>;
 }
 
+impl<B: CheckedExp> Object<B> {
+    /// Returns `e^(self)`, (the exponential function).
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_exp(self) -> Option<Object<<B as CheckedExp>::Output>> {
+        <B as CheckedExp>::checked_exp(self.0).map(Object)
+    }
+}
+
 /// Returns `2^(self)`.
 ///
 /// Returns `None` if the result is not finite.
@@ -59,6 +92,15 @@ pub trait CheckedExp2 {
 
     /// Returns `2^(self)`.
     fn checked_exp2(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedExp2> Object<B> {
+    /// Returns `2^(self)`.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_exp2(self) -> Option<Object<<B as CheckedExp2>::Output>> {
+        <B as CheckedExp2>::checked_exp2(self.0).map(Object)
+    }
 }
 
 /// Returns `e^(self) - 1` in a way that is accurate even if the
@@ -72,6 +114,16 @@ pub trait CheckedExpM1 {
     /// Returns `e^(self) - 1` in a way that is accurate even if the
     /// number is close to zero.
     fn checked_exp_m1(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedExpM1> Object<B> {
+    /// Returns `e^(self) - 1` in a way that is accurate even if the
+    /// number is close to zero.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_exp_m1(self) -> Option<Object<<B as CheckedExpM1>::Output>> {
+        <B as CheckedExpM1>::checked_exp_m1(self.0).map(Object)
+    }
 }
 
 #[cfg(any(feature = "std", feature = "libm"))]
@@ -157,6 +209,7 @@ macro_rules! test_exp_traits_nonnegative {
             use crate::elem::*;
             use crate::fns::*;
             use crate::limits::*;
+            use crate::types::Object;
 
             #[test]
             fn test_exp() {
@@ -165,6 +218,7 @@ macro_rules! test_exp_traits_nonnegative {
                 let two = one + one;
 
                 assert_eq!(Exp::exp(zero), one);
+                assert_eq!(Object::new(zero).exp(), Object::new(Exp::exp(zero)));
 
                 let e = Exp::exp(one);
 
@@ -180,6 +234,7 @@ macro_rules! test_exp_traits_nonnegative {
                 let four = two + two;
 
                 assert_eq!(Exp2::exp2(zero), one);
+                assert_eq!(Object::new(zero).exp2(), Object::new(Exp2::exp2(zero)));
                 assert_eq!(Exp2::exp2(one), two);
                 assert_eq!(Exp2::exp2(two), four);
             }
@@ -194,6 +249,7 @@ macro_rules! test_exp_traits_nonnegative {
                 let sixteenth = one / sixteen;
 
                 assert_eq!(ExpM1::exp_m1(zero), zero);
+                assert_eq!(Object::new(zero).exp_m1(), Object::new(ExpM1::exp_m1(zero)));
 
                 let e_m1 = ExpM1::exp_m1(one);
 
@@ -209,6 +265,10 @@ macro_rules! test_exp_traits_nonnegative {
                 let two = one + one;
 
                 assert_eq!(CheckedExp::checked_exp(zero), Some(one));
+                assert_eq!(
+                    Object::new(zero).checked_exp(),
+                    CheckedExp::checked_exp(zero).map(Object::new)
+                );
 
                 let e = CheckedExp::checked_exp(one).unwrap();
 
@@ -229,6 +289,10 @@ macro_rules! test_exp_traits_nonnegative {
                 let four = two + two;
 
                 assert_eq!(CheckedExp2::checked_exp2(zero), Some(one));
+                assert_eq!(
+                    Object::new(zero).checked_exp2(),
+                    CheckedExp2::checked_exp2(zero).map(Object::new)
+                );
                 assert_eq!(CheckedExp2::checked_exp2(one), Some(two));
                 assert_eq!(CheckedExp2::checked_exp2(two), Some(four));
 
@@ -245,6 +309,10 @@ macro_rules! test_exp_traits_nonnegative {
                 let two = one + one;
 
                 assert_eq!(CheckedExpM1::checked_exp_m1(zero), Some(zero));
+                assert_eq!(
+                    Object::new(zero).checked_exp_m1(),
+                    CheckedExpM1::checked_exp_m1(zero).map(Object::new)
+                );
 
                 let e_m1 = CheckedExpM1::checked_exp_m1(one).unwrap();
 
@@ -267,6 +335,7 @@ macro_rules! test_exp_traits_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_exp() {
@@ -279,6 +348,7 @@ macro_rules! test_exp_traits_negative {
 
                 let inv_e = Exp::exp(-one);
 
+                assert_eq!(Object::new(-one).exp(), Object::new(Exp::exp(-one)));
                 assert!(inv_e > zero);
                 assert!(inv_e < one);
                 assert!(Abs::abs(inv_e * Exp::exp(one) - one) < sixteenth);
@@ -293,6 +363,7 @@ macro_rules! test_exp_traits_negative {
                 let quarter = one / four;
 
                 assert_eq!(Exp2::exp2(-one), half);
+                assert_eq!(Object::new(-one).exp2(), Object::new(Exp2::exp2(-one)));
                 assert_eq!(Exp2::exp2(-two), quarter);
             }
 
@@ -306,6 +377,8 @@ macro_rules! test_exp_traits_negative {
                 let sixteenth = one / sixteen;
 
                 let inv_e_m1 = ExpM1::exp_m1(-one);
+
+                assert_eq!(Object::new(-one).exp_m1(), Object::new(ExpM1::exp_m1(-one)));
                 assert!(inv_e_m1 < zero);
                 assert!(inv_e_m1 > -one);
                 assert!(Abs::abs((inv_e_m1 + one) - Exp::exp(-one)) < sixteenth);
@@ -317,6 +390,11 @@ macro_rules! test_exp_traits_negative {
                 let one = <$ty as ConstOne>::ONE;
 
                 let inv_e = CheckedExp::checked_exp(-one).unwrap();
+
+                assert_eq!(
+                    Object::new(-one).checked_exp(),
+                    CheckedExp::checked_exp(-one).map(Object::new)
+                );
                 assert!(inv_e > zero);
                 assert!(inv_e < one);
             }
@@ -330,6 +408,10 @@ macro_rules! test_exp_traits_negative {
                 let quarter = one / four;
 
                 assert_eq!(CheckedExp2::checked_exp2(-one), Some(half));
+                assert_eq!(
+                    Object::new(-one).checked_exp2(),
+                    CheckedExp2::checked_exp2(-one).map(Object::new)
+                );
                 assert_eq!(CheckedExp2::checked_exp2(-two), Some(quarter));
             }
 
@@ -339,6 +421,11 @@ macro_rules! test_exp_traits_negative {
                 let one = <$ty as ConstOne>::ONE;
 
                 let inv_e_m1 = CheckedExpM1::checked_exp_m1(-one).unwrap();
+
+                assert_eq!(
+                    Object::new(-one).checked_exp_m1(),
+                    CheckedExpM1::checked_exp_m1(-one).map(Object::new)
+                );
                 assert!(inv_e_m1 < zero);
                 assert!(inv_e_m1 > -one);
             }

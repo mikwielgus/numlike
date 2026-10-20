@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use crate::types::Object;
+
 /*pub trait FullHypFns<Rhs = Self>: HypFns + InvHypFns<Rhs> {}
 impl<Rhs, T: HypFns + InvHypFns<Rhs>> FullHypFns<Rhs> for T {}*/
 
@@ -18,6 +20,13 @@ pub trait Sinh {
     fn sinh(self) -> Self::Output;
 }
 
+impl<B: Sinh> Object<B> {
+    /// Hyperbolic sine function.
+    fn sinh(self) -> Object<<B as Sinh>::Output> {
+        Object(<B as Sinh>::sinh(self.0))
+    }
+}
+
 /// Hyperbolic cosine function.
 pub trait Cosh {
     /// The resulting type after evaluating the function.
@@ -27,6 +36,13 @@ pub trait Cosh {
     fn cosh(self) -> Self::Output;
 }
 
+impl<B: Cosh> Object<B> {
+    /// Hyperbolic cosine function.
+    fn cosh(self) -> Object<<B as Cosh>::Output> {
+        Object(<B as Cosh>::cosh(self.0))
+    }
+}
+
 /// Hyperbolic tangent function.
 pub trait Tanh {
     /// The resulting type after evaluating the function.
@@ -34,6 +50,13 @@ pub trait Tanh {
 
     /// Hyperbolic tangent function.
     fn tanh(self) -> Self::Output;
+}
+
+impl<B: Tanh> Object<B> {
+    /// Hyperbolic tangent function.
+    fn tanh(self) -> Object<<B as Tanh>::Output> {
+        Object(<B as Tanh>::tanh(self.0))
+    }
 }
 
 /// Bundle of checked hyperbolic functions.
@@ -51,6 +74,15 @@ pub trait CheckedSinh {
     fn checked_sinh(self) -> Option<Self::Output>;
 }
 
+impl<B: CheckedSinh> Object<B> {
+    /// Hyperbolic sine function.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_sinh(self) -> Option<Object<<B as CheckedSinh>::Output>> {
+        <B as CheckedSinh>::checked_sinh(self.0).map(Object)
+    }
+}
+
 /// Hyperbolic cosine function.
 ///
 /// Returns `None` if the result is not finite.
@@ -60,6 +92,15 @@ pub trait CheckedCosh {
 
     /// Hyperbolic cosine function.
     fn checked_cosh(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedCosh> Object<B> {
+    /// Hyperbolic cosine function.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_cosh(self) -> Option<Object<<B as CheckedCosh>::Output>> {
+        <B as CheckedCosh>::checked_cosh(self.0).map(Object)
+    }
 }
 
 // No checked `atanh` because it does not have restricted domain.
@@ -77,6 +118,13 @@ pub trait Asinh {
     fn asinh(self) -> Self::Output;
 }
 
+impl<B: Asinh> Object<B> {
+    /// Inverse hyperbolic sine function.
+    fn asinh(self) -> Object<<B as Asinh>::Output> {
+        Object(<B as Asinh>::asinh(self.0))
+    }
+}
+
 /// Inverse hyperbolic cosine function.
 pub trait Acosh {
     /// The resulting type after evaluating the function.
@@ -86,6 +134,13 @@ pub trait Acosh {
     fn acosh(self) -> Self::Output;
 }
 
+impl<B: Acosh> Object<B> {
+    /// Inverse hyperbolic cosine function.
+    fn acosh(self) -> Object<<B as Acosh>::Output> {
+        Object(<B as Acosh>::acosh(self.0))
+    }
+}
+
 /// Inverse hyperbolic tangent function.
 pub trait Atanh {
     /// The resulting type after evaluating the function.
@@ -93,6 +148,13 @@ pub trait Atanh {
 
     /// Inverse hyperbolic tangent function.
     fn atanh(self) -> Self::Output;
+}
+
+impl<B: Atanh> Object<B> {
+    /// Inverse hyperbolic tangent function.
+    fn atanh(self) -> Object<<B as Atanh>::Output> {
+        Object(<B as Atanh>::atanh(self.0))
+    }
 }
 
 /// Bundle of checked inverse hyperbolic functions.
@@ -119,6 +181,15 @@ pub trait CheckedAcosh {
     fn checked_acosh(self) -> Option<Self::Output>;
 }
 
+impl<B: CheckedAcosh> Object<B> {
+    /// Inverse hyperbolic cosine function.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_acosh(self) -> Option<Object<<B as CheckedAcosh>::Output>> {
+        <B as CheckedAcosh>::checked_acosh(self.0).map(Object)
+    }
+}
+
 /// Inverse hyperbolic tangent function.
 ///
 /// Returns `None` if the result is not finite.
@@ -128,6 +199,15 @@ pub trait CheckedAtanh {
 
     /// Inverse hyperbolic tangent function.
     fn checked_atanh(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedAtanh> Object<B> {
+    /// Inverse hyperbolic tangent function.
+    ///
+    /// Returns `None` if the result is not finite.
+    fn checked_atanh(self) -> Option<Object<<B as CheckedAtanh>::Output>> {
+        <B as CheckedAtanh>::checked_atanh(self.0).map(Object)
+    }
 }
 
 #[cfg(any(feature = "std", feature = "libm"))]
@@ -276,6 +356,7 @@ macro_rules! test_hyp_traits_nonnegative {
             use crate::elem::*;
             use crate::fns::*;
             use crate::limits::*;
+            use crate::types::Object;
 
             #[test]
             fn test_sinh() {
@@ -287,6 +368,7 @@ macro_rules! test_hyp_traits_nonnegative {
                 let sixteenth = one / sixteen;
 
                 assert_eq!(Sinh::sinh(zero), zero);
+                assert_eq!(Object::new(zero).sinh(), Object::new(Sinh::sinh(zero)));
 
                 let sinh_one = Sinh::sinh(one);
 
@@ -305,6 +387,7 @@ macro_rules! test_hyp_traits_nonnegative {
                 let sixteenth = one / sixteen;
 
                 assert_eq!(Cosh::cosh(zero), one);
+                assert_eq!(Object::new(zero).cosh(), Object::new(Cosh::cosh(zero)));
 
                 let cosh_one = Cosh::cosh(one);
 
@@ -323,6 +406,7 @@ macro_rules! test_hyp_traits_nonnegative {
                 let sixteenth = one / sixteen;
 
                 assert_eq!(Tanh::tanh(zero), zero);
+                assert_eq!(Object::new(zero).tanh(), Object::new(Tanh::tanh(zero)));
 
                 let tanh_one = Tanh::tanh(one);
 
@@ -341,6 +425,7 @@ macro_rules! test_hyp_traits_nonnegative {
                 let sixteenth = one / sixteen;
 
                 assert_eq!(Asinh::asinh(zero), zero);
+                assert_eq!(Object::new(zero).asinh(), Object::new(Asinh::asinh(zero)));
 
                 let asinh_one = Asinh::asinh(one);
 
@@ -359,6 +444,7 @@ macro_rules! test_hyp_traits_nonnegative {
                 let sixteenth = one / sixteen;
 
                 assert_eq!(Acosh::acosh(one), zero);
+                assert_eq!(Object::new(one).acosh(), Object::new(Acosh::acosh(one)));
 
                 let acosh_two = Acosh::acosh(two);
 
@@ -378,6 +464,7 @@ macro_rules! test_hyp_traits_nonnegative {
                 let sixteenth = one / sixteen;
 
                 assert_eq!(Atanh::atanh(zero), zero);
+                assert_eq!(Object::new(zero).atanh(), Object::new(Atanh::atanh(zero)));
 
                 let atanh_half = Atanh::atanh(half);
 
@@ -392,6 +479,10 @@ macro_rules! test_hyp_traits_nonnegative {
                 let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(CheckedSinh::checked_sinh(zero), Some(zero));
+                assert_eq!(
+                    Object::new(zero).checked_sinh(),
+                    CheckedSinh::checked_sinh(zero).map(Object::new)
+                );
                 assert!(CheckedSinh::checked_sinh(one).unwrap() > one);
                 assert_eq!(
                     CheckedSinh::checked_sinh(<$ty as MaxFinite>::MAX_FINITE),
@@ -405,6 +496,10 @@ macro_rules! test_hyp_traits_nonnegative {
                 let one = <$ty as ConstOne>::ONE;
 
                 assert_eq!(CheckedCosh::checked_cosh(zero), Some(one));
+                assert_eq!(
+                    Object::new(zero).checked_cosh(),
+                    CheckedCosh::checked_cosh(zero).map(Object::new)
+                );
                 assert!(CheckedCosh::checked_cosh(one).unwrap() > one);
                 assert_eq!(
                     CheckedCosh::checked_cosh(<$ty as MaxFinite>::MAX_FINITE),
@@ -419,6 +514,10 @@ macro_rules! test_hyp_traits_nonnegative {
                 let two = one + one;
 
                 assert_eq!(CheckedAcosh::checked_acosh(one), Some(zero));
+                assert_eq!(
+                    Object::new(one).checked_acosh(),
+                    CheckedAcosh::checked_acosh(one).map(Object::new)
+                );
                 assert!(CheckedAcosh::checked_acosh(two).unwrap() > one);
                 assert_eq!(CheckedAcosh::checked_acosh(zero), None);
             }
@@ -431,6 +530,10 @@ macro_rules! test_hyp_traits_nonnegative {
                 let half = one / two;
 
                 assert_eq!(CheckedAtanh::checked_atanh(zero), Some(zero));
+                assert_eq!(
+                    Object::new(zero).checked_atanh(),
+                    CheckedAtanh::checked_atanh(zero).map(Object::new)
+                );
                 assert!(CheckedAtanh::checked_atanh(half).unwrap() > zero);
                 assert_eq!(CheckedAtanh::checked_atanh(one), None);
             }
@@ -446,6 +549,7 @@ macro_rules! test_hyp_traits_negative {
             use crate::elem::*;
             use crate::fns::*;
             use crate::limits::*;
+            use crate::types::Object;
 
             #[test]
             fn test_sinh() {
@@ -455,6 +559,7 @@ macro_rules! test_hyp_traits_negative {
                 let sixteen = four * four;
                 let sixteenth = one / sixteen;
 
+                assert_eq!(Object::new(-one).sinh(), Object::new(Sinh::sinh(-one)));
                 assert!(Abs::abs(Sinh::sinh(-one) + Sinh::sinh(one)) < sixteenth);
             }
 
@@ -466,6 +571,7 @@ macro_rules! test_hyp_traits_negative {
                 let sixteen = four * four;
                 let sixteenth = one / sixteen;
 
+                assert_eq!(Object::new(-one).cosh(), Object::new(Cosh::cosh(-one)));
                 assert!(Abs::abs(Cosh::cosh(-one) - Cosh::cosh(one)) < sixteenth);
             }
 
@@ -477,6 +583,7 @@ macro_rules! test_hyp_traits_negative {
                 let sixteen = four * four;
                 let sixteenth = one / sixteen;
 
+                assert_eq!(Object::new(-one).tanh(), Object::new(Tanh::tanh(-one)));
                 assert!(Abs::abs(Tanh::tanh(-one) + Tanh::tanh(one)) < sixteenth);
             }
 
@@ -488,6 +595,7 @@ macro_rules! test_hyp_traits_negative {
                 let sixteen = four * four;
                 let sixteenth = one / sixteen;
 
+                assert_eq!(Object::new(-one).asinh(), Object::new(Asinh::asinh(-one)));
                 assert!(Abs::abs(Asinh::asinh(-one) + Asinh::asinh(one)) < sixteenth);
             }
 
@@ -500,6 +608,7 @@ macro_rules! test_hyp_traits_negative {
                 let sixteen = four * four;
                 let sixteenth = one / sixteen;
 
+                assert_eq!(Object::new(-half).atanh(), Object::new(Atanh::atanh(-half)));
                 assert!(Abs::abs(Atanh::atanh(-half) + Atanh::atanh(half)) < sixteenth);
             }
 
@@ -507,6 +616,10 @@ macro_rules! test_hyp_traits_negative {
             fn test_checked_sinh() {
                 let one = <$ty as ConstOne>::ONE;
 
+                assert_eq!(
+                    Object::new(-one).checked_sinh(),
+                    CheckedSinh::checked_sinh(-one).map(Object::new)
+                );
                 assert!(CheckedSinh::checked_sinh(-one).unwrap() < -one);
                 assert_eq!(
                     CheckedSinh::checked_sinh(-<$ty as MaxFinite>::MAX_FINITE),
@@ -518,6 +631,10 @@ macro_rules! test_hyp_traits_negative {
             fn test_checked_cosh() {
                 let one = <$ty as ConstOne>::ONE;
 
+                assert_eq!(
+                    Object::new(-one).checked_cosh(),
+                    CheckedCosh::checked_cosh(-one).map(Object::new)
+                );
                 assert!(CheckedCosh::checked_cosh(-one).unwrap() > one);
                 assert_eq!(
                     CheckedCosh::checked_cosh(-<$ty as MaxFinite>::MAX_FINITE),
@@ -529,6 +646,10 @@ macro_rules! test_hyp_traits_negative {
             fn test_checked_acosh() {
                 let one = <$ty as ConstOne>::ONE;
 
+                assert_eq!(
+                    Object::new(-one).checked_acosh(),
+                    CheckedAcosh::checked_acosh(-one).map(Object::new)
+                );
                 assert_eq!(CheckedAcosh::checked_acosh(-one), None);
             }
 
@@ -538,6 +659,10 @@ macro_rules! test_hyp_traits_negative {
                 let two = one + one;
                 let half = one / two;
 
+                assert_eq!(
+                    Object::new(-half).checked_atanh(),
+                    CheckedAtanh::checked_atanh(-half).map(Object::new)
+                );
                 assert!(CheckedAtanh::checked_atanh(-half).unwrap() < <$ty as ConstZero>::ZERO);
                 assert_eq!(CheckedAtanh::checked_atanh(-one), None);
             }

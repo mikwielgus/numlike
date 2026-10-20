@@ -15,9 +15,6 @@ pub trait GcdLcm<Rhs = Self> {
 
     /// Calculate the greatest common divisor (GCD) and least common multiple
     /// (LCM) together.
-    ///
-    /// Could be more efficient than calling [`Gcd::gcd`] and [`Lcm::lcm`]
-    /// individually with identical inputs.
     fn gcd_lcm(self, rhs: Rhs) -> (Self::Output, Self::Output);
 }
 

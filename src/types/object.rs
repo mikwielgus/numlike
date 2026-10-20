@@ -7,7 +7,7 @@
 /// A wrapper to turn this library's trait methods into inherent methods.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct Object<B>(B);
+pub struct Object<B>(pub(crate) B);
 
 impl<B> Object<B> {
     /// Wrap the backend inside an object type.
