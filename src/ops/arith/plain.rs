@@ -6,9 +6,15 @@ use core::ops::{
     Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
 };
 
+use crate::types::Object;
+
 /// Bundle of arithmetic and fused arithmetic operations, including assign variants.
 pub trait FullArithOps<Rhs = Self>:
     ArithOps<Rhs> + ArithAssignOps<Rhs> + FusedArithOps<Rhs> + FusedArithAssignOps<Rhs>
+{
+}
+impl<Rhs, T: ArithOps<Rhs> + ArithAssignOps<Rhs> + FusedArithOps<Rhs> + FusedArithAssignOps<Rhs>>
+    FullArithOps<Rhs> for T
 {
 }
 
@@ -32,6 +38,22 @@ pub trait MulAdd<A = Self, B = Self> {
     fn mul_add(self, a: A, b: B) -> Self::Output;
 }
 
+impl<B: MulAdd<Output = B>> MulAdd for Object<B> {
+    type Output = Self;
+
+    fn mul_add(self, a: Self, b: Self) -> Self::Output {
+        Object(<B as MulAdd>::mul_add(self.0, a.0, b.0))
+    }
+}
+
+impl<B: MulAdd<Output = B>> Object<B> {
+    /// Fused multiply-add. Computes `(self * a) + b` with only one rounding
+    /// error, yielding a more accurate result than an unfused multiply-add.
+    pub fn mul_add(self, a: Self, b: Self) -> Self {
+        Object(<B as MulAdd>::mul_add(self.0, a.0, b.0))
+    }
+}
+
 /// Bundle of fused arithmetic assignment operations.
 pub trait FusedArithAssignOps<Rhs = Self>: MulAddAssign<Rhs, Rhs> {}
 impl<Rhs, T: MulAddAssign<Rhs, Rhs>> FusedArithAssignOps<Rhs> for T {}
@@ -44,6 +66,21 @@ pub trait MulAddAssign<A = Self, B = Self> {
     /// only one rounding error, yielding a more accurate result than an unfused
     /// multiply-add.
     fn mul_add_assign(&mut self, a: A, b: B);
+}
+
+impl<B: MulAddAssign> MulAddAssign for Object<B> {
+    fn mul_add_assign(&mut self, a: Self, b: Self) {
+        <B as MulAddAssign>::mul_add_assign(&mut self.0, a.0, b.0)
+    }
+}
+
+impl<B: MulAddAssign> Object<B> {
+    /// Fused multiply-add assignment. Computes `*self = (*self * a) + b` with
+    /// only one rounding error, yielding a more accurate result than an unfused
+    /// multiply-add.
+    pub fn mul_add_assign(&mut self, a: Self, b: Self) {
+        <B as MulAddAssign>::mul_add_assign(&mut self.0, a.0, b.0)
+    }
 }
 
 /// Bundle of arithmetic operations.
@@ -67,6 +104,26 @@ pub trait DivRem<Rhs> {
     /// Simultaneously computes the quotient and remainder of `self` divided by
     /// `other`.
     fn div_rem(self, other: Rhs) -> (Self::Output, Self::Output);
+}
+
+impl<B: DivRem<B, Output = B>> DivRem<Object<B>> for Object<B> {
+    type Output = Self;
+
+    fn div_rem(self, other: Self) -> (Self::Output, Self::Output) {
+        let (a, b) = <B as DivRem<B>>::div_rem(self.0, other.0);
+
+        (Object(a), Object(b))
+    }
+}
+
+impl<B: DivRem<B, Output = B>> Object<B> {
+    /// Simultaneously computes the quotient and remainder of `self` divided by
+    /// `other`.
+    pub fn div_rem(self, other: Self) -> (Self, Self) {
+        let (a, b) = <B as DivRem<B>>::div_rem(self.0, other.0);
+
+        (Object(a), Object(b))
+    }
 }
 
 /// Bundle of Euclidean division operations.
@@ -97,6 +154,21 @@ pub trait DivEuclid<Rhs = Self> {
     fn div_euclid(self, other: Rhs) -> Self::Output;
 }
 
+impl<B: DivEuclid<Output = B>> DivEuclid for Object<B> {
+    type Output = Self;
+
+    fn div_euclid(self, other: Self) -> Self::Output {
+        Object(<B as DivEuclid>::div_euclid(self.0, other.0))
+    }
+}
+
+impl<B: DivEuclid<Output = B>> Object<B> {
+    /// Calculates the quotient of Euclidean division of `self` by `other`.
+    pub fn div_euclid(self, other: Self) -> Self {
+        Object(<B as DivEuclid>::div_euclid(self.0, other.0))
+    }
+}
+
 /// Calculates the quotient of Euclidean division of `self` by `other`,
 /// writing the result back to `self`.
 ///
@@ -105,6 +177,20 @@ pub trait DivEuclidAssign<Rhs = Self> {
     /// Calculates the quotient of Euclidean division of `self` by `other`,
     /// writing the result back to `self`.
     fn div_euclid_assign(&mut self, other: Rhs);
+}
+
+impl<B: DivEuclidAssign> DivEuclidAssign for Object<B> {
+    fn div_euclid_assign(&mut self, other: Self) {
+        <B as DivEuclidAssign>::div_euclid_assign(&mut self.0, other.0)
+    }
+}
+
+impl<B: DivEuclidAssign> Object<B> {
+    /// Calculates the quotient of Euclidean division of `self` by `other`,
+    /// writing the result back to `self`.
+    pub fn div_euclid_assign(&mut self, other: Self) {
+        <B as DivEuclidAssign>::div_euclid_assign(&mut self.0, other.0)
+    }
 }
 
 /// Calculates the least nonnegative remainder of `self` when
@@ -127,6 +213,22 @@ pub trait RemEuclid<Rhs = Self> {
     fn rem_euclid(self, other: Rhs) -> Self::Output;
 }
 
+impl<B: RemEuclid<Output = B>> RemEuclid for Object<B> {
+    type Output = Self;
+
+    fn rem_euclid(self, other: Self) -> Self::Output {
+        Object(<B as RemEuclid>::rem_euclid(self.0, other.0))
+    }
+}
+
+impl<B: RemEuclid<Output = B>> Object<B> {
+    /// Calculates the least nonnegative remainder of `self` when
+    /// divided by `other`.
+    pub fn rem_euclid(self, other: Self) -> Self {
+        Object(<B as RemEuclid>::rem_euclid(self.0, other.0))
+    }
+}
+
 /// Calculates the least nonnegative remainder of `self` when divided by
 /// `other`, writing the result back to `self`.
 ///
@@ -135,6 +237,20 @@ pub trait RemEuclidAssign<Rhs = Self> {
     /// Calculates the least nonnegative remainder of `self` when divided by
     /// `other`, writing the result back to `self`.
     fn rem_euclid_assign(&mut self, other: Rhs);
+}
+
+impl<B: RemEuclidAssign> RemEuclidAssign for Object<B> {
+    fn rem_euclid_assign(&mut self, other: Self) {
+        <B as RemEuclidAssign>::rem_euclid_assign(&mut self.0, other.0)
+    }
+}
+
+impl<B: RemEuclidAssign> Object<B> {
+    /// Calculates the least nonnegative remainder of `self` when divided by
+    /// `other`, writing the result back to `self`.
+    pub fn rem_euclid_assign(&mut self, other: Self) {
+        <B as RemEuclidAssign>::rem_euclid_assign(&mut self.0, other.0)
+    }
 }
 
 /// Simultaneously computes the Euclidean quotient and remainder of `self`
@@ -148,6 +264,26 @@ pub trait DivRemEuclid<Rhs = Self> {
     /// Simultaneously computes the Euclidean quotient and remainder of `self`
     /// divided by `other`.
     fn div_rem_euclid(self, other: Rhs) -> (Self::Output, Self::Output);
+}
+
+impl<B: DivRemEuclid<Output = B>> DivRemEuclid for Object<B> {
+    type Output = Self;
+
+    fn div_rem_euclid(self, other: Self) -> (Self::Output, Self::Output) {
+        let (a, b) = <B as DivRemEuclid>::div_rem_euclid(self.0, other.0);
+
+        (Object(a), Object(b))
+    }
+}
+
+impl<B: DivRemEuclid<Output = B>> Object<B> {
+    /// Simultaneously computes the Euclidean quotient and remainder of `self`
+    /// divided by `other`.
+    pub fn div_rem_euclid(self, other: Self) -> (Self, Self) {
+        let (a, b) = <B as DivRemEuclid>::div_rem_euclid(self.0, other.0);
+
+        (Object(a), Object(b))
+    }
 }
 
 /// Bundle of arithmetic assignment operations.
@@ -191,6 +327,19 @@ impl<Rhs, T: AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + NegAssign> RingA
 pub trait NegAssign {
     /// Negates `self` in place.
     fn neg_assign(&mut self);
+}
+
+impl<B: NegAssign> NegAssign for Object<B> {
+    fn neg_assign(&mut self) {
+        <B as NegAssign>::neg_assign(&mut self.0)
+    }
+}
+
+impl<B: NegAssign> Object<B> {
+    /// Negates `self` in place.
+    pub fn neg_assign(&mut self) {
+        <B as NegAssign>::neg_assign(&mut self.0)
+    }
 }
 
 macro_rules! impl_euclid_traits {
@@ -443,6 +592,7 @@ macro_rules! test_plain_arith_traits_int_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_div_rem() {
@@ -456,6 +606,12 @@ macro_rules! test_plain_arith_traits_int_nonnegative {
                 assert_eq!(DivRem::div_rem(four, two), (two, zero));
                 assert_eq!(DivRem::div_rem(five, two), (two, one));
                 assert_eq!(DivRem::div_rem(three, two), (one, one));
+
+                assert_eq!(Object::new(five).div_rem(Object::new(two)), {
+                    let (a, b) = DivRem::div_rem(five, two);
+
+                    (Object::new(a), Object::new(b))
+                });
             }
 
             #[test]
@@ -469,6 +625,11 @@ macro_rules! test_plain_arith_traits_int_nonnegative {
                 assert_eq!(DivEuclid::div_euclid(four, two), two);
                 assert_eq!(DivEuclid::div_euclid(five, two), two);
                 assert_eq!(DivEuclid::div_euclid(three, two), one);
+
+                assert_eq!(
+                    Object::new(five).div_euclid(Object::new(two)),
+                    Object::new(DivEuclid::div_euclid(five, two))
+                );
             }
 
             #[test]
@@ -483,6 +644,10 @@ macro_rules! test_plain_arith_traits_int_nonnegative {
                 assert_eq!(RemEuclid::rem_euclid(four, two), zero);
                 assert_eq!(RemEuclid::rem_euclid(five, two), one);
                 assert_eq!(RemEuclid::rem_euclid(three, two), one);
+                assert_eq!(
+                    Object::new(five).rem_euclid(Object::new(two)),
+                    Object::new(RemEuclid::rem_euclid(five, two))
+                );
             }
 
             #[test]
@@ -495,6 +660,11 @@ macro_rules! test_plain_arith_traits_int_nonnegative {
 
                 assert_eq!(DivRemEuclid::div_rem_euclid(five, two), (two, one));
                 assert_eq!(DivRemEuclid::div_rem_euclid(four, two), (two, zero));
+                assert_eq!(Object::new(five).div_rem_euclid(Object::new(two)), {
+                    let (a, b) = DivRemEuclid::div_rem_euclid(five, two);
+
+                    (Object::new(a), Object::new(b))
+                });
             }
 
             #[test]
@@ -507,6 +677,11 @@ macro_rules! test_plain_arith_traits_int_nonnegative {
                 DivEuclidAssign::div_euclid_assign(&mut value, two);
 
                 assert_eq!(value, two);
+                let mut object_value = Object::new(five);
+
+                object_value.div_euclid_assign(Object::new(two));
+
+                assert_eq!(object_value, Object::new(two));
             }
 
             #[test]
@@ -519,6 +694,11 @@ macro_rules! test_plain_arith_traits_int_nonnegative {
                 RemEuclidAssign::rem_euclid_assign(&mut value, two);
 
                 assert_eq!(value, one);
+                let mut object_value = Object::new(five);
+
+                object_value.rem_euclid_assign(Object::new(two));
+
+                assert_eq!(object_value, Object::new(one));
             }
 
             #[test]
@@ -531,6 +711,10 @@ macro_rules! test_plain_arith_traits_int_nonnegative {
                 assert_eq!(MulAdd::mul_add(two, two, zero), four);
                 assert_eq!(MulAdd::mul_add(one, one, one), two);
                 assert_eq!(MulAdd::mul_add(two, one, two), four);
+                assert_eq!(
+                    Object::new(two).mul_add(Object::new(one), Object::new(two)),
+                    Object::new(MulAdd::mul_add(two, one, two))
+                );
             }
 
             #[test]
@@ -543,6 +727,11 @@ macro_rules! test_plain_arith_traits_int_nonnegative {
                 MulAddAssign::mul_add_assign(&mut value, one, two);
 
                 assert_eq!(value, four);
+                let mut object_value = Object::new(two);
+
+                object_value.mul_add_assign(Object::new(one), Object::new(two));
+
+                assert_eq!(object_value, Object::new(four));
             }
         }
     };
@@ -554,6 +743,7 @@ macro_rules! test_plain_arith_traits_int_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_div_rem() {
@@ -565,6 +755,11 @@ macro_rules! test_plain_arith_traits_int_negative {
 
                 assert_eq!(DivRem::div_rem(-five, two), (-two, -one));
                 assert_eq!(DivRem::div_rem(-four, two), (-two, zero));
+                assert_eq!(Object::new(five).div_rem(Object::new(two)), {
+                    let (a, b) = DivRem::div_rem(five, two);
+
+                    (Object::new(a), Object::new(b))
+                });
             }
 
             #[test]
@@ -576,6 +771,10 @@ macro_rules! test_plain_arith_traits_int_negative {
 
                 assert_eq!(DivEuclid::div_euclid(-five, two), -three);
                 assert_eq!(DivEuclid::div_euclid(-five, -two), three);
+                assert_eq!(
+                    Object::new(five).div_euclid(Object::new(two)),
+                    Object::new(DivEuclid::div_euclid(five, two))
+                );
             }
 
             #[test]
@@ -588,6 +787,10 @@ macro_rules! test_plain_arith_traits_int_negative {
 
                 assert_eq!(RemEuclid::rem_euclid(-five, two), one);
                 assert_eq!(RemEuclid::rem_euclid(-four, two), zero);
+                assert_eq!(
+                    Object::new(five).rem_euclid(Object::new(two)),
+                    Object::new(RemEuclid::rem_euclid(five, two))
+                );
             }
 
             #[test]
@@ -598,6 +801,11 @@ macro_rules! test_plain_arith_traits_int_negative {
                 let five = two + two + one;
 
                 assert_eq!(DivRemEuclid::div_rem_euclid(-five, two), (-three, one));
+                assert_eq!(Object::new(five).div_rem_euclid(Object::new(two)), {
+                    let (a, b) = DivRemEuclid::div_rem_euclid(five, two);
+
+                    (Object::new(a), Object::new(b))
+                });
             }
 
             #[test]
@@ -615,6 +823,11 @@ macro_rules! test_plain_arith_traits_int_negative {
                 let mut zero_value = zero;
                 NegAssign::neg_assign(&mut zero_value);
                 assert_eq!(zero_value, zero);
+                let mut object_value = Object::new(one);
+
+                object_value.neg_assign();
+
+                assert_eq!(object_value, Object::new(-one));
             }
         }
     };
@@ -626,6 +839,7 @@ macro_rules! test_plain_arith_traits_float_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_div_rem() {
@@ -636,6 +850,11 @@ macro_rules! test_plain_arith_traits_float_nonnegative {
 
                 assert_eq!(DivRem::div_rem(four, two), (two, zero));
                 assert_eq!(DivRem::div_rem(two, one), (two, zero));
+                assert_eq!(Object::new(four).div_rem(Object::new(two)), {
+                    let (a, b) = DivRem::div_rem(four, two);
+
+                    (Object::new(a), Object::new(b))
+                });
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -650,6 +869,10 @@ macro_rules! test_plain_arith_traits_float_nonnegative {
                 assert_eq!(DivEuclid::div_euclid(four, two), two);
                 assert_eq!(DivEuclid::div_euclid(five, two), two);
                 assert_eq!(DivEuclid::div_euclid(three, two), one);
+                assert_eq!(
+                    Object::new(five).div_euclid(Object::new(two)),
+                    Object::new(DivEuclid::div_euclid(five, two))
+                );
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -665,6 +888,10 @@ macro_rules! test_plain_arith_traits_float_nonnegative {
                 assert_eq!(RemEuclid::rem_euclid(four, two), zero);
                 assert_eq!(RemEuclid::rem_euclid(five, two), one);
                 assert_eq!(RemEuclid::rem_euclid(three, two), one);
+                assert_eq!(
+                    Object::new(five).rem_euclid(Object::new(two)),
+                    Object::new(RemEuclid::rem_euclid(five, two))
+                );
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -678,6 +905,11 @@ macro_rules! test_plain_arith_traits_float_nonnegative {
 
                 assert_eq!(DivRemEuclid::div_rem_euclid(five, two), (two, one));
                 assert_eq!(DivRemEuclid::div_rem_euclid(four, two), (two, zero));
+                assert_eq!(Object::new(five).div_rem_euclid(Object::new(two)), {
+                    let (a, b) = DivRemEuclid::div_rem_euclid(five, two);
+
+                    (Object::new(a), Object::new(b))
+                });
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -691,6 +923,11 @@ macro_rules! test_plain_arith_traits_float_nonnegative {
                 DivEuclidAssign::div_euclid_assign(&mut value, two);
 
                 assert_eq!(value, two);
+                let mut object_value = Object::new(five);
+
+                object_value.div_euclid_assign(Object::new(two));
+
+                assert_eq!(object_value, Object::new(two));
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -704,6 +941,11 @@ macro_rules! test_plain_arith_traits_float_nonnegative {
                 RemEuclidAssign::rem_euclid_assign(&mut value, two);
 
                 assert_eq!(value, one);
+                let mut object_value = Object::new(five);
+
+                object_value.rem_euclid_assign(Object::new(two));
+
+                assert_eq!(object_value, Object::new(one));
             }
 
             #[test]
@@ -716,6 +958,10 @@ macro_rules! test_plain_arith_traits_float_nonnegative {
                 assert_eq!(MulAdd::mul_add(two, two, zero), four);
                 assert_eq!(MulAdd::mul_add(one, one, one), two);
                 assert_eq!(MulAdd::mul_add(two, one, two), four);
+                assert_eq!(
+                    Object::new(two).mul_add(Object::new(one), Object::new(two)),
+                    Object::new(MulAdd::mul_add(two, one, two))
+                );
             }
 
             #[test]
@@ -727,6 +973,11 @@ macro_rules! test_plain_arith_traits_float_nonnegative {
 
                 MulAddAssign::mul_add_assign(&mut value, one, two);
                 assert_eq!(value, four);
+                let mut object_value = Object::new(two);
+
+                object_value.mul_add_assign(Object::new(one), Object::new(two));
+
+                assert_eq!(object_value, Object::new(four));
             }
         }
     };
@@ -738,6 +989,7 @@ macro_rules! test_plain_arith_traits_float_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_div_rem() {
@@ -748,6 +1000,11 @@ macro_rules! test_plain_arith_traits_float_negative {
 
                 assert_eq!(DivRem::div_rem(-four, two), (-two, zero));
                 assert_eq!(DivRem::div_rem(-two, one), (-two, zero));
+                assert_eq!(Object::new(four).div_rem(Object::new(two)), {
+                    let (a, b) = DivRem::div_rem(four, two);
+
+                    (Object::new(a), Object::new(b))
+                });
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -760,6 +1017,10 @@ macro_rules! test_plain_arith_traits_float_negative {
 
                 assert_eq!(DivEuclid::div_euclid(-five, two), -three);
                 assert_eq!(DivEuclid::div_euclid(-five, -two), three);
+                assert_eq!(
+                    Object::new(five).div_euclid(Object::new(two)),
+                    Object::new(DivEuclid::div_euclid(five, two))
+                );
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -773,6 +1034,10 @@ macro_rules! test_plain_arith_traits_float_negative {
 
                 assert_eq!(RemEuclid::rem_euclid(-five, two), one);
                 assert_eq!(RemEuclid::rem_euclid(-four, two), zero);
+                assert_eq!(
+                    Object::new(five).rem_euclid(Object::new(two)),
+                    Object::new(RemEuclid::rem_euclid(five, two))
+                );
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -784,6 +1049,11 @@ macro_rules! test_plain_arith_traits_float_negative {
                 let five = two + two + one;
 
                 assert_eq!(DivRemEuclid::div_rem_euclid(-five, two), (-three, one));
+                assert_eq!(Object::new(five).div_rem_euclid(Object::new(two)), {
+                    let (a, b) = DivRemEuclid::div_rem_euclid(five, two);
+
+                    (Object::new(a), Object::new(b))
+                });
             }
 
             #[test]
@@ -801,6 +1071,11 @@ macro_rules! test_plain_arith_traits_float_negative {
                 let mut zero_value = zero;
                 NegAssign::neg_assign(&mut zero_value);
                 assert_eq!(zero_value, zero);
+                let mut object_value = Object::new(one);
+
+                object_value.neg_assign();
+
+                assert_eq!(object_value, Object::new(-one));
             }
         }
     };

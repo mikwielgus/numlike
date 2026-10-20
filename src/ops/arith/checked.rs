@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 use crate::ops::MulAdd;
+
 #[cfg(any(feature = "std", feature = "libm"))]
 use crate::ops::{DivEuclid, RemEuclid};
+use crate::types::Object;
 
 /// Bundle of checked arithmetic and fused arithmetic operations.
 pub trait CheckedPlainArithOps<Rhs = Self>:
@@ -25,6 +27,22 @@ pub trait CheckedMulAdd<A = Self, B = Self> {
     /// Checked fused multiply-add. Computes `(self * a) + b`, returning `None`
     /// if overflow occurred or the result is not finite.
     fn checked_mul_add(self, a: A, b: B) -> Option<Self::Output>;
+}
+
+impl<B: CheckedMulAdd<Output = B>> CheckedMulAdd for Object<B> {
+    type Output = Self;
+
+    fn checked_mul_add(self, a: Self, b: Self) -> Option<Self::Output> {
+        <B as CheckedMulAdd>::checked_mul_add(self.0, a.0, b.0).map(Object)
+    }
+}
+
+impl<B: CheckedMulAdd<Output = B>> Object<B> {
+    /// Checked fused multiply-add. Computes `(self * a) + b`, returning `None`
+    /// if overflow occurred or the result is not finite.
+    pub fn checked_mul_add(self, a: Self, b: Self) -> Option<Self> {
+        <B as CheckedMulAdd>::checked_mul_add(self.0, a.0, b.0).map(Object)
+    }
 }
 
 /// Bundle of checked arithmetic operations.
@@ -56,6 +74,22 @@ pub trait CheckedRem<Rhs = Self> {
     fn checked_rem(self, other: Rhs) -> Option<Self::Output>;
 }
 
+impl<B: CheckedRem<Output = B>> CheckedRem for Object<B> {
+    type Output = Self;
+
+    fn checked_rem(self, other: Self) -> Option<Self::Output> {
+        <B as CheckedRem>::checked_rem(self.0, other.0).map(Object)
+    }
+}
+
+impl<B: CheckedRem<Output = B>> Object<B> {
+    /// Checked remainder. Computes `self % other`, returning `None` if `other
+    /// == 0` or the division results in overflow.
+    pub fn checked_rem(self, other: Self) -> Option<Self> {
+        <B as CheckedRem>::checked_rem(self.0, other.0).map(Object)
+    }
+}
+
 /// Checked simultaneous quotient and remainder. Computes
 /// `(self / other, self % other)`, returning `None` if `other == 0` or the
 /// division results in overflow.
@@ -67,6 +101,25 @@ pub trait CheckedDivRem<Rhs> {
     /// `(self / other, self % other)`, returning `None` if `other == 0` or the
     /// division results in overflow.
     fn checked_div_rem(self, other: Rhs) -> Option<(Self::Output, Self::Output)>;
+}
+
+impl<B: CheckedDivRem<B, Output = B>> CheckedDivRem<Object<B>> for Object<B> {
+    type Output = Self;
+
+    fn checked_div_rem(self, other: Self) -> Option<(Self::Output, Self::Output)> {
+        <B as CheckedDivRem<B>>::checked_div_rem(self.0, other.0)
+            .map(|(a, b)| (Object(a), Object(b)))
+    }
+}
+
+impl<B: CheckedDivRem<B, Output = B>> Object<B> {
+    /// Checked simultaneous quotient and remainder. Computes
+    /// `(self / other, self % other)`, returning `None` if `other == 0` or the
+    /// division results in overflow.
+    pub fn checked_div_rem(self, other: Self) -> Option<(Self, Self)> {
+        <B as CheckedDivRem<B>>::checked_div_rem(self.0, other.0)
+            .map(|(a, b)| (Object(a), Object(b)))
+    }
 }
 
 /// Bundle of checked Euclidean division operations.
@@ -90,6 +143,22 @@ pub trait CheckedDivEuclid<Rhs = Self> {
     fn checked_div_euclid(self, other: Rhs) -> Option<Self::Output>;
 }
 
+impl<B: CheckedDivEuclid<Output = B>> CheckedDivEuclid for Object<B> {
+    type Output = Self;
+
+    fn checked_div_euclid(self, other: Self) -> Option<Self::Output> {
+        <B as CheckedDivEuclid>::checked_div_euclid(self.0, other.0).map(Object)
+    }
+}
+
+impl<B: CheckedDivEuclid<Output = B>> Object<B> {
+    /// Checked Euclidean division. Computes `self.div_euclid(other)`,
+    /// returning `None` if `other == 0` or the division results in overflow.
+    pub fn checked_div_euclid(self, other: Self) -> Option<Self> {
+        <B as CheckedDivEuclid>::checked_div_euclid(self.0, other.0).map(Object)
+    }
+}
+
 /// Checked Euclidean remainder. Computes `self.rem_euclid(other)`, returning
 /// `None` if `other == 0` or the division results in overflow.
 pub trait CheckedRemEuclid<Rhs = Self> {
@@ -99,6 +168,22 @@ pub trait CheckedRemEuclid<Rhs = Self> {
     /// Checked Euclidean remainder. Computes `self.rem_euclid(other)`,
     /// returning `None` if `other == 0` or the division results in overflow.
     fn checked_rem_euclid(self, other: Rhs) -> Option<Self::Output>;
+}
+
+impl<B: CheckedRemEuclid<Output = B>> CheckedRemEuclid for Object<B> {
+    type Output = Self;
+
+    fn checked_rem_euclid(self, other: Self) -> Option<Self::Output> {
+        <B as CheckedRemEuclid>::checked_rem_euclid(self.0, other.0).map(Object)
+    }
+}
+
+impl<B: CheckedRemEuclid<Output = B>> Object<B> {
+    /// Checked Euclidean remainder. Computes `self.rem_euclid(other)`,
+    /// returning `None` if `other == 0` or the division results in overflow.
+    pub fn checked_rem_euclid(self, other: Self) -> Option<Self> {
+        <B as CheckedRemEuclid>::checked_rem_euclid(self.0, other.0).map(Object)
+    }
 }
 
 /// Checked simultaneous Euclidean quotient and remainder. Computes
@@ -112,6 +197,25 @@ pub trait CheckedDivRemEuclid<Rhs = Self> {
     /// `(self.div_euclid(other), self.rem_euclid(other))`, returning `None` if
     /// `other == 0` or the division results in overflow.
     fn checked_div_rem_euclid(self, other: Rhs) -> Option<(Self::Output, Self::Output)>;
+}
+
+impl<B: CheckedDivRemEuclid<Output = B>> CheckedDivRemEuclid for Object<B> {
+    type Output = Self;
+
+    fn checked_div_rem_euclid(self, other: Self) -> Option<(Self::Output, Self::Output)> {
+        <B as CheckedDivRemEuclid>::checked_div_rem_euclid(self.0, other.0)
+            .map(|(a, b)| (Object(a), Object(b)))
+    }
+}
+
+impl<B: CheckedDivRemEuclid<Output = B>> Object<B> {
+    /// Checked simultaneous Euclidean quotient and remainder. Computes
+    /// `(self.div_euclid(other), self.rem_euclid(other))`, returning `None` if
+    /// `other == 0` or the division results in overflow.
+    pub fn checked_div_rem_euclid(self, other: Self) -> Option<(Self, Self)> {
+        <B as CheckedDivRemEuclid>::checked_div_rem_euclid(self.0, other.0)
+            .map(|(a, b)| (Object(a), Object(b)))
+    }
 }
 
 /// Bundle of checked field operations.
@@ -130,6 +234,22 @@ pub trait CheckedDiv<Rhs = Self> {
     /// Checked division. Computes `self / other`, returning `None` if `other ==
     /// 0` or the division results in overflow.
     fn checked_div(self, other: Rhs) -> Option<Self::Output>;
+}
+
+impl<B: CheckedDiv<Output = B>> CheckedDiv for Object<B> {
+    type Output = Self;
+
+    fn checked_div(self, other: Self) -> Option<Self::Output> {
+        <B as CheckedDiv>::checked_div(self.0, other.0).map(Object)
+    }
+}
+
+impl<B: CheckedDiv<Output = B>> Object<B> {
+    /// Checked division. Computes `self / other`, returning `None` if `other ==
+    /// 0` or the division results in overflow.
+    pub fn checked_div(self, other: Self) -> Option<Self> {
+        <B as CheckedDiv>::checked_div(self.0, other.0).map(Object)
+    }
 }
 
 /// Bundle of checked ring operations.
@@ -161,6 +281,22 @@ pub trait CheckedAdd<Rhs = Self> {
     fn checked_add(self, other: Rhs) -> Option<Self::Output>;
 }
 
+impl<B: CheckedAdd<Output = B>> CheckedAdd for Object<B> {
+    type Output = Self;
+
+    fn checked_add(self, other: Self) -> Option<Self::Output> {
+        <B as CheckedAdd>::checked_add(self.0, other.0).map(Object)
+    }
+}
+
+impl<B: CheckedAdd<Output = B>> Object<B> {
+    /// Checked addition. Computes `self + other`, returning `None` if overflow
+    /// or occurred.
+    pub fn checked_add(self, other: Self) -> Option<Self> {
+        <B as CheckedAdd>::checked_add(self.0, other.0).map(Object)
+    }
+}
+
 /// Checked subtraction. Computes `self - other`, returning `None` if
 /// overflow occurred.
 pub trait CheckedSub<Rhs = Self> {
@@ -170,6 +306,22 @@ pub trait CheckedSub<Rhs = Self> {
     /// Checked subtraction. Computes `self - other`, returning `None` if
     /// overflow occurred.
     fn checked_sub(self, other: Rhs) -> Option<Self::Output>;
+}
+
+impl<B: CheckedSub<Output = B>> CheckedSub for Object<B> {
+    type Output = Self;
+
+    fn checked_sub(self, other: Self) -> Option<Self::Output> {
+        <B as CheckedSub>::checked_sub(self.0, other.0).map(Object)
+    }
+}
+
+impl<B: CheckedSub<Output = B>> Object<B> {
+    /// Checked subtraction. Computes `self - other`, returning `None` if
+    /// overflow occurred.
+    pub fn checked_sub(self, other: Self) -> Option<Self> {
+        <B as CheckedSub>::checked_sub(self.0, other.0).map(Object)
+    }
 }
 
 /// Checked multiplication. Computes `self * other`, returning `None` if
@@ -183,6 +335,22 @@ pub trait CheckedMul<Rhs = Self> {
     fn checked_mul(self, other: Rhs) -> Option<Self::Output>;
 }
 
+impl<B: CheckedMul<Output = B>> CheckedMul for Object<B> {
+    type Output = Self;
+
+    fn checked_mul(self, other: Self) -> Option<Self::Output> {
+        <B as CheckedMul>::checked_mul(self.0, other.0).map(Object)
+    }
+}
+
+impl<B: CheckedMul<Output = B>> Object<B> {
+    /// Checked multiplication. Computes `self * other`, returning `None` if
+    /// overflow occurred.
+    pub fn checked_mul(self, other: Self) -> Option<Self> {
+        <B as CheckedMul>::checked_mul(self.0, other.0).map(Object)
+    }
+}
+
 /// Checked negation. Computes `-self`, returning `None` if `self == MIN`.
 pub trait CheckedNeg {
     /// The resulting type after applying the operation.
@@ -190,6 +358,21 @@ pub trait CheckedNeg {
 
     /// Checked negation. Computes `-self`, returning `None` if `self == MIN`.
     fn checked_neg(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedNeg<Output = B>> CheckedNeg for Object<B> {
+    type Output = Self;
+
+    fn checked_neg(self) -> Option<Self::Output> {
+        <B as CheckedNeg>::checked_neg(self.0).map(Object)
+    }
+}
+
+impl<B: CheckedNeg<Output = B>> Object<B> {
+    /// Checked negation. Computes `-self`, returning `None` if `self == MIN`.
+    pub fn checked_neg(self) -> Option<Self> {
+        <B as CheckedNeg>::checked_neg(self.0).map(Object)
+    }
 }
 
 macro_rules! impl_checked_field_traits_for_ints {
@@ -659,6 +842,7 @@ macro_rules! test_checked_arith_traits_int_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_div_rem() {
@@ -673,6 +857,11 @@ macro_rules! test_checked_arith_traits_int_nonnegative {
                 assert_eq!(CheckedDivRem::checked_div_rem(five, two), Some((two, one)));
                 assert_eq!(CheckedDivRem::checked_div_rem(three, two), Some((one, one)));
                 assert_eq!(CheckedDivRem::checked_div_rem(one, zero), None);
+                assert_eq!(
+                    Object::new(five).checked_div_rem(Object::new(two)),
+                    CheckedDivRem::checked_div_rem(five, two)
+                        .map(|(a, b)| (Object::new(a), Object::new(b)))
+                );
             }
 
             #[test]
@@ -688,6 +877,10 @@ macro_rules! test_checked_arith_traits_int_nonnegative {
                 assert_eq!(CheckedDivEuclid::checked_div_euclid(five, two), Some(two));
                 assert_eq!(CheckedDivEuclid::checked_div_euclid(three, two), Some(one));
                 assert_eq!(CheckedDivEuclid::checked_div_euclid(one, zero), None);
+                assert_eq!(
+                    Object::new(five).checked_div_euclid(Object::new(two)),
+                    CheckedDivEuclid::checked_div_euclid(five, two).map(Object::new)
+                );
             }
 
             #[test]
@@ -703,6 +896,10 @@ macro_rules! test_checked_arith_traits_int_nonnegative {
                 assert_eq!(CheckedRemEuclid::checked_rem_euclid(five, two), Some(one));
                 assert_eq!(CheckedRemEuclid::checked_rem_euclid(three, two), Some(one));
                 assert_eq!(CheckedRemEuclid::checked_rem_euclid(one, zero), None);
+                assert_eq!(
+                    Object::new(five).checked_rem_euclid(Object::new(two)),
+                    CheckedRemEuclid::checked_rem_euclid(five, two).map(Object::new)
+                );
             }
 
             #[test]
@@ -722,6 +919,11 @@ macro_rules! test_checked_arith_traits_int_nonnegative {
                     Some((two, zero))
                 );
                 assert_eq!(CheckedDivRemEuclid::checked_div_rem_euclid(one, zero), None);
+                assert_eq!(
+                    Object::new(five).checked_div_rem_euclid(Object::new(two)),
+                    CheckedDivRemEuclid::checked_div_rem_euclid(five, two)
+                        .map(|(a, b)| (Object::new(a), Object::new(b)))
+                );
             }
 
             #[test]
@@ -734,6 +936,10 @@ macro_rules! test_checked_arith_traits_int_nonnegative {
                 assert_eq!(CheckedMulAdd::checked_mul_add(two, two, zero), Some(four));
                 assert_eq!(CheckedMulAdd::checked_mul_add(one, one, one), Some(two));
                 assert_eq!(CheckedMulAdd::checked_mul_add(two, one, two), Some(four));
+                assert_eq!(
+                    Object::new(two).checked_mul_add(Object::new(one), Object::new(two)),
+                    CheckedMulAdd::checked_mul_add(two, one, two).map(Object::new)
+                );
             }
         }
     };
@@ -746,6 +952,7 @@ macro_rules! test_checked_arith_traits_int_negative {
             use crate::elem::*;
             use crate::limits::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_div_rem() {
@@ -767,6 +974,11 @@ macro_rules! test_checked_arith_traits_int_negative {
                     CheckedDivRem::checked_div_rem(<$ty as MinFinite>::MIN_FINITE, -one),
                     None
                 );
+                assert_eq!(
+                    Object::new(five).checked_div_rem(Object::new(two)),
+                    CheckedDivRem::checked_div_rem(five, two)
+                        .map(|(a, b)| (Object::new(a), Object::new(b)))
+                );
             }
 
             #[test]
@@ -784,6 +996,10 @@ macro_rules! test_checked_arith_traits_int_negative {
                     CheckedDivEuclid::checked_div_euclid(-five, -two),
                     Some(three)
                 );
+                assert_eq!(
+                    Object::new(five).checked_div_euclid(Object::new(two)),
+                    CheckedDivEuclid::checked_div_euclid(five, two).map(Object::new)
+                );
             }
 
             #[test]
@@ -796,6 +1012,10 @@ macro_rules! test_checked_arith_traits_int_negative {
 
                 assert_eq!(CheckedRemEuclid::checked_rem_euclid(-five, two), Some(one));
                 assert_eq!(CheckedRemEuclid::checked_rem_euclid(-four, two), Some(zero));
+                assert_eq!(
+                    Object::new(five).checked_rem_euclid(Object::new(two)),
+                    CheckedRemEuclid::checked_rem_euclid(five, two).map(Object::new)
+                );
             }
 
             #[test]
@@ -808,6 +1028,11 @@ macro_rules! test_checked_arith_traits_int_negative {
                 assert_eq!(
                     CheckedDivRemEuclid::checked_div_rem_euclid(-five, two),
                     Some((-three, one))
+                );
+                assert_eq!(
+                    Object::new(five).checked_div_rem_euclid(Object::new(two)),
+                    CheckedDivRemEuclid::checked_div_rem_euclid(five, two)
+                        .map(|(a, b)| (Object::new(a), Object::new(b)))
                 );
             }
 
@@ -823,6 +1048,10 @@ macro_rules! test_checked_arith_traits_int_negative {
                     CheckedNeg::checked_neg(<$ty as MinFinite>::MIN_FINITE),
                     None
                 );
+                assert_eq!(
+                    Object::new(one).checked_neg(),
+                    CheckedNeg::checked_neg(one).map(Object::new)
+                );
             }
         }
     };
@@ -834,6 +1063,7 @@ macro_rules! test_checked_arith_traits_float_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_div_rem() {
@@ -845,6 +1075,11 @@ macro_rules! test_checked_arith_traits_float_nonnegative {
                 assert_eq!(CheckedDivRem::checked_div_rem(four, two), Some((two, zero)));
                 assert_eq!(CheckedDivRem::checked_div_rem(two, one), Some((two, zero)));
                 assert_eq!(CheckedDivRem::checked_div_rem(one, zero), None);
+                assert_eq!(
+                    Object::new(four).checked_div_rem(Object::new(two)),
+                    CheckedDivRem::checked_div_rem(four, two)
+                        .map(|(a, b)| (Object::new(a), Object::new(b)))
+                );
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -861,6 +1096,10 @@ macro_rules! test_checked_arith_traits_float_nonnegative {
                 assert_eq!(CheckedDivEuclid::checked_div_euclid(five, two), Some(two));
                 assert_eq!(CheckedDivEuclid::checked_div_euclid(three, two), Some(one));
                 assert_eq!(CheckedDivEuclid::checked_div_euclid(one, zero), None);
+                assert_eq!(
+                    Object::new(five).checked_div_euclid(Object::new(two)),
+                    CheckedDivEuclid::checked_div_euclid(five, two).map(Object::new)
+                );
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -877,6 +1116,10 @@ macro_rules! test_checked_arith_traits_float_nonnegative {
                 assert_eq!(CheckedRemEuclid::checked_rem_euclid(five, two), Some(one));
                 assert_eq!(CheckedRemEuclid::checked_rem_euclid(three, two), Some(one));
                 assert_eq!(CheckedRemEuclid::checked_rem_euclid(one, zero), None);
+                assert_eq!(
+                    Object::new(five).checked_rem_euclid(Object::new(two)),
+                    CheckedRemEuclid::checked_rem_euclid(five, two).map(Object::new)
+                );
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -897,6 +1140,11 @@ macro_rules! test_checked_arith_traits_float_nonnegative {
                     Some((two, zero))
                 );
                 assert_eq!(CheckedDivRemEuclid::checked_div_rem_euclid(one, zero), None);
+                assert_eq!(
+                    Object::new(five).checked_div_rem_euclid(Object::new(two)),
+                    CheckedDivRemEuclid::checked_div_rem_euclid(five, two)
+                        .map(|(a, b)| (Object::new(a), Object::new(b)))
+                );
             }
 
             #[test]
@@ -909,6 +1157,10 @@ macro_rules! test_checked_arith_traits_float_nonnegative {
                 assert_eq!(CheckedMulAdd::checked_mul_add(two, two, zero), Some(four));
                 assert_eq!(CheckedMulAdd::checked_mul_add(one, one, one), Some(two));
                 assert_eq!(CheckedMulAdd::checked_mul_add(two, one, two), Some(four));
+                assert_eq!(
+                    Object::new(two).checked_mul_add(Object::new(one), Object::new(two)),
+                    CheckedMulAdd::checked_mul_add(two, one, two).map(Object::new)
+                );
             }
         }
     };
@@ -920,6 +1172,7 @@ macro_rules! test_checked_arith_traits_float_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_div_rem() {
@@ -935,6 +1188,11 @@ macro_rules! test_checked_arith_traits_float_negative {
                 assert_eq!(
                     CheckedDivRem::checked_div_rem(-two, one),
                     Some((-two, zero))
+                );
+                assert_eq!(
+                    Object::new(four).checked_div_rem(Object::new(two)),
+                    CheckedDivRem::checked_div_rem(four, two)
+                        .map(|(a, b)| (Object::new(a), Object::new(b)))
                 );
             }
 
@@ -954,6 +1212,10 @@ macro_rules! test_checked_arith_traits_float_negative {
                     CheckedDivEuclid::checked_div_euclid(-five, -two),
                     Some(three)
                 );
+                assert_eq!(
+                    Object::new(five).checked_div_euclid(Object::new(two)),
+                    CheckedDivEuclid::checked_div_euclid(five, two).map(Object::new)
+                );
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -967,6 +1229,10 @@ macro_rules! test_checked_arith_traits_float_negative {
 
                 assert_eq!(CheckedRemEuclid::checked_rem_euclid(-five, two), Some(one));
                 assert_eq!(CheckedRemEuclid::checked_rem_euclid(-four, two), Some(zero));
+                assert_eq!(
+                    Object::new(five).checked_rem_euclid(Object::new(two)),
+                    CheckedRemEuclid::checked_rem_euclid(five, two).map(Object::new)
+                );
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
@@ -981,6 +1247,11 @@ macro_rules! test_checked_arith_traits_float_negative {
                     CheckedDivRemEuclid::checked_div_rem_euclid(-five, two),
                     Some((-three, one))
                 );
+                assert_eq!(
+                    Object::new(five).checked_div_rem_euclid(Object::new(two)),
+                    CheckedDivRemEuclid::checked_div_rem_euclid(five, two)
+                        .map(|(a, b)| (Object::new(a), Object::new(b)))
+                );
             }
 
             #[test]
@@ -991,6 +1262,10 @@ macro_rules! test_checked_arith_traits_float_negative {
                 assert_eq!(CheckedNeg::checked_neg(one), Some(-one));
                 assert_eq!(CheckedNeg::checked_neg(-one), Some(one));
                 assert_eq!(CheckedNeg::checked_neg(zero), Some(zero));
+                assert_eq!(
+                    Object::new(one).checked_neg(),
+                    CheckedNeg::checked_neg(one).map(Object::new)
+                );
             }
         }
     };

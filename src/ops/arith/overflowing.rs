@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use crate::types::Object;
+
 /// Bundle of overflowing arithmetic and fused arithmetic operations.
 pub trait FullOverflowingArithOps<Rhs = Self>:
     OverflowingArithOps<Rhs> + OverflowingFusedArithOps<Rhs>
@@ -23,6 +25,25 @@ pub trait OverflowingMulAdd<A = Self, B = Self> {
 
     /// Overflowing fused multiply-add. Computes `(self * a) + b`.
     fn overflowing_mul_add(self, a: A, b: B) -> (Self::Output, bool);
+}
+
+impl<B: OverflowingMulAdd<Output = B>> OverflowingMulAdd for Object<B> {
+    type Output = Self;
+
+    fn overflowing_mul_add(self, a: Self, b: Self) -> (Self::Output, bool) {
+        let (value, overflow) = <B as OverflowingMulAdd>::overflowing_mul_add(self.0, a.0, b.0);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingMulAdd<Output = B>> Object<B> {
+    /// Overflowing fused multiply-add. Computes `(self * a) + b`.
+    pub fn overflowing_mul_add(self, a: Self, b: Self) -> (Self, bool) {
+        let (value, overflow) = <B as OverflowingMulAdd>::overflowing_mul_add(self.0, a.0, b.0);
+
+        (Object(value), overflow)
+    }
 }
 
 /// Bundle of overflowing arithmetic operations.
@@ -59,6 +80,25 @@ pub trait OverflowingRem<Rhs = Self> {
     fn overflowing_rem(self, other: Rhs) -> (Self::Output, bool);
 }
 
+impl<B: OverflowingRem<Output = B>> OverflowingRem for Object<B> {
+    type Output = Self;
+
+    fn overflowing_rem(self, other: Self) -> (Self::Output, bool) {
+        let (value, overflow) = <B as OverflowingRem>::overflowing_rem(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingRem<Output = B>> Object<B> {
+    /// Calculates the remainder when `self` is divided by `other`.
+    pub fn overflowing_rem(self, other: Self) -> (Self, bool) {
+        let (value, overflow) = <B as OverflowingRem>::overflowing_rem(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
 /// Calculates the quotient and remainder when `self` is divided by `other`.
 ///
 /// Returns a tuple of `(quotient, remainder)` along with a boolean indicating whether an
@@ -73,6 +113,25 @@ pub trait OverflowingDivRem<Rhs> {
 
     /// Calculates the quotient and remainder when `self` is divided by `other`.
     fn overflowing_div_rem(self, other: Rhs) -> ((Self::Output, Self::Output), bool);
+}
+
+impl<B: OverflowingDivRem<B, Output = B>> OverflowingDivRem<Object<B>> for Object<B> {
+    type Output = Self;
+
+    fn overflowing_div_rem(self, other: Self) -> ((Self::Output, Self::Output), bool) {
+        let ((a, b), overflow) = <B as OverflowingDivRem<B>>::overflowing_div_rem(self.0, other.0);
+
+        ((Object(a), Object(b)), overflow)
+    }
+}
+
+impl<B: OverflowingDivRem<B, Output = B>> Object<B> {
+    /// Calculates the quotient and remainder when `self` is divided by `other`.
+    pub fn overflowing_div_rem(self, other: Self) -> ((Self, Self), bool) {
+        let ((a, b), overflow) = <B as OverflowingDivRem<B>>::overflowing_div_rem(self.0, other.0);
+
+        ((Object(a), Object(b)), overflow)
+    }
 }
 
 /// Bundle of overflowing Euclidean division operations.
@@ -101,6 +160,27 @@ pub trait OverflowingDivEuclid<Rhs = Self> {
     fn overflowing_div_euclid(self, other: Rhs) -> (Self::Output, bool);
 }
 
+impl<B: OverflowingDivEuclid<Output = B>> OverflowingDivEuclid for Object<B> {
+    type Output = Self;
+
+    fn overflowing_div_euclid(self, other: Self) -> (Self::Output, bool) {
+        let (value, overflow) =
+            <B as OverflowingDivEuclid>::overflowing_div_euclid(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingDivEuclid<Output = B>> Object<B> {
+    /// Calculates the quotient of Euclidean division `self.div_euclid(other)`.
+    pub fn overflowing_div_euclid(self, other: Self) -> (Self, bool) {
+        let (value, overflow) =
+            <B as OverflowingDivEuclid>::overflowing_div_euclid(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
 /// Overflowing Euclidean remainder. Calculates `self.rem_euclid(other)`.
 ///
 /// Returns a tuple of the remainder after dividing along with a boolean indicating whether an
@@ -117,6 +197,27 @@ pub trait OverflowingRemEuclid<Rhs = Self> {
     fn overflowing_rem_euclid(self, other: Rhs) -> (Self::Output, bool);
 }
 
+impl<B: OverflowingRemEuclid<Output = B>> OverflowingRemEuclid for Object<B> {
+    type Output = Self;
+
+    fn overflowing_rem_euclid(self, other: Self) -> (Self::Output, bool) {
+        let (value, overflow) =
+            <B as OverflowingRemEuclid>::overflowing_rem_euclid(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingRemEuclid<Output = B>> Object<B> {
+    /// Overflowing Euclidean remainder. Calculates `self.rem_euclid(other)`.
+    pub fn overflowing_rem_euclid(self, other: Self) -> (Self, bool) {
+        let (value, overflow) =
+            <B as OverflowingRemEuclid>::overflowing_rem_euclid(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
 /// Calculates the Euclidean quotient and remainder when `self` is divided by `other`.
 ///
 /// Returns a tuple of `(quotient, remainder)` along with a boolean indicating whether an
@@ -131,6 +232,27 @@ pub trait OverflowingDivRemEuclid<Rhs = Self> {
 
     /// Calculates the Euclidean quotient and remainder when `self` is divided by `other`.
     fn overflowing_div_rem_euclid(self, other: Rhs) -> ((Self::Output, Self::Output), bool);
+}
+
+impl<B: OverflowingDivRemEuclid<Output = B>> OverflowingDivRemEuclid for Object<B> {
+    type Output = Self;
+
+    fn overflowing_div_rem_euclid(self, other: Self) -> ((Self::Output, Self::Output), bool) {
+        let ((a, b), overflow) =
+            <B as OverflowingDivRemEuclid>::overflowing_div_rem_euclid(self.0, other.0);
+
+        ((Object(a), Object(b)), overflow)
+    }
+}
+
+impl<B: OverflowingDivRemEuclid<Output = B>> Object<B> {
+    /// Calculates the Euclidean quotient and remainder when `self` is divided by `other`.
+    pub fn overflowing_div_rem_euclid(self, other: Self) -> ((Self, Self), bool) {
+        let ((a, b), overflow) =
+            <B as OverflowingDivRemEuclid>::overflowing_div_rem_euclid(self.0, other.0);
+
+        ((Object(a), Object(b)), overflow)
+    }
 }
 
 /// Bundle of overflowing field operations.
@@ -157,6 +279,25 @@ pub trait OverflowingDiv<Rhs = Self> {
 
     /// Calculates the divisor when `self` is divided by `other`.
     fn overflowing_div(self, other: Rhs) -> (Self::Output, bool);
+}
+
+impl<B: OverflowingDiv<Output = B>> OverflowingDiv for Object<B> {
+    type Output = Self;
+
+    fn overflowing_div(self, other: Self) -> (Self::Output, bool) {
+        let (value, overflow) = <B as OverflowingDiv>::overflowing_div(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingDiv<Output = B>> Object<B> {
+    /// Calculates the divisor when `self` is divided by `other`.
+    pub fn overflowing_div(self, other: Self) -> (Self, bool) {
+        let (value, overflow) = <B as OverflowingDiv>::overflowing_div(self.0, other.0);
+
+        (Object(value), overflow)
+    }
 }
 
 /// Bundle of overflowing ring operations.
@@ -190,6 +331,27 @@ pub trait OverflowingAdd<Rhs = Self> {
     fn overflowing_add(self, other: Rhs) -> (Self::Output, bool);
 }
 
+impl<B: OverflowingAdd<Output = B>> OverflowingAdd for Object<B> {
+    type Output = Self;
+
+    fn overflowing_add(self, other: Self) -> (Self::Output, bool) {
+        let (value, overflow) = <B as OverflowingAdd>::overflowing_add(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingAdd<Output = B>> Object<B> {
+    /// Returns a tuple of the addition along with a boolean indicating
+    /// whether an arithmetic overflow would occur. If an overflow would have
+    /// occurred then the wrapped value is returned.
+    pub fn overflowing_add(self, other: Self) -> (Self, bool) {
+        let (value, overflow) = <B as OverflowingAdd>::overflowing_add(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
 /// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic overflow
 /// would occur. If an overflow would have occurred then the wrapped value is returned.
 pub trait OverflowingSub<Rhs = Self> {
@@ -199,6 +361,26 @@ pub trait OverflowingSub<Rhs = Self> {
     /// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic overflow
     /// would occur. If an overflow would have occurred then the wrapped value is returned.
     fn overflowing_sub(self, other: Rhs) -> (Self::Output, bool);
+}
+
+impl<B: OverflowingSub<Output = B>> OverflowingSub for Object<B> {
+    type Output = Self;
+
+    fn overflowing_sub(self, other: Self) -> (Self::Output, bool) {
+        let (value, overflow) = <B as OverflowingSub>::overflowing_sub(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingSub<Output = B>> Object<B> {
+    /// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic overflow
+    /// would occur. If an overflow would have occurred then the wrapped value is returned.
+    pub fn overflowing_sub(self, other: Self) -> (Self, bool) {
+        let (value, overflow) = <B as OverflowingSub>::overflowing_sub(self.0, other.0);
+
+        (Object(value), overflow)
+    }
 }
 
 /// Calculates the multiplication of `self` and `other`.
@@ -213,6 +395,25 @@ pub trait OverflowingMul<Rhs = Self> {
     fn overflowing_mul(self, other: Rhs) -> (Self::Output, bool);
 }
 
+impl<B: OverflowingMul<Output = B>> OverflowingMul for Object<B> {
+    type Output = Self;
+
+    fn overflowing_mul(self, other: Self) -> (Self::Output, bool) {
+        let (value, overflow) = <B as OverflowingMul>::overflowing_mul(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingMul<Output = B>> Object<B> {
+    /// Calculates the multiplication of `self` and `other`.
+    pub fn overflowing_mul(self, other: Self) -> (Self, bool) {
+        let (value, overflow) = <B as OverflowingMul>::overflowing_mul(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
 /// Returns a tuple of the negated version of self along with a boolean indicating whether an overflow
 /// happened. If `self` is the minimum value, then the minimum value will be returned again and `true`
 /// will be returned for an overflow happening.
@@ -224,6 +425,27 @@ pub trait OverflowingNeg {
     /// happened. If `self` is the minimum value, then the minimum value will be returned again and `true`
     /// will be returned for an overflow happening.
     fn overflowing_neg(self) -> (Self::Output, bool);
+}
+
+impl<B: OverflowingNeg<Output = B>> OverflowingNeg for Object<B> {
+    type Output = Self;
+
+    fn overflowing_neg(self) -> (Self::Output, bool) {
+        let (value, overflow) = <B as OverflowingNeg>::overflowing_neg(self.0);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingNeg<Output = B>> Object<B> {
+    /// Returns a tuple of the negated version of self along with a boolean indicating whether an overflow
+    /// happened. If `self` is the minimum value, then the minimum value will be returned again and `true`
+    /// will be returned for an overflow happening.
+    pub fn overflowing_neg(self) -> (Self, bool) {
+        let (value, overflow) = <B as OverflowingNeg>::overflowing_neg(self.0);
+
+        (Object(value), overflow)
+    }
 }
 
 macro_rules! impl_overflowing_field_traits_for_ints {
@@ -688,6 +910,7 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_div_rem() {
@@ -710,6 +933,11 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
                     OverflowingDivRem::overflowing_div_rem(three, two),
                     ((one, one), false)
                 );
+                assert_eq!(Object::new(five).overflowing_div_rem(Object::new(two)), {
+                    let ((a, b), o) = OverflowingDivRem::overflowing_div_rem(five, two);
+
+                    ((Object::new(a), Object::new(b)), o)
+                });
             }
 
             #[test]
@@ -731,6 +959,14 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
                 assert_eq!(
                     OverflowingDivEuclid::overflowing_div_euclid(three, two),
                     (one, false)
+                );
+                assert_eq!(
+                    Object::new(five).overflowing_div_euclid(Object::new(two)),
+                    {
+                        let (v, o) = OverflowingDivEuclid::overflowing_div_euclid(five, two);
+
+                        (Object::new(v), o)
+                    }
                 );
             }
 
@@ -755,6 +991,14 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
                     OverflowingRemEuclid::overflowing_rem_euclid(three, two),
                     (one, false)
                 );
+                assert_eq!(
+                    Object::new(five).overflowing_rem_euclid(Object::new(two)),
+                    {
+                        let (v, o) = OverflowingRemEuclid::overflowing_rem_euclid(five, two);
+
+                        (Object::new(v), o)
+                    }
+                );
             }
 
             #[test]
@@ -772,6 +1016,15 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
                 assert_eq!(
                     OverflowingDivRemEuclid::overflowing_div_rem_euclid(four, two),
                     ((two, zero), false)
+                );
+                assert_eq!(
+                    Object::new(five).overflowing_div_rem_euclid(Object::new(two)),
+                    {
+                        let ((a, b), o) =
+                            OverflowingDivRemEuclid::overflowing_div_rem_euclid(five, two);
+
+                        ((Object::new(a), Object::new(b)), o)
+                    }
                 );
             }
 
@@ -794,6 +1047,14 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
                     OverflowingMulAdd::overflowing_mul_add(two, one, two),
                     (four, false)
                 );
+                assert_eq!(
+                    Object::new(two).overflowing_mul_add(Object::new(one), Object::new(two)),
+                    {
+                        let (v, o) = OverflowingMulAdd::overflowing_mul_add(two, one, two);
+
+                        (Object::new(v), o)
+                    }
+                );
             }
         }
     };
@@ -806,6 +1067,7 @@ macro_rules! test_overflowing_arith_traits_int_negative {
             use crate::elem::*;
             use crate::limits::*;
             use crate::ops::*;
+            use crate::types::Object;
 
             #[test]
             fn test_div_rem() {
@@ -827,6 +1089,11 @@ macro_rules! test_overflowing_arith_traits_int_negative {
                     OverflowingDivRem::overflowing_div_rem(<$ty as MinFinite>::MIN_FINITE, -one),
                     ((<$ty as MinFinite>::MIN_FINITE, zero), true)
                 );
+                assert_eq!(Object::new(five).overflowing_div_rem(Object::new(two)), {
+                    let ((a, b), o) = OverflowingDivRem::overflowing_div_rem(five, two);
+
+                    ((Object::new(a), Object::new(b)), o)
+                });
             }
 
             #[test]
@@ -843,6 +1110,14 @@ macro_rules! test_overflowing_arith_traits_int_negative {
                 assert_eq!(
                     OverflowingDivEuclid::overflowing_div_euclid(-five, -two),
                     (three, false)
+                );
+                assert_eq!(
+                    Object::new(five).overflowing_div_euclid(Object::new(two)),
+                    {
+                        let (v, o) = OverflowingDivEuclid::overflowing_div_euclid(five, two);
+
+                        (Object::new(v), o)
+                    }
                 );
             }
 
@@ -862,6 +1137,14 @@ macro_rules! test_overflowing_arith_traits_int_negative {
                     OverflowingRemEuclid::overflowing_rem_euclid(-four, two),
                     (zero, false)
                 );
+                assert_eq!(
+                    Object::new(five).overflowing_rem_euclid(Object::new(two)),
+                    {
+                        let (v, o) = OverflowingRemEuclid::overflowing_rem_euclid(five, two);
+
+                        (Object::new(v), o)
+                    }
+                );
             }
 
             #[test]
@@ -874,6 +1157,15 @@ macro_rules! test_overflowing_arith_traits_int_negative {
                 assert_eq!(
                     OverflowingDivRemEuclid::overflowing_div_rem_euclid(-five, two),
                     ((-three, one), false)
+                );
+                assert_eq!(
+                    Object::new(five).overflowing_div_rem_euclid(Object::new(two)),
+                    {
+                        let ((a, b), o) =
+                            OverflowingDivRemEuclid::overflowing_div_rem_euclid(five, two);
+
+                        ((Object::new(a), Object::new(b)), o)
+                    }
                 );
             }
 
@@ -889,6 +1181,11 @@ macro_rules! test_overflowing_arith_traits_int_negative {
                     OverflowingNeg::overflowing_neg(<$ty as MinFinite>::MIN_FINITE),
                     (<$ty as MinFinite>::MIN_FINITE, true)
                 );
+                assert_eq!(Object::new(one).overflowing_neg(), {
+                    let (v, o) = OverflowingNeg::overflowing_neg(one);
+
+                    (Object::new(v), o)
+                });
             }
         }
     };

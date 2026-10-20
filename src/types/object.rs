@@ -4,7 +4,9 @@
 
 //! A wrapper to turn this library's trait methods into inherent methods.
 
-use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use core::ops::{
+    Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign,
+};
 
 /// A wrapper to turn this library's trait methods into inherent methods.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -76,6 +78,20 @@ impl<B: Div<Output = B>> Div for Object<B> {
 impl<B: DivAssign> DivAssign for Object<B> {
     fn div_assign(&mut self, rhs: Self) {
         self.0 /= rhs.0;
+    }
+}
+
+impl<B: Rem<Output = B>> Rem for Object<B> {
+    type Output = Self;
+
+    fn rem(self, rhs: Self) -> Self::Output {
+        Self(self.0 % rhs.0)
+    }
+}
+
+impl<B: RemAssign> RemAssign for Object<B> {
+    fn rem_assign(&mut self, rhs: Self) {
+        self.0 %= rhs.0;
     }
 }
 
