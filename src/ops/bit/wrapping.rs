@@ -225,17 +225,7 @@ macro_rules! test_wrapping_bitshift_traits_int_negative {
     };
 }
 
-test_wrapping_bitshift_traits_int_nonnegative!(i8, i8_nonnegative_tests);
-test_wrapping_bitshift_traits_int_negative!(i8, i8_negative_tests);
-test_wrapping_bitshift_traits_int_nonnegative!(i16, i16_nonnegative_tests);
-test_wrapping_bitshift_traits_int_negative!(i16, i16_negative_tests);
-test_wrapping_bitshift_traits_int_nonnegative!(i32, i32_nonnegative_tests);
-test_wrapping_bitshift_traits_int_negative!(i32, i32_negative_tests);
-test_wrapping_bitshift_traits_int_nonnegative!(i64, i64_nonnegative_tests);
-test_wrapping_bitshift_traits_int_negative!(i64, i64_negative_tests);
-test_wrapping_bitshift_traits_int_nonnegative!(i128, i128_nonnegative_tests);
-test_wrapping_bitshift_traits_int_negative!(i128, i128_negative_tests);
-test_wrapping_bitshift_traits_int_nonnegative!(isize, isize_nonnegative_tests);
-test_wrapping_bitshift_traits_int_negative!(isize, isize_negative_tests);
-
+for_signed_ints!(
+    test_wrapping_bitshift_traits_int_nonnegative; test_wrapping_bitshift_traits_int_negative
+);
 for_unsigned_ints!(test_wrapping_bitshift_traits_int_nonnegative);

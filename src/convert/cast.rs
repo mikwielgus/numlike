@@ -232,19 +232,10 @@ macro_rules! convert_traits_negative_tests {
     };
 }
 
-macro_rules! test_convert_traits {
-    ($ty:ty, $nonnegative_tests_mod:ident) => {
-        convert_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
-    };
-    ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
-        convert_traits_nonnegative_tests!($ty, $nonnegative_tests_mod);
-        convert_traits_negative_tests!($ty, $negative_tests_mod);
-    };
-}
+for_signed_ints!(convert_traits_nonnegative_tests; convert_traits_negative_tests);
+for_unsigned_ints!(convert_traits_nonnegative_tests);
 
-for_signed_ints!(test_convert_traits);
-
-for_unsigned_ints!(test_convert_traits);
-
-test_convert_traits!(f32, f32_nonnegative_tests, f32_negative_tests);
-test_convert_traits!(f64, f64_nonnegative_tests, f64_negative_tests);
+convert_traits_nonnegative_tests!(f32, f32_nonnegative_tests);
+convert_traits_negative_tests!(f32, f32_negative_tests);
+convert_traits_nonnegative_tests!(f64, f64_nonnegative_tests);
+convert_traits_negative_tests!(f64, f64_negative_tests);

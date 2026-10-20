@@ -11,6 +11,20 @@ macro_rules! for_signed_ints {
         $m!(i128, i128_nonnegative_tests, i128_negative_tests);
         $m!(isize, isize_nonnegative_tests, isize_negative_tests);
     };
+    ($nonnegative:ident; $negative:ident) => {
+        $nonnegative!(i8, i8_nonnegative_tests);
+        $negative!(i8, i8_negative_tests);
+        $nonnegative!(i16, i16_nonnegative_tests);
+        $negative!(i16, i16_negative_tests);
+        $nonnegative!(i32, i32_nonnegative_tests);
+        $negative!(i32, i32_negative_tests);
+        $nonnegative!(i64, i64_nonnegative_tests);
+        $negative!(i64, i64_negative_tests);
+        $nonnegative!(i128, i128_nonnegative_tests);
+        $negative!(i128, i128_negative_tests);
+        $nonnegative!(isize, isize_nonnegative_tests);
+        $negative!(isize, isize_negative_tests);
+    };
     ($m:ident, $suffix:ident) => {
         pastey::paste! {
             $m!(i8, [<i8 _ $suffix _ nonnegative_tests>], [<i8 _ $suffix _ negative_tests>]);
