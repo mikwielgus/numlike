@@ -25,7 +25,7 @@ pub trait Log<Rhs = Self> {
 
 impl<B> Object<B> {
     /// Returns the logarithm of the number with respect to an arbitrary base.
-    fn log<Rhs>(self, base: Rhs) -> Object<<B as Log<Rhs>>::Output>
+    pub fn log<Rhs>(self, base: Rhs) -> Object<<B as Log<Rhs>>::Output>
     where
         B: Log<Rhs>,
     {
@@ -46,7 +46,7 @@ pub trait Ln {
 
 impl<B: Ln> Object<B> {
     /// Returns the natural logarithm of the number.
-    fn ln(self) -> Object<<B as Ln>::Output> {
+    pub fn ln(self) -> Object<<B as Ln>::Output> {
         Object(<B as Ln>::ln(self.0))
     }
 }
@@ -64,7 +64,7 @@ pub trait Log2 {
 
 impl<B: Log2> Object<B> {
     /// Returns the base 2 logarithm of the number.
-    fn log2(self) -> Object<<B as Log2>::Output> {
+    pub fn log2(self) -> Object<<B as Log2>::Output> {
         Object(<B as Log2>::log2(self.0))
     }
 }
@@ -82,7 +82,7 @@ pub trait Log10 {
 
 impl<B: Log10> Object<B> {
     /// Returns the base 10 logarithm of the number.
-    fn log10(self) -> Object<<B as Log10>::Output> {
+    pub fn log10(self) -> Object<<B as Log10>::Output> {
         Object(<B as Log10>::log10(self.0))
     }
 }
@@ -103,7 +103,7 @@ pub trait Ln1p {
 impl<B: Ln1p> Object<B> {
     /// Returns `ln(1+n)` (natural logarithm) more accurately than if
     /// the operations were performed separately.
-    fn ln_1p(self) -> Object<<B as Ln1p>::Output> {
+    pub fn ln_1p(self) -> Object<<B as Ln1p>::Output> {
         Object(<B as Ln1p>::ln_1p(self.0))
     }
 }
@@ -137,7 +137,7 @@ impl<B> Object<B> {
     /// Returns the logarithm of the number with respect to an arbitrary base.
     ///
     /// Returns `None` if the result is not finite.
-    fn checked_log<Rhs>(self, base: Rhs) -> Option<Object<<B as CheckedLog<Rhs>>::Output>>
+    pub fn checked_log<Rhs>(self, base: Rhs) -> Option<Object<<B as CheckedLog<Rhs>>::Output>>
     where
         B: CheckedLog<Rhs>,
     {
@@ -160,7 +160,7 @@ impl<B: CheckedLn> Object<B> {
     /// Returns the natural logarithm of the number.
     ///
     /// Returns `None` if the result is not finite.
-    fn checked_ln(self) -> Option<Object<<B as CheckedLn>::Output>> {
+    pub fn checked_ln(self) -> Option<Object<<B as CheckedLn>::Output>> {
         <B as CheckedLn>::checked_ln(self.0).map(Object)
     }
 }
@@ -180,7 +180,7 @@ impl<B: CheckedLog2> Object<B> {
     /// Returns the base 2 logarithm of the number.
     ///
     /// Returns `None` if the result is not finite.
-    fn checked_log2(self) -> Option<Object<<B as CheckedLog2>::Output>> {
+    pub fn checked_log2(self) -> Option<Object<<B as CheckedLog2>::Output>> {
         <B as CheckedLog2>::checked_log2(self.0).map(Object)
     }
 }
@@ -200,7 +200,7 @@ impl<B: CheckedLog10> Object<B> {
     /// Returns the base 10 logarithm of the number.
     ///
     /// Returns `None` if the result is not finite.
-    fn checked_log10(self) -> Option<Object<<B as CheckedLog10>::Output>> {
+    pub fn checked_log10(self) -> Option<Object<<B as CheckedLog10>::Output>> {
         <B as CheckedLog10>::checked_log10(self.0).map(Object)
     }
 }
@@ -223,7 +223,7 @@ impl<B: CheckedLn1p> Object<B> {
     /// the operations were performed separately.
     ///
     /// Returns `None` if the result is not finite.
-    fn checked_ln_1p(self) -> Option<Object<<B as CheckedLn1p>::Output>> {
+    pub fn checked_ln_1p(self) -> Option<Object<<B as CheckedLn1p>::Output>> {
         <B as CheckedLn1p>::checked_ln_1p(self.0).map(Object)
     }
 }
@@ -255,7 +255,7 @@ pub trait Ilog<Rhs = Self> {
 impl<B> Object<B> {
     /// Returns the logarithm of the number with respect to an arbitrary base,
     /// rounded down.
-    fn ilog<Rhs>(self, base: Rhs) -> Object<<B as Ilog<Rhs>>::Output>
+    pub fn ilog<Rhs>(self, base: Rhs) -> Object<<B as Ilog<Rhs>>::Output>
     where
         B: Ilog<Rhs>,
     {
@@ -278,7 +278,7 @@ pub trait Ilog2 {
 
 impl<B: Ilog2> Object<B> {
     /// Returns the base 2 logarithm of the number, rounded down.
-    fn ilog2(self) -> Object<<B as Ilog2>::Output> {
+    pub fn ilog2(self) -> Object<<B as Ilog2>::Output> {
         Object(<B as Ilog2>::ilog2(self.0))
     }
 }
@@ -298,7 +298,7 @@ pub trait Ilog10 {
 
 impl<B: Ilog10> Object<B> {
     /// Returns the base 10 logarithm of the number, rounded down.
-    fn ilog10(self) -> Object<<B as Ilog10>::Output> {
+    pub fn ilog10(self) -> Object<<B as Ilog10>::Output> {
         Object(<B as Ilog10>::ilog10(self.0))
     }
 }
@@ -329,7 +329,7 @@ impl<B> Object<B> {
     /// rounded down.
     ///
     /// Returns `None` if `self` is less than or equal to zero, or if the base is not at least 2.
-    fn checked_ilog<Rhs>(self, base: Rhs) -> Option<Object<<B as CheckedIlog<Rhs>>::Output>>
+    pub fn checked_ilog<Rhs>(self, base: Rhs) -> Option<Object<<B as CheckedIlog<Rhs>>::Output>>
     where
         B: CheckedIlog<Rhs>,
     {
@@ -352,7 +352,7 @@ impl<B: CheckedIlog2> Object<B> {
     /// Returns the base 2 logarithm of the number, rounded down.
     ///
     /// Returns `None` if `self` is less than or equal to zero.
-    fn checked_ilog2(self) -> Option<Object<<B as CheckedIlog2>::Output>> {
+    pub fn checked_ilog2(self) -> Option<Object<<B as CheckedIlog2>::Output>> {
         <B as CheckedIlog2>::checked_ilog2(self.0).map(Object)
     }
 }
@@ -372,7 +372,7 @@ impl<B: CheckedIlog10> Object<B> {
     /// Returns the base 10 logarithm of the number, rounded down.
     ///
     /// Returns `None` if `self` is less than or equal to zero.
-    fn checked_ilog10(self) -> Option<Object<<B as CheckedIlog10>::Output>> {
+    pub fn checked_ilog10(self) -> Option<Object<<B as CheckedIlog10>::Output>> {
         <B as CheckedIlog10>::checked_ilog10(self.0).map(Object)
     }
 }

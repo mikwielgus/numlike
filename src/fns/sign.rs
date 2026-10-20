@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use crate::types::Object;
+
 /// Bundle of sign-related functions.
 pub trait SignFns: IsPositive + IsNegative + IsZero + Sgn + Abs {}
 impl<T: IsPositive + IsNegative + IsZero + Sgn + Abs> SignFns for T {}
@@ -12,16 +14,37 @@ pub trait IsPositive {
     fn is_positive(self) -> bool;
 }
 
+impl<B: IsPositive> Object<B> {
+    /// Returns `true` if `self` is positive and `false` otherwise.
+    pub fn is_positive(self) -> bool {
+        <B as IsPositive>::is_positive(self.0)
+    }
+}
+
 /// Returns `true` if `self` is negative and `false` otherwise.
 pub trait IsNegative {
     /// Returns `true` if `self` is negative and `false` otherwise.
     fn is_negative(self) -> bool;
 }
 
+impl<B: IsNegative> Object<B> {
+    /// Returns `true` if `self` is negative and `false` otherwise.
+    pub fn is_negative(self) -> bool {
+        <B as IsNegative>::is_negative(self.0)
+    }
+}
+
 /// Returns `true` if `self` is zero and `false` otherwise.
 pub trait IsZero {
     /// Returns `true` if `self` is zero and `false` otherwise.
     fn is_zero(self) -> bool;
+}
+
+impl<B: IsZero> Object<B> {
+    /// Returns `true` if `self` is zero and `false` otherwise.
+    pub fn is_zero(self) -> bool {
+        <B as IsZero>::is_zero(self.0)
+    }
 }
 
 /// Returns a number representing sign of `self`.
@@ -35,6 +58,13 @@ pub trait Sgn {
 
     /// Returns a number representing sign of `self`.
     fn sgn(self) -> Self::Output;
+}
+
+impl<B: Sgn> Object<B> {
+    /// Returns a number representing sign of `self`.
+    pub fn sgn(self) -> Object<<B as Sgn>::Output> {
+        Object(<B as Sgn>::sgn(self.0))
+    }
 }
 
 /// Computes the absolute value of `self`.
@@ -54,6 +84,13 @@ pub trait Abs {
     fn abs(self) -> Self::Output;
 }
 
+impl<B: Abs> Object<B> {
+    /// Computes the absolute value of `self`.
+    pub fn abs(self) -> Object<<B as Abs>::Output> {
+        Object(<B as Abs>::abs(self.0))
+    }
+}
+
 /// Checked absolute value. Computes `self.abs()`, returning `None` if
 /// `self` is the minimum value of a signed integer type.
 pub trait CheckedAbs {
@@ -63,6 +100,14 @@ pub trait CheckedAbs {
     /// Checked absolute value. Computes `self.abs()`, returning `None` if
     /// `self` is the minimum value of a signed integer type.
     fn checked_abs(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedAbs> Object<B> {
+    /// Checked absolute value. Computes `self.abs()`, returning `None` if
+    /// `self` is the minimum value of a signed integer type.
+    pub fn checked_abs(self) -> Option<Object<<B as CheckedAbs>::Output>> {
+        <B as CheckedAbs>::checked_abs(self.0).map(Object)
+    }
 }
 
 macro_rules! impl_sign_traits_for_unsigned_int {
@@ -125,6 +170,7 @@ macro_rules! sign_traits_nonnegative_tests {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_is_positive() {
@@ -137,6 +183,8 @@ macro_rules! sign_traits_nonnegative_tests {
                 assert!(IsPositive::is_positive(one));
                 assert!(IsPositive::is_positive(two));
                 assert!(IsPositive::is_positive(four));
+
+                assert_eq!(Object::new(two).is_positive(), IsPositive::is_positive(two));
             }
 
             #[test]
@@ -150,6 +198,8 @@ macro_rules! sign_traits_nonnegative_tests {
                 assert!(!IsNegative::is_negative(one));
                 assert!(!IsNegative::is_negative(two));
                 assert!(!IsNegative::is_negative(four));
+
+                assert_eq!(Object::new(two).is_negative(), IsNegative::is_negative(two));
             }
 
             #[test]
@@ -161,6 +211,8 @@ macro_rules! sign_traits_nonnegative_tests {
                 assert!(IsZero::is_zero(zero));
                 assert!(!IsZero::is_zero(one));
                 assert!(!IsZero::is_zero(two));
+
+                assert_eq!(Object::new(zero).is_zero(), IsZero::is_zero(zero));
             }
 
             #[test]
@@ -174,6 +226,8 @@ macro_rules! sign_traits_nonnegative_tests {
                 assert_eq!(Sgn::sgn(one), one);
                 assert_eq!(Sgn::sgn(two), one);
                 assert_eq!(Sgn::sgn(four), one);
+
+                assert_eq!(Object::new(two).sgn(), Object::new(Sgn::sgn(two)));
             }
 
             #[test]
@@ -187,6 +241,8 @@ macro_rules! sign_traits_nonnegative_tests {
                 assert_eq!(Abs::abs(one), one);
                 assert_eq!(Abs::abs(two), two);
                 assert_eq!(Abs::abs(four), four);
+
+                assert_eq!(Object::new(two).abs(), Object::new(Abs::abs(two)));
             }
 
             #[test]
@@ -200,6 +256,11 @@ macro_rules! sign_traits_nonnegative_tests {
                 assert_eq!(CheckedAbs::checked_abs(one), Some(one));
                 assert_eq!(CheckedAbs::checked_abs(two), Some(two));
                 assert_eq!(CheckedAbs::checked_abs(four), Some(four));
+
+                assert_eq!(
+                    Object::new(two).checked_abs(),
+                    CheckedAbs::checked_abs(two).map(Object::new)
+                );
             }
         }
     };
@@ -325,6 +386,7 @@ macro_rules! sign_traits_negative_tests {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_is_positive() {
@@ -337,6 +399,11 @@ macro_rules! sign_traits_negative_tests {
                 assert!(!IsPositive::is_positive(-one));
                 assert!(!IsPositive::is_positive(-two));
                 assert!(!IsPositive::is_positive(-four));
+
+                assert_eq!(
+                    Object::new(-two).is_positive(),
+                    IsPositive::is_positive(-two)
+                );
             }
 
             #[test]
@@ -350,6 +417,11 @@ macro_rules! sign_traits_negative_tests {
                 assert!(IsNegative::is_negative(-one));
                 assert!(IsNegative::is_negative(-two));
                 assert!(IsNegative::is_negative(-four));
+
+                assert_eq!(
+                    Object::new(-two).is_negative(),
+                    IsNegative::is_negative(-two)
+                );
             }
 
             #[test]
@@ -361,6 +433,8 @@ macro_rules! sign_traits_negative_tests {
                 assert!(IsZero::is_zero(-zero));
                 assert!(!IsZero::is_zero(-one));
                 assert!(!IsZero::is_zero(-two));
+
+                assert_eq!(Object::new(-zero).is_zero(), IsZero::is_zero(-zero));
             }
 
             #[test]
@@ -376,6 +450,8 @@ macro_rules! sign_traits_negative_tests {
                 assert_eq!(Sgn::sgn(-one), -one);
                 assert_eq!(Sgn::sgn(-two), -one);
                 assert_eq!(Sgn::sgn(-four), -one);
+
+                assert_eq!(Object::new(-two).sgn(), Object::new(Sgn::sgn(-two)));
             }
 
             #[test]
@@ -387,6 +463,8 @@ macro_rules! sign_traits_negative_tests {
                 assert_eq!(Abs::abs(-one), one);
                 assert_eq!(Abs::abs(-two), two);
                 assert_eq!(Abs::abs(-four), four);
+
+                assert_eq!(Object::new(-two).abs(), Object::new(Abs::abs(-two)));
             }
 
             #[test]
@@ -398,6 +476,11 @@ macro_rules! sign_traits_negative_tests {
                 assert_eq!(CheckedAbs::checked_abs(-one), Some(one));
                 assert_eq!(CheckedAbs::checked_abs(-two), Some(two));
                 assert_eq!(CheckedAbs::checked_abs(-four), Some(four));
+
+                assert_eq!(
+                    Object::new(-two).checked_abs(),
+                    CheckedAbs::checked_abs(-two).map(Object::new)
+                );
 
                 // TODO?: make it overflow?
             }

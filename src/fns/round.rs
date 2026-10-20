@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use crate::types::Object;
+
 /// Bundle of rounding functions.
 pub trait RoundFns: Round + Trunc + RoundTiesEven + Floor + Ceil {}
 impl<T: Round + Trunc + RoundTiesEven + Floor + Ceil> RoundFns for T {}
@@ -19,6 +21,14 @@ pub trait Round {
     fn round(self) -> Self::Output;
 }
 
+impl<B: Round> Object<B> {
+    /// Returns the nearest integer to `self`. If a value is half-way between two
+    /// integers, round away from `0.0`.
+    pub fn round(self) -> Object<<B as Round>::Output> {
+        Object(<B as Round>::round(self.0))
+    }
+}
+
 /// Returns the integer part of `self`.
 /// This means that non-integer numbers are always truncated towards zero.
 ///
@@ -30,6 +40,14 @@ pub trait Trunc {
     /// Returns the integer part of `self`.
     /// This means that non-integer numbers are always truncated towards zero.
     fn trunc(self) -> Self::Output;
+}
+
+impl<B: Trunc> Object<B> {
+    /// Returns the integer part of `self`.
+    /// This means that non-integer numbers are always truncated towards zero.
+    pub fn trunc(self) -> Object<<B as Trunc>::Output> {
+        Object(<B as Trunc>::trunc(self.0))
+    }
 }
 
 /// Returns the nearest integer to a number. Rounds half-way cases to the number
@@ -45,6 +63,14 @@ pub trait RoundTiesEven {
     fn round_ties_even(self) -> Self::Output;
 }
 
+impl<B: RoundTiesEven> Object<B> {
+    /// Returns the nearest integer to a number. Rounds half-way cases to the number
+    /// with an even least significant digit.
+    pub fn round_ties_even(self) -> Object<<B as RoundTiesEven>::Output> {
+        Object(<B as RoundTiesEven>::round_ties_even(self.0))
+    }
+}
+
 /// Returns the largest integer that is less than or equal to `self`.
 ///
 /// This function always returns the precise result.
@@ -56,6 +82,13 @@ pub trait Floor {
     fn floor(self) -> Self::Output;
 }
 
+impl<B: Floor> Object<B> {
+    /// Returns the largest integer that is less than or equal to `self`.
+    pub fn floor(self) -> Object<<B as Floor>::Output> {
+        Object(<B as Floor>::floor(self.0))
+    }
+}
+
 /// Returns the smallest integer that is greater than or equal to `self`.
 ///
 /// This function always returns the precise result.
@@ -65,6 +98,13 @@ pub trait Ceil {
 
     /// Returns the smallest integer that is greater than or equal to `self`.
     fn ceil(self) -> Self::Output;
+}
+
+impl<B: Ceil> Object<B> {
+    /// Returns the smallest integer that is greater than or equal to `self`.
+    pub fn ceil(self) -> Object<<B as Ceil>::Output> {
+        Object(<B as Ceil>::ceil(self.0))
+    }
 }
 
 macro_rules! impl_round_traits_for_int {
@@ -201,6 +241,7 @@ macro_rules! test_round_traits_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_round() {
@@ -219,6 +260,11 @@ macro_rules! test_round_traits_nonnegative {
                 assert_eq!(Round::round(half), one);
                 assert_eq!(Round::round(one_and_half), two);
                 assert_eq!(Round::round(two_and_half), two + one);
+
+                assert_eq!(
+                    Object::new(one_and_half).round(),
+                    Object::new(Round::round(one_and_half))
+                );
             }
 
             #[test]
@@ -238,6 +284,11 @@ macro_rules! test_round_traits_nonnegative {
                 assert_eq!(Trunc::trunc(half), zero);
                 assert_eq!(Trunc::trunc(one_and_half), one);
                 assert_eq!(Trunc::trunc(two_and_half), two);
+
+                assert_eq!(
+                    Object::new(one_and_half).trunc(),
+                    Object::new(Trunc::trunc(one_and_half))
+                );
             }
 
             #[test]
@@ -257,6 +308,11 @@ macro_rules! test_round_traits_nonnegative {
                 assert_eq!(RoundTiesEven::round_ties_even(half), zero);
                 assert_eq!(RoundTiesEven::round_ties_even(one_and_half), two);
                 assert_eq!(RoundTiesEven::round_ties_even(two_and_half), two);
+
+                assert_eq!(
+                    Object::new(one_and_half).round_ties_even(),
+                    Object::new(RoundTiesEven::round_ties_even(one_and_half))
+                );
             }
 
             #[test]
@@ -276,6 +332,11 @@ macro_rules! test_round_traits_nonnegative {
                 assert_eq!(Floor::floor(half), zero);
                 assert_eq!(Floor::floor(one_and_half), one);
                 assert_eq!(Floor::floor(two_and_half), two);
+
+                assert_eq!(
+                    Object::new(one_and_half).floor(),
+                    Object::new(Floor::floor(one_and_half))
+                );
             }
 
             #[test]
@@ -295,6 +356,11 @@ macro_rules! test_round_traits_nonnegative {
                 assert_eq!(Ceil::ceil(half), one);
                 assert_eq!(Ceil::ceil(one_and_half), two);
                 assert_eq!(Ceil::ceil(two_and_half), two + one);
+
+                assert_eq!(
+                    Object::new(one_and_half).ceil(),
+                    Object::new(Ceil::ceil(one_and_half))
+                );
             }
         }
     };
@@ -307,6 +373,7 @@ macro_rules! test_round_traits_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_round() {
@@ -321,6 +388,11 @@ macro_rules! test_round_traits_negative {
                 assert_eq!(Round::round(-half), -one);
                 assert_eq!(Round::round(-one_and_half), -two);
                 assert_eq!(Round::round(-two_and_half), -(two + one));
+
+                assert_eq!(
+                    Object::new(-one_and_half).round(),
+                    Object::new(Round::round(-one_and_half))
+                );
             }
 
             #[test]
@@ -336,6 +408,11 @@ macro_rules! test_round_traits_negative {
                 assert_eq!(Trunc::trunc(-half), <$ty as ConstZero>::ZERO);
                 assert_eq!(Trunc::trunc(-one_and_half), -one);
                 assert_eq!(Trunc::trunc(-two_and_half), -two);
+
+                assert_eq!(
+                    Object::new(-one_and_half).trunc(),
+                    Object::new(Trunc::trunc(-one_and_half))
+                );
             }
 
             #[test]
@@ -354,6 +431,11 @@ macro_rules! test_round_traits_negative {
                 );
                 assert_eq!(RoundTiesEven::round_ties_even(-one_and_half), -two);
                 assert_eq!(RoundTiesEven::round_ties_even(-two_and_half), -two);
+
+                assert_eq!(
+                    Object::new(-one_and_half).round_ties_even(),
+                    Object::new(RoundTiesEven::round_ties_even(-one_and_half))
+                );
             }
 
             #[test]
@@ -369,6 +451,11 @@ macro_rules! test_round_traits_negative {
                 assert_eq!(Floor::floor(-half), -one);
                 assert_eq!(Floor::floor(-one_and_half), -two);
                 assert_eq!(Floor::floor(-two_and_half), -(two + one));
+
+                assert_eq!(
+                    Object::new(-one_and_half).floor(),
+                    Object::new(Floor::floor(-one_and_half))
+                );
             }
 
             #[test]
@@ -384,6 +471,11 @@ macro_rules! test_round_traits_negative {
                 assert_eq!(Ceil::ceil(-half), <$ty as ConstZero>::ZERO);
                 assert_eq!(Ceil::ceil(-one_and_half), -one);
                 assert_eq!(Ceil::ceil(-two_and_half), -two);
+
+                assert_eq!(
+                    Object::new(-one_and_half).ceil(),
+                    Object::new(Ceil::ceil(-one_and_half))
+                );
             }
         }
     };

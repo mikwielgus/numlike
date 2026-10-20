@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use crate::types::Object;
+
 /// Raises `self` to the power of `rhs`.
 ///
 /// For integers, this uses exponentiation by squaring.
@@ -25,6 +27,30 @@ pub trait Pow<Rhs = Self> {
     fn pow(self, rhs: Rhs) -> Self::Output;
 }
 
+impl<B> Object<B> {
+    /// Raises `self` to the power of `rhs`.
+    ///
+    /// For integers, this uses exponentiation by squaring.
+    ///
+    /// For floats, this may use an integer or floating-point power depending on
+    /// the exponent type. Using an integer power is generally faster than using
+    /// a floating-point power. It might have a different sequence of rounding
+    /// operations than a floating-point power, so the results are not
+    /// guaranteed to agree.
+    ///
+    /// Note that the floating-point power is special in that it can return
+    /// non-NaN results for NaN inputs. For example, `f32::NAN.pow(0.0)` returns
+    /// `1.0`. However, if an input is a *signaling* NaN, then the result is
+    /// non-deterministically either a NaN or the result that the corresponding
+    /// quiet NaN would produce.
+    pub fn pow<Rhs>(self, rhs: Rhs) -> Object<<B as Pow<Rhs>>::Output>
+    where
+        B: Pow<Rhs>,
+    {
+        Object(<B as Pow<Rhs>>::pow(self.0, rhs))
+    }
+}
+
 /// Checked exponentiation. Computes `self.pow(rhs)`, returning `None` if
 /// overflow occurred or the result is not finite.
 pub trait CheckedPow<Rhs = Self> {
@@ -34,6 +60,17 @@ pub trait CheckedPow<Rhs = Self> {
     /// Checked exponentiation. Computes `self.pow(rhs)`, returning `None` if
     /// overflow occurred or the result is not finite.
     fn checked_pow(self, rhs: Rhs) -> Option<Self::Output>;
+}
+
+impl<B> Object<B> {
+    /// Checked exponentiation. Computes `self.pow(rhs)`, returning `None` if
+    /// overflow occurred or the result is not finite.
+    pub fn checked_pow<Rhs>(self, rhs: Rhs) -> Option<Object<<B as CheckedPow<Rhs>>::Output>>
+    where
+        B: CheckedPow<Rhs>,
+    {
+        <B as CheckedPow<Rhs>>::checked_pow(self.0, rhs).map(Object)
+    }
 }
 
 macro_rules! impl_pow_for_int {
@@ -99,6 +136,7 @@ macro_rules! test_pow_traits_for_int_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_pow() {
@@ -119,6 +157,8 @@ macro_rules! test_pow_traits_for_int_nonnegative {
 
                 assert_eq!(Pow::pow(two, 2u16), four);
                 assert_eq!(Pow::pow(two, 2u32), four);
+
+                assert_eq!(Object::new(two).pow(3u8), Object::new(Pow::pow(two, 3u8)));
             }
 
             #[test]
@@ -139,6 +179,11 @@ macro_rules! test_pow_traits_for_int_nonnegative {
                 assert_eq!(CheckedPow::checked_pow(two, 2u32), Some(four));
 
                 assert_eq!(CheckedPow::checked_pow(two, 128u8), None);
+
+                assert_eq!(
+                    Object::new(two).checked_pow(3u8),
+                    CheckedPow::checked_pow(two, 3u8).map(Object::new)
+                );
             }
         }
     };
@@ -150,6 +195,7 @@ macro_rules! test_pow_traits_for_int_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_pow() {
@@ -166,6 +212,8 @@ macro_rules! test_pow_traits_for_int_negative {
 
                 assert_eq!(Pow::pow(-two, 2u16), four);
                 assert_eq!(Pow::pow(-two, 3u32), -eight);
+
+                assert_eq!(Object::new(-two).pow(3u8), Object::new(Pow::pow(-two, 3u8)));
             }
 
             #[test]
@@ -181,6 +229,11 @@ macro_rules! test_pow_traits_for_int_negative {
                 assert_eq!(CheckedPow::checked_pow(-two, 3u8), Some(-eight));
 
                 assert_eq!(CheckedPow::checked_pow(-two, 128u8), None);
+
+                assert_eq!(
+                    Object::new(-two).checked_pow(3u8),
+                    CheckedPow::checked_pow(-two, 3u8).map(Object::new)
+                );
             }
         }
     };
@@ -257,6 +310,7 @@ macro_rules! test_pow_traits_float_nonnegative {
             use crate::elem::*;
             use crate::fns::*;
             use crate::limits::*;
+            use crate::types::Object;
 
             #[test]
             fn test_pow() {
@@ -278,6 +332,8 @@ macro_rules! test_pow_traits_float_nonnegative {
                 assert_eq!(Pow::pow(two, 2u16), four);
                 assert_eq!(Pow::pow(two, 2u32), four);
                 assert_eq!(Pow::pow(two, two), four);
+
+                assert_eq!(Object::new(two).pow(3), Object::new(Pow::pow(two, 3)));
             }
 
             #[test]
@@ -297,6 +353,11 @@ macro_rules! test_pow_traits_float_nonnegative {
                     CheckedPow::checked_pow(two, <$ty as MaxFinite>::MAX_FINITE),
                     None
                 );
+
+                assert_eq!(
+                    Object::new(two).checked_pow(3),
+                    CheckedPow::checked_pow(two, 3).map(Object::new)
+                );
             }
         }
     };
@@ -309,6 +370,7 @@ macro_rules! test_pow_traits_float_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_pow() {
@@ -329,6 +391,8 @@ macro_rules! test_pow_traits_float_negative {
                 assert_eq!(Pow::pow(two, -2), quarter);
                 assert_eq!(Pow::pow(two, -one), half);
                 assert_eq!(Pow::pow(four, -one), quarter);
+
+                assert_eq!(Object::new(-two).pow(3), Object::new(Pow::pow(-two, 3)));
             }
 
             #[test]
@@ -345,6 +409,11 @@ macro_rules! test_pow_traits_float_negative {
                 assert_eq!(CheckedPow::checked_pow(two, -1), Some(half));
                 assert_eq!(CheckedPow::checked_pow(two, -2), Some(quarter));
                 assert_eq!(CheckedPow::checked_pow(two, -one), Some(half));
+
+                assert_eq!(
+                    Object::new(-two).checked_pow(3),
+                    CheckedPow::checked_pow(-two, 3).map(Object::new)
+                );
             }
         }
     };

@@ -4,6 +4,7 @@
 
 #[cfg(any(feature = "std", feature = "libm"))]
 use crate::fns::round::Floor;
+use crate::types::Object;
 
 /// Bundle of root-finding functions.
 pub trait RootFns: Sqrt + Cbrt {}
@@ -20,6 +21,13 @@ pub trait Sqrt {
     fn sqrt(self) -> Self::Output;
 }
 
+impl<B: Sqrt> Object<B> {
+    /// Returns the square root of a number.
+    pub fn sqrt(self) -> Object<<B as Sqrt>::Output> {
+        Object(<B as Sqrt>::sqrt(self.0))
+    }
+}
+
 /// Returns the cube root of a number.
 pub trait Cbrt {
     /// The resulting type after evaluating the function.
@@ -27,6 +35,13 @@ pub trait Cbrt {
 
     /// Returns the cube root of a number.
     fn cbrt(self) -> Self::Output;
+}
+
+impl<B: Cbrt> Object<B> {
+    /// Returns the cube root of a number.
+    pub fn cbrt(self) -> Object<<B as Cbrt>::Output> {
+        Object(<B as Cbrt>::cbrt(self.0))
+    }
 }
 
 /// Returns the square root of a number.
@@ -39,6 +54,16 @@ pub trait CheckedSqrt {
 
     /// Returns the square root of a number.
     fn checked_sqrt(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedSqrt> Object<B> {
+    /// Returns the square root of a number.
+    ///
+    /// Returns `None` if the result is not finite (including when `self` is a
+    /// negative number other than `-0.0`).
+    pub fn checked_sqrt(self) -> Option<Object<<B as CheckedSqrt>::Output>> {
+        <B as CheckedSqrt>::checked_sqrt(self.0).map(Object)
+    }
 }
 
 /// Returns the integer square root of the number, rounded down.
@@ -58,6 +83,13 @@ pub trait Isqrt {
     fn isqrt(self) -> Self::Output;
 }
 
+impl<B: Isqrt> Object<B> {
+    /// Returns the integer square root of the number, rounded down.
+    pub fn isqrt(self) -> Object<<B as Isqrt>::Output> {
+        Object(<B as Isqrt>::isqrt(self.0))
+    }
+}
+
 /// Returns the integer square root of the number, rounded down.
 ///
 /// This trait's function returns the **principal (non-negative) square root**.
@@ -71,6 +103,15 @@ pub trait CheckedIsqrt {
 
     /// Returns the integer square root of the number, rounded down.
     fn checked_isqrt(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedIsqrt> Object<B> {
+    /// Returns the integer square root of the number, rounded down.
+    ///
+    /// Returns `None` if `self` is negative, or if the result is not finite.
+    pub fn checked_isqrt(self) -> Option<Object<<B as CheckedIsqrt>::Output>> {
+        <B as CheckedIsqrt>::checked_isqrt(self.0).map(Object)
+    }
 }
 
 #[cfg(any(feature = "std", feature = "libm"))]
@@ -140,6 +181,7 @@ macro_rules! test_root_traits_float_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_sqrt() {
@@ -149,6 +191,7 @@ macro_rules! test_root_traits_float_nonnegative {
                 let four = two + two;
 
                 assert_eq!(Sqrt::sqrt(zero), zero);
+                assert_eq!(Object::new(zero).sqrt(), Object::new(Sqrt::sqrt(zero)));
                 assert_eq!(Sqrt::sqrt(one), one);
                 assert_eq!(Sqrt::sqrt(four), two);
             }
@@ -162,6 +205,7 @@ macro_rules! test_root_traits_float_nonnegative {
                 let eight = four + four;
 
                 assert_eq!(Cbrt::cbrt(zero), zero);
+                assert_eq!(Object::new(zero).cbrt(), Object::new(Cbrt::cbrt(zero)));
                 assert_eq!(Cbrt::cbrt(one), one);
                 assert_eq!(Cbrt::cbrt(eight), two);
             }
@@ -174,6 +218,7 @@ macro_rules! test_root_traits_float_nonnegative {
                 let four = two + two;
 
                 assert_eq!(Isqrt::isqrt(zero), zero);
+                assert_eq!(Object::new(zero).isqrt(), Object::new(Isqrt::isqrt(zero)));
                 assert_eq!(Isqrt::isqrt(one), one);
                 assert_eq!(Isqrt::isqrt(two), one);
                 assert_eq!(Isqrt::isqrt(four), two);
@@ -187,6 +232,10 @@ macro_rules! test_root_traits_float_nonnegative {
                 let four = two + two;
 
                 assert_eq!(CheckedSqrt::checked_sqrt(zero), Some(zero));
+                assert_eq!(
+                    Object::new(zero).checked_sqrt(),
+                    CheckedSqrt::checked_sqrt(zero).map(Object::new)
+                );
                 assert_eq!(CheckedSqrt::checked_sqrt(one), Some(one));
                 assert_eq!(CheckedSqrt::checked_sqrt(four), Some(two));
             }
@@ -199,6 +248,10 @@ macro_rules! test_root_traits_float_nonnegative {
                 let four = two + two;
 
                 assert_eq!(CheckedIsqrt::checked_isqrt(zero), Some(zero));
+                assert_eq!(
+                    Object::new(zero).checked_isqrt(),
+                    CheckedIsqrt::checked_isqrt(zero).map(Object::new)
+                );
                 assert_eq!(CheckedIsqrt::checked_isqrt(one), Some(one));
                 assert_eq!(CheckedIsqrt::checked_isqrt(two), Some(one));
                 assert_eq!(CheckedIsqrt::checked_isqrt(four), Some(two));
@@ -214,6 +267,7 @@ macro_rules! test_root_traits_float_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_cbrt() {
@@ -223,18 +277,29 @@ macro_rules! test_root_traits_float_negative {
                 let eight = four + four;
 
                 assert_eq!(Cbrt::cbrt(-one), -one);
+                assert_eq!(Object::new(-one).cbrt(), Object::new(Cbrt::cbrt(-one)));
                 assert_eq!(Cbrt::cbrt(-eight), -two);
             }
 
             #[test]
             fn test_checked_sqrt() {
                 let one = <$ty as ConstOne>::ONE;
+
+                assert_eq!(
+                    Object::new(-one).checked_sqrt(),
+                    CheckedSqrt::checked_sqrt(-one).map(Object::new)
+                );
                 assert_eq!(CheckedSqrt::checked_sqrt(-one), None);
             }
 
             #[test]
             fn test_checked_isqrt() {
                 let one = <$ty as ConstOne>::ONE;
+
+                assert_eq!(
+                    Object::new(-one).checked_isqrt(),
+                    CheckedIsqrt::checked_isqrt(-one).map(Object::new)
+                );
                 assert_eq!(CheckedIsqrt::checked_isqrt(-one), None);
             }
         }
@@ -338,6 +403,7 @@ macro_rules! test_isqrt_traits_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_isqrt() {
@@ -350,6 +416,7 @@ macro_rules! test_isqrt_traits_nonnegative {
                 let nine = eight + one;
 
                 assert_eq!(Isqrt::isqrt(zero), zero);
+                assert_eq!(Object::new(zero).isqrt(), Object::new(Isqrt::isqrt(zero)));
                 assert_eq!(Isqrt::isqrt(one), one);
                 assert_eq!(Isqrt::isqrt(two), one);
                 assert_eq!(Isqrt::isqrt(three), one);
@@ -368,6 +435,10 @@ macro_rules! test_isqrt_traits_nonnegative {
                 let nine = four + four + one;
 
                 assert_eq!(CheckedIsqrt::checked_isqrt(zero), Some(zero));
+                assert_eq!(
+                    Object::new(zero).checked_isqrt(),
+                    CheckedIsqrt::checked_isqrt(zero).map(Object::new)
+                );
                 assert_eq!(CheckedIsqrt::checked_isqrt(one), Some(one));
                 assert_eq!(CheckedIsqrt::checked_isqrt(two), Some(one));
                 assert_eq!(CheckedIsqrt::checked_isqrt(four), Some(two));
@@ -383,10 +454,16 @@ macro_rules! test_isqrt_traits_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_checked_isqrt() {
                 let one = <$ty as ConstOne>::ONE;
+
+                assert_eq!(
+                    Object::new(-one).checked_isqrt(),
+                    CheckedIsqrt::checked_isqrt(-one).map(Object::new)
+                );
                 assert_eq!(CheckedIsqrt::checked_isqrt(-one), None);
             }
         }

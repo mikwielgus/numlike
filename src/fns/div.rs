@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 use crate::fns::Abs;
+use crate::types::Object;
 
 /// Calculate the greatest common divisor (GCD) and least common multiple (LCM)
 /// together.
@@ -18,6 +19,25 @@ pub trait GcdLcm<Rhs = Self> {
     fn gcd_lcm(self, rhs: Rhs) -> (Self::Output, Self::Output);
 }
 
+impl<B> Object<B> {
+    /// Calculate the greatest common divisor (GCD) and least common multiple
+    /// (LCM) together.
+    pub fn gcd_lcm<Rhs>(
+        self,
+        rhs: Rhs,
+    ) -> (
+        Object<<B as GcdLcm<Rhs>>::Output>,
+        Object<<B as GcdLcm<Rhs>>::Output>,
+    )
+    where
+        B: GcdLcm<Rhs>,
+    {
+        let (gcd, lcm) = <B as GcdLcm<Rhs>>::gcd_lcm(self.0, rhs);
+
+        (Object(gcd), Object(lcm))
+    }
+}
+
 /// Calculate the greatest common divisor (GCD).
 pub trait Gcd<Rhs = Self> {
     /// The resulting type after evaluating the function.
@@ -27,6 +47,16 @@ pub trait Gcd<Rhs = Self> {
     fn gcd(self, rhs: Rhs) -> Self::Output;
 }
 
+impl<B> Object<B> {
+    /// Calculate the greatest common divisor (GCD).
+    pub fn gcd<Rhs>(self, rhs: Rhs) -> Object<<B as Gcd<Rhs>>::Output>
+    where
+        B: Gcd<Rhs>,
+    {
+        Object(<B as Gcd<Rhs>>::gcd(self.0, rhs))
+    }
+}
+
 /// Calculate the least common multiple (LCM).
 pub trait Lcm<Rhs = Self> {
     /// The resulting type after evaluating the function.
@@ -34,6 +64,16 @@ pub trait Lcm<Rhs = Self> {
 
     /// Calculate the least common multiple (LCM).
     fn lcm(self, rhs: Rhs) -> Self::Output;
+}
+
+impl<B> Object<B> {
+    /// Calculate the least common multiple (LCM).
+    pub fn lcm<Rhs>(self, rhs: Rhs) -> Object<<B as Lcm<Rhs>>::Output>
+    where
+        B: Lcm<Rhs>,
+    {
+        Object(<B as Lcm<Rhs>>::lcm(self.0, rhs))
+    }
 }
 
 macro_rules! impl_gcd_lcm_for_int {
@@ -130,6 +170,7 @@ macro_rules! test_gcd_lcm_traits_int_nonnegative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_gcd() {
@@ -155,6 +196,11 @@ macro_rules! test_gcd_lcm_traits_int_nonnegative {
                 assert_eq!(Gcd::gcd(zero, eight), eight);
                 assert_eq!(Gcd::gcd(eight, zero), eight);
                 assert_eq!(Gcd::gcd(twelve, twelve), twelve);
+
+                assert_eq!(
+                    Object::new(twelve).gcd(eight),
+                    Object::new(Gcd::gcd(twelve, eight))
+                );
             }
 
             #[test]
@@ -183,6 +229,11 @@ macro_rules! test_gcd_lcm_traits_int_nonnegative {
                 assert_eq!(Lcm::lcm(zero, eight), zero);
                 assert_eq!(Lcm::lcm(eight, zero), zero);
                 assert_eq!(Lcm::lcm(twelve, twelve), twelve);
+
+                assert_eq!(
+                    Object::new(twelve).lcm(eight),
+                    Object::new(Lcm::lcm(twelve, eight))
+                );
             }
 
             #[test]
@@ -211,6 +262,13 @@ macro_rules! test_gcd_lcm_traits_int_nonnegative {
                 assert_eq!(GcdLcm::gcd_lcm(zero, eight), (eight, zero));
                 assert_eq!(GcdLcm::gcd_lcm(eight, zero), (eight, zero));
                 assert_eq!(GcdLcm::gcd_lcm(twelve, twelve), (twelve, twelve));
+
+                let (gcd, lcm) = GcdLcm::gcd_lcm(twelve, eight);
+
+                assert_eq!(
+                    Object::new(twelve).gcd_lcm(eight),
+                    (Object::new(gcd), Object::new(lcm))
+                );
             }
         }
     };
@@ -222,6 +280,7 @@ macro_rules! test_gcd_lcm_traits_int_negative {
         mod $tests_mod {
             use crate::elem::*;
             use crate::fns::*;
+            use crate::types::Object;
 
             #[test]
             fn test_gcd() {
@@ -247,6 +306,11 @@ macro_rules! test_gcd_lcm_traits_int_negative {
                 assert_eq!(Gcd::gcd(-zero, eight), eight);
                 assert_eq!(Gcd::gcd(-eight, zero), eight);
                 assert_eq!(Gcd::gcd(-twelve, -twelve), twelve);
+
+                assert_eq!(
+                    Object::new(twelve).gcd(-eight),
+                    Object::new(Gcd::gcd(twelve, -eight))
+                );
             }
 
             #[test]
@@ -275,6 +339,11 @@ macro_rules! test_gcd_lcm_traits_int_negative {
                 assert_eq!(Lcm::lcm(-zero, eight), zero);
                 assert_eq!(Lcm::lcm(-eight, zero), zero);
                 assert_eq!(Lcm::lcm(twelve, twelve), twelve);
+
+                assert_eq!(
+                    Object::new(twelve).lcm(-eight),
+                    Object::new(Lcm::lcm(twelve, -eight))
+                );
             }
 
             #[test]
@@ -303,6 +372,13 @@ macro_rules! test_gcd_lcm_traits_int_negative {
                 assert_eq!(GcdLcm::gcd_lcm(-zero, eight), (eight, zero));
                 assert_eq!(GcdLcm::gcd_lcm(-eight, zero), (eight, zero));
                 assert_eq!(GcdLcm::gcd_lcm(twelve, twelve), (twelve, twelve));
+
+                let (gcd, lcm) = GcdLcm::gcd_lcm(twelve, -eight);
+
+                assert_eq!(
+                    Object::new(twelve).gcd_lcm(-eight),
+                    (Object::new(gcd), Object::new(lcm))
+                );
             }
         }
     };
