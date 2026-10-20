@@ -7,6 +7,8 @@
 use core::mem::size_of;
 use core::num::{Saturating, Wrapping};
 
+use crate::types::Object;
+
 /// Returns the memory representation of this value as a byte array in
 /// big-endian (network) byte order.
 pub trait ToBeBytes {
@@ -18,6 +20,22 @@ pub trait ToBeBytes {
     fn to_be_bytes(self) -> Self::Output;
 }
 
+impl<B: ToBeBytes> ToBeBytes for Object<B> {
+    type Output = <B as ToBeBytes>::Output;
+
+    fn to_be_bytes(self) -> Self::Output {
+        <B as ToBeBytes>::to_be_bytes(self.0)
+    }
+}
+
+impl<B: ToBeBytes> Object<B> {
+    /// Returns the memory representation of this number as a byte array in
+    /// big-endian (network) byte order.
+    pub fn to_be_bytes(self) -> <B as ToBeBytes>::Output {
+        <B as ToBeBytes>::to_be_bytes(self.0)
+    }
+}
+
 /// Returns the memory representation of this value as a byte array in
 /// little-endian byte order.
 pub trait ToLeBytes {
@@ -27,6 +45,22 @@ pub trait ToLeBytes {
     /// Returns the memory representation of this number as a byte array in
     /// little-endian byte order.
     fn to_le_bytes(self) -> Self::Output;
+}
+
+impl<B: ToLeBytes> ToLeBytes for Object<B> {
+    type Output = <B as ToLeBytes>::Output;
+
+    fn to_le_bytes(self) -> Self::Output {
+        <B as ToLeBytes>::to_le_bytes(self.0)
+    }
+}
+
+impl<B: ToLeBytes> Object<B> {
+    /// Returns the memory representation of this number as a byte array in
+    /// little-endian byte order.
+    pub fn to_le_bytes(self) -> <B as ToLeBytes>::Output {
+        <B as ToLeBytes>::to_le_bytes(self.0)
+    }
 }
 
 /// Returns the memory representation of this value as a byte array in native
@@ -43,6 +77,22 @@ pub trait ToNeBytes {
     fn to_ne_bytes(self) -> Self::Output;
 }
 
+impl<B: ToNeBytes> ToNeBytes for Object<B> {
+    type Output = <B as ToNeBytes>::Output;
+
+    fn to_ne_bytes(self) -> Self::Output {
+        <B as ToNeBytes>::to_ne_bytes(self.0)
+    }
+}
+
+impl<B: ToNeBytes> Object<B> {
+    /// Returns the memory representation of this number as a byte array in
+    /// native byte order.
+    pub fn to_ne_bytes(self) -> <B as ToNeBytes>::Output {
+        <B as ToNeBytes>::to_ne_bytes(self.0)
+    }
+}
+
 /// Creates a value from its representation as a byte array in big-endian byte
 /// order.
 pub trait FromBeBytes {
@@ -54,6 +104,22 @@ pub trait FromBeBytes {
     fn from_be_bytes(bytes: Self::Output) -> Self;
 }
 
+impl<B: FromBeBytes> FromBeBytes for Object<B> {
+    type Output = <B as FromBeBytes>::Output;
+
+    fn from_be_bytes(bytes: Self::Output) -> Self {
+        Object(<B as FromBeBytes>::from_be_bytes(bytes))
+    }
+}
+
+impl<B: FromBeBytes> Object<B> {
+    /// Creates a value from its representation as a byte array in big-endian
+    /// byte order.
+    pub fn from_be_bytes(bytes: <B as FromBeBytes>::Output) -> Self {
+        Object(<B as FromBeBytes>::from_be_bytes(bytes))
+    }
+}
+
 /// Creates a value from its representation as a byte array in little-endian
 /// byte order.
 pub trait FromLeBytes {
@@ -63,6 +129,22 @@ pub trait FromLeBytes {
     /// Creates a value from its representation as a byte array in little-endian
     /// byte order.
     fn from_le_bytes(bytes: Self::Output) -> Self;
+}
+
+impl<B: FromLeBytes> FromLeBytes for Object<B> {
+    type Output = <B as FromLeBytes>::Output;
+
+    fn from_le_bytes(bytes: Self::Output) -> Self {
+        Object(<B as FromLeBytes>::from_le_bytes(bytes))
+    }
+}
+
+impl<B: FromLeBytes> Object<B> {
+    /// Creates a value from its representation as a byte array in little-endian
+    /// byte order.
+    pub fn from_le_bytes(bytes: <B as FromLeBytes>::Output) -> Self {
+        Object(<B as FromLeBytes>::from_le_bytes(bytes))
+    }
 }
 
 /// Creates a value from its representation as a byte array in native byte
@@ -80,6 +162,25 @@ pub trait FromNeBytes {
     /// As the target platform’s native endianness is used, portable code should
     /// use [`from_be_bytes`] or [`from_le_bytes`], as appropriate, instead.
     fn from_ne_bytes(bytes: Self::Output) -> Self;
+}
+
+impl<B: FromNeBytes> FromNeBytes for Object<B> {
+    type Output = <B as FromNeBytes>::Output;
+
+    fn from_ne_bytes(bytes: Self::Output) -> Self {
+        Object(<B as FromNeBytes>::from_ne_bytes(bytes))
+    }
+}
+
+impl<B: FromNeBytes> Object<B> {
+    /// Creates a value from its representation as a byte array in native byte
+    /// order.
+    ///
+    /// As the target platform’s native endianness is used, portable code should
+    /// use [`from_be_bytes`] or [`from_le_bytes`], as appropriate, instead.
+    pub fn from_ne_bytes(bytes: <B as FromNeBytes>::Output) -> Self {
+        Object(<B as FromNeBytes>::from_ne_bytes(bytes))
+    }
 }
 
 macro_rules! impl_bytes_traits {
@@ -224,6 +325,7 @@ macro_rules! test_bytes_traits_nonnegative {
         mod $tests_mod {
             use crate::bytes::*;
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_roundtrip() {
@@ -282,6 +384,22 @@ macro_rules! test_bytes_traits_nonnegative {
                     <$ty as FromNeBytes>::from_ne_bytes(<$ty as ToNeBytes>::to_ne_bytes(four)),
                     four
                 );
+
+                assert_eq!(Object::new(two).to_be_bytes(), ToBeBytes::to_be_bytes(two));
+                assert_eq!(Object::new(two).to_le_bytes(), ToLeBytes::to_le_bytes(two));
+                assert_eq!(Object::new(two).to_ne_bytes(), ToNeBytes::to_ne_bytes(two));
+                assert_eq!(
+                    Object::<$ty>::from_be_bytes(ToBeBytes::to_be_bytes(two)),
+                    Object::new(FromBeBytes::from_be_bytes(ToBeBytes::to_be_bytes(two)))
+                );
+                assert_eq!(
+                    Object::<$ty>::from_le_bytes(ToLeBytes::to_le_bytes(two)),
+                    Object::new(FromLeBytes::from_le_bytes(ToLeBytes::to_le_bytes(two)))
+                );
+                assert_eq!(
+                    Object::<$ty>::from_ne_bytes(ToNeBytes::to_ne_bytes(two)),
+                    Object::new(FromNeBytes::from_ne_bytes(ToNeBytes::to_ne_bytes(two)))
+                );
             }
 
             #[test]
@@ -312,6 +430,7 @@ macro_rules! test_bytes_traits_negative {
         mod $tests_mod {
             use crate::bytes::*;
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_roundtrip() {
@@ -356,6 +475,31 @@ macro_rules! test_bytes_traits_negative {
                 assert_eq!(
                     <$ty as FromNeBytes>::from_ne_bytes(<$ty as ToNeBytes>::to_ne_bytes(-four)),
                     -four
+                );
+
+                assert_eq!(
+                    Object::new(-two).to_be_bytes(),
+                    ToBeBytes::to_be_bytes(-two)
+                );
+                assert_eq!(
+                    Object::new(-two).to_le_bytes(),
+                    ToLeBytes::to_le_bytes(-two)
+                );
+                assert_eq!(
+                    Object::new(-two).to_ne_bytes(),
+                    ToNeBytes::to_ne_bytes(-two)
+                );
+                assert_eq!(
+                    Object::<$ty>::from_be_bytes(ToBeBytes::to_be_bytes(-two)),
+                    Object::new(FromBeBytes::from_be_bytes(ToBeBytes::to_be_bytes(-two)))
+                );
+                assert_eq!(
+                    Object::<$ty>::from_le_bytes(ToLeBytes::to_le_bytes(-two)),
+                    Object::new(FromLeBytes::from_le_bytes(ToLeBytes::to_le_bytes(-two)))
+                );
+                assert_eq!(
+                    Object::<$ty>::from_ne_bytes(ToNeBytes::to_ne_bytes(-two)),
+                    Object::new(FromNeBytes::from_ne_bytes(ToNeBytes::to_ne_bytes(-two)))
                 );
             }
 

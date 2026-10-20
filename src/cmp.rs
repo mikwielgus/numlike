@@ -5,6 +5,7 @@
 //! Equality and ordering with defined NaN behavior.
 
 use crate::fns::{IsNegative, IsPositive};
+use crate::types::Object;
 use core::cmp::Ordering;
 
 /// Compare the value to zero. This is just `sgn` function, but returns
@@ -13,6 +14,20 @@ pub trait Cmp0 {
     /// Compare the value to zero. This is just `sgn` function, but returns
     /// `Ordering`.
     fn cmp0(&self) -> Ordering;
+}
+
+impl<B: Cmp0> Cmp0 for Object<B> {
+    fn cmp0(&self) -> Ordering {
+        <B as Cmp0>::cmp0(&self.0)
+    }
+}
+
+impl<B: Cmp0> Object<B> {
+    /// Compare the value to zero. This is just `sgn` function, but returns
+    /// `Ordering`.
+    pub fn cmp0(&self) -> Ordering {
+        <B as Cmp0>::cmp0(&self.0)
+    }
 }
 
 macro_rules! impl_cmp0_trait_for_signed {
@@ -48,6 +63,7 @@ macro_rules! test_cmp0_trait_nonnegative {
         mod $tests_mod {
             use crate::cmp::*;
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_cmp0() {
@@ -58,6 +74,8 @@ macro_rules! test_cmp0_trait_nonnegative {
                 assert_eq!(Cmp0::cmp0(&zero), Ordering::Equal);
                 assert_eq!(Cmp0::cmp0(&one), Ordering::Greater);
                 assert_eq!(Cmp0::cmp0(&two), Ordering::Greater);
+
+                assert_eq!(Object::new(two).cmp0(), Cmp0::cmp0(&two));
             }
         }
     };
@@ -69,6 +87,7 @@ macro_rules! test_cmp0_trait_negative {
         mod $tests_mod {
             use crate::cmp::*;
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_cmp0() {
@@ -77,6 +96,8 @@ macro_rules! test_cmp0_trait_negative {
 
                 assert_eq!(Cmp0::cmp0(&-one), Ordering::Less);
                 assert_eq!(Cmp0::cmp0(&-two), Ordering::Less);
+
+                assert_eq!(Object::new(-two).cmp0(), Cmp0::cmp0(&-two));
             }
         }
     };
@@ -101,12 +122,34 @@ pub trait NanfixPartialEq<Rhs: ?Sized = Self> {
     }
 }
 
+impl<B: NanfixPartialEq> NanfixPartialEq for Object<B> {
+    fn nanfix_eq(&self, other: &Self) -> bool {
+        <B as NanfixPartialEq>::nanfix_eq(&self.0, &other.0)
+    }
+}
+
+impl<B: NanfixPartialEq> Object<B> {
+    /// Test whether self and the other value are equal, treating NaN as equal
+    /// to itself.
+    pub fn nanfix_eq(&self, other: &Self) -> bool {
+        <B as NanfixPartialEq>::nanfix_eq(&self.0, &other.0)
+    }
+
+    /// Test whether self and the other value not equal, treating NaN as equal
+    /// to itself.
+    pub fn nanfix_ne(&self, other: &Self) -> bool {
+        <B as NanfixPartialEq>::nanfix_ne(&self.0, &other.0)
+    }
+}
+
 /// Trait to be implemented if [`NanfixPartialEq`] is a total equality
 /// (virtually always it is).
 ///
 /// The distinction between [`NanfixPartialEq`] and [`NanfixEq`] primarily
 /// exists to mirror Rust standard library's [`PartialEq`] and [`Eq`].
 pub trait NanfixEq<Rhs: ?Sized = Self>: NanfixPartialEq {}
+
+impl<B: NanfixEq> NanfixEq for Object<B> {}
 
 /// Trait for partial order where NaNs are fixed to be the smallest element in
 /// the set, smaller even than the negative infinity.
@@ -143,6 +186,40 @@ pub trait NanminPartialOrd<Rhs: ?Sized = Self>: NanfixPartialEq {
     }
 }
 
+impl<B: NanminPartialOrd> NanminPartialOrd for Object<B> {
+    fn nanmin_partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        <B as NanminPartialOrd>::nanmin_partial_cmp(&self.0, &other.0)
+    }
+}
+
+impl<B: NanminPartialOrd> Object<B> {
+    /// This method returns an (NaN-min) ordering between self and other values
+    /// if one exists.
+    pub fn nanmin_partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        <B as NanminPartialOrd>::nanmin_partial_cmp(&self.0, &other.0)
+    }
+
+    /// Checks if `self` is (NaN-min) less than `other`.
+    pub fn nanmin_lt(&self, other: &Self) -> bool {
+        <B as NanminPartialOrd>::nanmin_lt(&self.0, &other.0)
+    }
+
+    /// Checks if `self` is (NaN-min) less or equal to `other`.
+    pub fn nanmin_le(&self, other: &Self) -> bool {
+        <B as NanminPartialOrd>::nanmin_le(&self.0, &other.0)
+    }
+
+    /// Checks if `self` is (NaN-min) greater than `other`.
+    pub fn nanmin_gt(&self, other: &Self) -> bool {
+        <B as NanminPartialOrd>::nanmin_gt(&self.0, &other.0)
+    }
+
+    /// Checks if `self` is (NaN-min) greater or equal to `other`.
+    pub fn nanmin_ge(&self, other: &Self) -> bool {
+        <B as NanminPartialOrd>::nanmin_ge(&self.0, &other.0)
+    }
+}
+
 /// Trait for total order where NaNs are fixed to be the smallest element in the
 /// set, smaller even than the negative infinity.
 ///
@@ -155,6 +232,22 @@ pub trait NanminOrd<Rhs: ?Sized = Self>: NanfixEq + NanminPartialOrd {
     /// By convention, `self.nanmin_cmp(&other)` returns the ordering matching
     /// the expression `self <operator> other` if true.
     fn nanmin_cmp(&self, other: &Rhs) -> Ordering;
+}
+
+impl<B: NanminOrd> NanminOrd for Object<B> {
+    fn nanmin_cmp(&self, other: &Self) -> Ordering {
+        <B as NanminOrd>::nanmin_cmp(&self.0, &other.0)
+    }
+}
+
+impl<B: NanminOrd> Object<B> {
+    /// This method returns an (NaN-min) `Ordering` between `self` and `other`.
+    ///
+    /// By convention, `self.nanmin_cmp(&other)` returns the ordering matching
+    /// the expression `self <operator> other` if true.
+    pub fn nanmin_cmp(&self, other: &Self) -> Ordering {
+        <B as NanminOrd>::nanmin_cmp(&self.0, &other.0)
+    }
 }
 
 /// Trait for partial order where NaNs are fixed to be the greatest element in
@@ -192,6 +285,40 @@ pub trait NanmaxPartialOrd<Rhs: ?Sized = Self>: NanfixPartialEq {
     }
 }
 
+impl<B: NanmaxPartialOrd> NanmaxPartialOrd for Object<B> {
+    fn nanmax_partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        <B as NanmaxPartialOrd>::nanmax_partial_cmp(&self.0, &other.0)
+    }
+}
+
+impl<B: NanmaxPartialOrd> Object<B> {
+    /// This method returns an (NaN-max) ordering between self and other values
+    /// if one exists.
+    pub fn nanmax_partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        <B as NanmaxPartialOrd>::nanmax_partial_cmp(&self.0, &other.0)
+    }
+
+    /// Checks if `self` is (NaN-max) less than `other`.
+    pub fn nanmax_lt(&self, other: &Self) -> bool {
+        <B as NanmaxPartialOrd>::nanmax_lt(&self.0, &other.0)
+    }
+
+    /// Checks if `self` is (NaN-max) less or equal to `other`.
+    pub fn nanmax_le(&self, other: &Self) -> bool {
+        <B as NanmaxPartialOrd>::nanmax_le(&self.0, &other.0)
+    }
+
+    /// Checks if `self` is (NaN-max) greater than `other`.
+    pub fn nanmax_gt(&self, other: &Self) -> bool {
+        <B as NanmaxPartialOrd>::nanmax_gt(&self.0, &other.0)
+    }
+
+    /// Checks if `self` is (NaN-max) greater or equal to `other`.
+    pub fn nanmax_ge(&self, other: &Self) -> bool {
+        <B as NanmaxPartialOrd>::nanmax_ge(&self.0, &other.0)
+    }
+}
+
 /// Trait for total order where NaNs are fixed to be the greatest element in the
 /// set, greater even than the positive infinity.
 ///
@@ -204,6 +331,22 @@ pub trait NanmaxOrd<Rhs: ?Sized = Self>: NanfixEq + NanmaxPartialOrd {
     /// By convention, `self.nanmax_cmp(&other)` returns the ordering matching
     /// the expression `self <operator> other` if true.
     fn nanmax_cmp(&self, other: &Rhs) -> Ordering;
+}
+
+impl<B: NanmaxOrd> NanmaxOrd for Object<B> {
+    fn nanmax_cmp(&self, other: &Self) -> Ordering {
+        <B as NanmaxOrd>::nanmax_cmp(&self.0, &other.0)
+    }
+}
+
+impl<B: NanmaxOrd> Object<B> {
+    /// This method returns an (NaN-max) `Ordering` between `self` and `other`.
+    ///
+    /// By convention, `self.nanmax_cmp(&other)` returns the ordering matching
+    /// the expression `self <operator> other` if true.
+    pub fn nanmax_cmp(&self, other: &Self) -> Ordering {
+        <B as NanmaxOrd>::nanmax_cmp(&self.0, &other.0)
+    }
 }
 
 macro_rules! impl_nanfix_eq_traits_for_ord {
@@ -235,6 +378,7 @@ macro_rules! test_nanfix_eq_traits_nonnegative {
         mod $tests_mod {
             use crate::cmp::*;
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_nanfix_eq() {
@@ -251,6 +395,11 @@ macro_rules! test_nanfix_eq_traits_nonnegative {
                 assert!(!NanfixPartialEq::nanfix_eq(&zero, &one));
                 assert!(!NanfixPartialEq::nanfix_eq(&one, &two));
                 assert!(!NanfixPartialEq::nanfix_eq(&two, &four));
+
+                assert_eq!(
+                    Object::new(two).nanfix_eq(&Object::new(two)),
+                    NanfixPartialEq::nanfix_eq(&two, &two)
+                );
             }
 
             #[test]
@@ -268,6 +417,11 @@ macro_rules! test_nanfix_eq_traits_nonnegative {
                 assert!(NanfixPartialEq::nanfix_ne(&zero, &one));
                 assert!(NanfixPartialEq::nanfix_ne(&one, &two));
                 assert!(NanfixPartialEq::nanfix_ne(&two, &four));
+
+                assert_eq!(
+                    Object::new(two).nanfix_ne(&Object::new(four)),
+                    NanfixPartialEq::nanfix_ne(&two, &four)
+                );
             }
         }
     };
@@ -279,6 +433,7 @@ macro_rules! test_nanfix_eq_traits_negative {
         mod $tests_mod {
             use crate::cmp::*;
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_nanfix_eq() {
@@ -293,6 +448,11 @@ macro_rules! test_nanfix_eq_traits_negative {
                 assert!(!NanfixPartialEq::nanfix_eq(&(-one), &(-two)));
                 assert!(!NanfixPartialEq::nanfix_eq(&(-two), &(-four)));
                 assert!(!NanfixPartialEq::nanfix_eq(&(-one), &one));
+
+                assert_eq!(
+                    Object::new(-two).nanfix_eq(&Object::new(-two)),
+                    NanfixPartialEq::nanfix_eq(&(-two), &(-two))
+                );
             }
 
             #[test]
@@ -308,6 +468,11 @@ macro_rules! test_nanfix_eq_traits_negative {
                 assert!(NanfixPartialEq::nanfix_ne(&(-one), &(-two)));
                 assert!(NanfixPartialEq::nanfix_ne(&(-two), &(-four)));
                 assert!(NanfixPartialEq::nanfix_ne(&(-one), &one));
+
+                assert_eq!(
+                    Object::new(-two).nanfix_ne(&Object::new(-four)),
+                    NanfixPartialEq::nanfix_ne(&(-two), &(-four))
+                );
             }
         }
     };
@@ -423,6 +588,7 @@ macro_rules! test_nanfix_eq_traits_nan {
         mod $tests_mod {
             use crate::cmp::*;
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_nan_nanfix_eq() {
@@ -433,6 +599,11 @@ macro_rules! test_nanfix_eq_traits_nan {
 
                 assert!(!NanfixPartialEq::nanfix_eq(&nan, &zero));
                 assert!(!NanfixPartialEq::nanfix_eq(&zero, &nan));
+
+                assert_eq!(
+                    Object::new(nan).nanfix_eq(&Object::new(nan)),
+                    NanfixPartialEq::nanfix_eq(&nan, &nan)
+                );
             }
 
             #[test]
@@ -444,6 +615,11 @@ macro_rules! test_nanfix_eq_traits_nan {
 
                 assert!(NanfixPartialEq::nanfix_ne(&nan, &zero));
                 assert!(NanfixPartialEq::nanfix_ne(&zero, &nan));
+
+                assert_eq!(
+                    Object::new(nan).nanfix_ne(&Object::new(zero)),
+                    NanfixPartialEq::nanfix_ne(&nan, &zero)
+                );
             }
         }
     };
@@ -457,6 +633,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
 
             use crate::cmp::*;
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_nanmin_cmp() {
@@ -477,6 +654,11 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
                 assert_eq!(NanminOrd::nanmin_cmp(&one, &zero), Ordering::Greater);
                 assert_eq!(NanminOrd::nanmin_cmp(&two, &one), Ordering::Greater);
                 assert_eq!(NanminOrd::nanmin_cmp(&four, &two), Ordering::Greater);
+
+                assert_eq!(
+                    Object::new(zero).nanmin_cmp(&Object::new(one)),
+                    NanminOrd::nanmin_cmp(&zero, &one)
+                );
             }
 
             #[test]
@@ -498,6 +680,11 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
                 assert_eq!(NanmaxOrd::nanmax_cmp(&one, &zero), Ordering::Greater);
                 assert_eq!(NanmaxOrd::nanmax_cmp(&two, &one), Ordering::Greater);
                 assert_eq!(NanmaxOrd::nanmax_cmp(&four, &two), Ordering::Greater);
+
+                assert_eq!(
+                    Object::new(zero).nanmax_cmp(&Object::new(one)),
+                    NanmaxOrd::nanmax_cmp(&zero, &one)
+                );
             }
 
             #[test]
@@ -517,6 +704,11 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
                 assert!(NanminPartialOrd::nanmin_ge(&one, &one));
                 assert!(!NanminPartialOrd::nanmin_gt(&zero, &one));
                 assert!(!NanminPartialOrd::nanmin_ge(&one, &two));
+
+                assert_eq!(
+                    Object::new(zero).nanmin_lt(&Object::new(one)),
+                    NanminPartialOrd::nanmin_lt(&zero, &one)
+                );
             }
 
             #[test]
@@ -536,6 +728,11 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
                 assert!(NanmaxPartialOrd::nanmax_ge(&one, &one));
                 assert!(!NanmaxPartialOrd::nanmax_gt(&zero, &one));
                 assert!(!NanmaxPartialOrd::nanmax_ge(&one, &two));
+
+                assert_eq!(
+                    Object::new(zero).nanmax_lt(&Object::new(one)),
+                    NanmaxPartialOrd::nanmax_lt(&zero, &one)
+                );
             }
 
             #[test]
@@ -554,6 +751,11 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
                 assert_eq!(
                     NanminPartialOrd::nanmin_partial_cmp(&one, &zero),
                     Some(Ordering::Greater)
+                );
+
+                assert_eq!(
+                    Object::new(zero).nanmin_partial_cmp(&Object::new(one)),
+                    NanminPartialOrd::nanmin_partial_cmp(&zero, &one)
                 );
             }
 
@@ -574,6 +776,11 @@ macro_rules! test_nanmin_nanmax_ord_traits_nonnegative {
                     NanmaxPartialOrd::nanmax_partial_cmp(&one, &zero),
                     Some(Ordering::Greater)
                 );
+
+                assert_eq!(
+                    Object::new(zero).nanmax_partial_cmp(&Object::new(one)),
+                    NanmaxPartialOrd::nanmax_partial_cmp(&zero, &one)
+                );
             }
         }
     };
@@ -587,6 +794,7 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
 
             use crate::cmp::*;
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_nanmin_cmp() {
@@ -605,6 +813,11 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
                 assert_eq!(NanminOrd::nanmin_cmp(&(-two), &(-four)), Ordering::Greater);
                 assert_eq!(NanminOrd::nanmin_cmp(&(-one), &(-two)), Ordering::Greater);
                 assert_eq!(NanminOrd::nanmin_cmp(&one, &(-one)), Ordering::Greater);
+
+                assert_eq!(
+                    Object::new(-two).nanmin_cmp(&Object::new(-one)),
+                    NanminOrd::nanmin_cmp(&(-two), &(-one))
+                );
             }
 
             #[test]
@@ -624,6 +837,11 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
                 assert_eq!(NanmaxOrd::nanmax_cmp(&(-two), &(-four)), Ordering::Greater);
                 assert_eq!(NanmaxOrd::nanmax_cmp(&(-one), &(-two)), Ordering::Greater);
                 assert_eq!(NanmaxOrd::nanmax_cmp(&one, &(-one)), Ordering::Greater);
+
+                assert_eq!(
+                    Object::new(-two).nanmax_cmp(&Object::new(-one)),
+                    NanmaxOrd::nanmax_cmp(&(-two), &(-one))
+                );
             }
 
             #[test]
@@ -642,6 +860,11 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
                 assert!(NanminPartialOrd::nanmin_ge(&(-one), &(-one)));
                 assert!(!NanminPartialOrd::nanmin_gt(&(-two), &(-one)));
                 assert!(!NanminPartialOrd::nanmin_ge(&(-one), &one));
+
+                assert_eq!(
+                    Object::new(-two).nanmin_lt(&Object::new(-one)),
+                    NanminPartialOrd::nanmin_lt(&(-two), &(-one))
+                );
             }
 
             #[test]
@@ -660,6 +883,11 @@ macro_rules! test_nanmin_nanmax_ord_traits_negative {
                 assert!(NanmaxPartialOrd::nanmax_ge(&(-one), &(-one)));
                 assert!(!NanmaxPartialOrd::nanmax_gt(&(-two), &(-one)));
                 assert!(!NanmaxPartialOrd::nanmax_ge(&(-one), &one));
+
+                assert_eq!(
+                    Object::new(-two).nanmax_lt(&Object::new(-one)),
+                    NanmaxPartialOrd::nanmax_lt(&(-two), &(-one))
+                );
             }
         }
     };
@@ -673,6 +901,7 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
 
             use crate::cmp::*;
             use crate::elem::*;
+            use crate::types::Object;
 
             #[test]
             fn test_nan_nanmin_cmp() {
@@ -691,6 +920,11 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
                     Ordering::Greater
                 );
                 assert_eq!(NanminOrd::nanmin_cmp(&infinity, &nan), Ordering::Greater);
+
+                assert_eq!(
+                    Object::new(nan).nanmin_cmp(&Object::new(zero)),
+                    NanminOrd::nanmin_cmp(&nan, &zero)
+                );
             }
 
             #[test]
@@ -710,6 +944,11 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
                 assert_eq!(NanmaxOrd::nanmax_cmp(&nan, &infinity), Ordering::Greater);
                 assert_eq!(NanmaxOrd::nanmax_cmp(&neg_infinity, &nan), Ordering::Less);
                 assert_eq!(NanmaxOrd::nanmax_cmp(&infinity, &nan), Ordering::Less);
+
+                assert_eq!(
+                    Object::new(nan).nanmax_cmp(&Object::new(zero)),
+                    NanmaxOrd::nanmax_cmp(&nan, &zero)
+                );
             }
 
             #[test]
@@ -727,6 +966,11 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
                 assert!(NanminPartialOrd::nanmin_ge(&nan, &nan));
                 assert!(!NanminPartialOrd::nanmin_ge(&nan, &zero));
                 assert!(!NanminPartialOrd::nanmin_gt(&nan, &zero));
+
+                assert_eq!(
+                    Object::new(nan).nanmin_lt(&Object::new(zero)),
+                    NanminPartialOrd::nanmin_lt(&nan, &zero)
+                );
             }
 
             #[test]
@@ -745,6 +989,11 @@ macro_rules! test_nan_for_nanmin_nanmax_ord_traits {
                 assert!(NanmaxPartialOrd::nanmax_ge(&nan, &infinity));
                 assert!(!NanmaxPartialOrd::nanmax_ge(&zero, &nan));
                 assert!(!NanmaxPartialOrd::nanmax_gt(&zero, &nan));
+
+                assert_eq!(
+                    Object::new(zero).nanmax_lt(&Object::new(nan)),
+                    NanmaxPartialOrd::nanmax_lt(&zero, &nan)
+                );
             }
         }
     };
