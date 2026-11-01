@@ -440,8 +440,8 @@ macro_rules! test_hyp_traits_nonnegative {
 
             #[test]
             fn test_sinh() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -459,8 +459,8 @@ macro_rules! test_hyp_traits_nonnegative {
 
             #[test]
             fn test_cosh() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -478,8 +478,8 @@ macro_rules! test_hyp_traits_nonnegative {
 
             #[test]
             fn test_tanh() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -497,8 +497,8 @@ macro_rules! test_hyp_traits_nonnegative {
 
             #[test]
             fn test_asinh() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -516,8 +516,8 @@ macro_rules! test_hyp_traits_nonnegative {
 
             #[test]
             fn test_acosh() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -535,8 +535,8 @@ macro_rules! test_hyp_traits_nonnegative {
 
             #[test]
             fn test_atanh() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -555,8 +555,8 @@ macro_rules! test_hyp_traits_nonnegative {
 
             #[test]
             fn test_checked_sinh() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(CheckedSinh::checked_sinh(zero), Some(zero));
                 assert_eq!(
@@ -572,8 +572,8 @@ macro_rules! test_hyp_traits_nonnegative {
 
             #[test]
             fn test_checked_cosh() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(CheckedCosh::checked_cosh(zero), Some(one));
                 assert_eq!(
@@ -589,8 +589,8 @@ macro_rules! test_hyp_traits_nonnegative {
 
             #[test]
             fn test_checked_acosh() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
 
                 assert_eq!(CheckedAcosh::checked_acosh(one), Some(zero));
@@ -604,8 +604,8 @@ macro_rules! test_hyp_traits_nonnegative {
 
             #[test]
             fn test_checked_atanh() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
 
@@ -633,7 +633,7 @@ macro_rules! test_hyp_traits_negative {
 
             #[test]
             fn test_sinh() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -645,7 +645,7 @@ macro_rules! test_hyp_traits_negative {
 
             #[test]
             fn test_cosh() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -657,7 +657,7 @@ macro_rules! test_hyp_traits_negative {
 
             #[test]
             fn test_tanh() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -669,7 +669,7 @@ macro_rules! test_hyp_traits_negative {
 
             #[test]
             fn test_asinh() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let sixteen = four * four;
@@ -681,7 +681,7 @@ macro_rules! test_hyp_traits_negative {
 
             #[test]
             fn test_atanh() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -694,7 +694,7 @@ macro_rules! test_hyp_traits_negative {
 
             #[test]
             fn test_checked_sinh() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(
                     Object::new(-one).checked_sinh(),
@@ -709,7 +709,7 @@ macro_rules! test_hyp_traits_negative {
 
             #[test]
             fn test_checked_cosh() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(
                     Object::new(-one).checked_cosh(),
@@ -724,7 +724,7 @@ macro_rules! test_hyp_traits_negative {
 
             #[test]
             fn test_checked_acosh() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(
                     Object::new(-one).checked_acosh(),
@@ -735,7 +735,7 @@ macro_rules! test_hyp_traits_negative {
 
             #[test]
             fn test_checked_atanh() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
 
@@ -743,7 +743,7 @@ macro_rules! test_hyp_traits_negative {
                     Object::new(-half).checked_atanh(),
                     CheckedAtanh::checked_atanh(-half).map(Object::new)
                 );
-                assert!(CheckedAtanh::checked_atanh(-half).unwrap() < <$ty as ConstZero>::ZERO);
+                assert!(CheckedAtanh::checked_atanh(-half).unwrap() < <$ty as AssocConstZero>::ZERO);
                 assert_eq!(CheckedAtanh::checked_atanh(-one), None);
             }
         }

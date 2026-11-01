@@ -216,8 +216,8 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_is_positive() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -231,8 +231,8 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_is_negative() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -246,8 +246,8 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_is_zero() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
 
                 assert!(IsZero::is_zero(zero));
@@ -259,8 +259,8 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_sgn() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -274,8 +274,8 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_abs() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -289,8 +289,8 @@ macro_rules! sign_traits_nonnegative_tests {
 
             #[test]
             fn test_checked_abs() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -432,8 +432,8 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_is_positive() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -450,8 +450,8 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_is_negative() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -468,8 +468,8 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_is_zero() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
 
                 assert!(IsZero::is_zero(-zero));
@@ -481,8 +481,8 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_sgn() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -498,7 +498,7 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_abs() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -511,7 +511,7 @@ macro_rules! sign_traits_negative_tests {
 
             #[test]
             fn test_checked_abs() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 

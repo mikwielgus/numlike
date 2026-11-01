@@ -105,7 +105,7 @@ impl<B: Epsilon> Object<B> {
 
 /// The minimum base-2 exponent according to the C definition.
 ///
-/// ConstOne greater than the minimum possible normal power of 2 exponent for a
+/// AssocConstOne greater than the minimum possible normal power of 2 exponent for a
 /// significand bounded by 1 ≤ x < 2 (i.e. the IEEE definition).
 ///
 /// This corresponds to the exact minimum possible normal power of 2 exponent
@@ -128,7 +128,7 @@ impl<B: MinExponent> Object<B> {
 
 /// The maximum base-2 exponent according to the C definition.
 ///
-/// ConstOne greater than the maximum possible power of 2 exponent for a significand
+/// AssocConstOne greater than the maximum possible power of 2 exponent for a significand
 /// bounded by 1 ≤ x < 2 (i.e. the IEEE definition).
 ///
 /// This corresponds to the exact maximum possible power of 2 exponent for a
@@ -332,8 +332,8 @@ impl<B: MaxExactInteger> Object<B> {
 
 /// Bundle of the minimum positive and maximum negative values of a numeric
 /// type.
-pub trait NearestsToConstZero: MinPositive + MaxNegative {}
-impl<T: MinPositive + MaxNegative> NearestsToConstZero for T {}
+pub trait NearestsToAssocConstZero: MinPositive + MaxNegative {}
+impl<T: MinPositive + MaxNegative> NearestsToAssocConstZero for T {}
 
 /// The minimum positive value of a numeric type.
 ///
@@ -437,7 +437,7 @@ macro_rules! impl_limits_traits_for_int {
             <$ty>::MIN,
             <$ty>::MAX,
             <$ty>::BITS,
-            <$ty as crate::elem::ConstOne>::ONE
+            <$ty as crate::elem::AssocConstOne>::ONE
         );
 
         impl MaxNegative for $ty {
@@ -488,7 +488,7 @@ macro_rules! impl_limits_traits_for_int {
         }
 
         impl MinPositive for $ty {
-            const MIN_POSITIVE: Self = <Self as crate::elem::ConstOne>::ONE;
+            const MIN_POSITIVE: Self = <Self as crate::elem::AssocConstOne>::ONE;
         }
 
         impl MinimizerDenom for $ty {
@@ -508,7 +508,7 @@ macro_rules! impl_limits_traits_for_int {
         $nonnegative_tests_mod:ident,
         $negative_tests_mod:ident
     ) => {
-        impl_limits_traits_for_int!($ty, $min, $max, $bits, <$ty as crate::elem::ConstOne>::ONE);
+        impl_limits_traits_for_int!($ty, $min, $max, $bits, <$ty as crate::elem::AssocConstOne>::ONE);
 
         impl MaxNegative for $ty {
             const MAX_NEGATIVE: Self = $max_negative;
@@ -556,7 +556,7 @@ macro_rules! test_limits_traits_int_nonnegative {
 
                 assert_eq!(
                     <$ty as MinPositive>::MIN_POSITIVE,
-                    <$ty as crate::elem::ConstOne>::ONE
+                    <$ty as crate::elem::AssocConstOne>::ONE
                 );
 
                 assert_eq!(<$ty as MinimizerDenom>::MINIMIZER_DENOM, $minimizer_denom);
@@ -636,7 +636,7 @@ macro_rules! test_limits_traits_int_negative {
 
                 assert_eq!(
                     <$ty as MaxNegative>::MAX_NEGATIVE,
-                    -<$ty as crate::elem::ConstOne>::ONE
+                    -<$ty as crate::elem::AssocConstOne>::ONE
                 );
 
                 assert_eq!(

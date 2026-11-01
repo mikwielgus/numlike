@@ -22,16 +22,16 @@ pub trait Zero {
 
 /// Defines a distinguished `0` value like [`Zero`] does, but as an associated
 /// constant.
-pub trait ConstZero {
+pub trait AssocConstZero {
     /// A distinguished `0` value.
     const ZERO: Self;
 }
 
-impl<B: ConstZero> ConstZero for Object<B> {
+impl<B: AssocConstZero> AssocConstZero for Object<B> {
     const ZERO: Self = Object(B::ZERO);
 }
 
-impl<B: ConstZero> Object<B> {
+impl<B: AssocConstZero> Object<B> {
     /// A distinguished `0` value.
     pub const ZERO: Self = Object(B::ZERO);
 }
@@ -49,16 +49,16 @@ pub trait One {
 
 /// Defines a distinguished `1` value like [`One`] does, but as an associated
 /// constant.
-pub trait ConstOne {
+pub trait AssocConstOne {
     /// A distinguished `1` value.
     const ONE: Self;
 }
 
-impl<B: ConstOne> ConstOne for Object<B> {
+impl<B: AssocConstOne> AssocConstOne for Object<B> {
     const ONE: Self = Object(B::ONE);
 }
 
-impl<B: ConstOne> Object<B> {
+impl<B: AssocConstOne> Object<B> {
     /// A distinguished `1` value.
     pub const ONE: Self = Object(B::ONE);
 }
@@ -128,7 +128,7 @@ macro_rules! impl_elem_traits_for_int {
             }
         }
 
-        impl ConstZero for $ty {
+        impl AssocConstZero for $ty {
             const ZERO: Self = $zero;
         }
 
@@ -139,7 +139,7 @@ macro_rules! impl_elem_traits_for_int {
             }
         }
 
-        impl ConstOne for $ty {
+        impl AssocConstOne for $ty {
             const ONE: Self = $one;
         }
 
@@ -177,8 +177,8 @@ macro_rules! test_elem_traits_nonnegative {
 
             #[test]
             fn test_zero_one() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(<$ty as Zero>::zero(), zero);
                 assert_eq!(<$ty as One>::one(), one);
@@ -194,8 +194,8 @@ macro_rules! test_elem_traits_nonnegative {
 
             #[test]
             fn test_is_nan() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert!(!IsNan::is_nan(zero));
                 assert!(!IsNan::is_nan(one));
@@ -212,8 +212,8 @@ macro_rules! test_elem_traits_negative {
 
             #[test]
             fn test_zero_one() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(-zero, zero);
                 assert_eq!(-(-one), one);
@@ -378,7 +378,7 @@ macro_rules! impl_elem_traits_for_float {
             }
         }
 
-        impl ConstZero for $ty {
+        impl AssocConstZero for $ty {
             const ZERO: Self = 0.0;
         }
 
@@ -389,7 +389,7 @@ macro_rules! impl_elem_traits_for_float {
             }
         }
 
-        impl ConstOne for $ty {
+        impl AssocConstOne for $ty {
             const ONE: Self = 1.0;
         }
 

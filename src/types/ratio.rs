@@ -11,7 +11,7 @@ use core::{
 
 use crate::{
     cmp::{NanfixEq, NanfixPartialEq, NanmaxOrd, NanmaxPartialOrd, NanminOrd, NanminPartialOrd},
-    elem::{ConstNan, ConstOne, ConstZero, IsNan, MinusInfinity, Nan, One, PlusInfinity, Zero},
+    elem::{ConstNan, AssocConstOne, AssocConstZero, IsNan, MinusInfinity, Nan, One, PlusInfinity, Zero},
     fns::{Abs, CheckedAbs, Gcd, IsNegative, IsPositive, Lcm, Sgn, SignFns},
     limits::{
         MaxExactInteger, MaxExtended, MaxFinite, MaxNegative, MaximizerDenom, MinExactInteger,
@@ -57,10 +57,10 @@ impl<
         + Div<Output = T>
         + Gcd<Output = T>
         + Neg<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > Ratio<T>
 {
     /// Creates a new ratio. The numerator and denominator will be reduced.
@@ -71,17 +71,17 @@ impl<
 
     #[inline]
     fn reduce(numer: T, denom: T) -> Self {
-        if numer == ConstZero::ZERO {
+        if numer == AssocConstZero::ZERO {
             return Ratio {
                 numer,
-                denom: ConstOne::ONE,
+                denom: AssocConstOne::ONE,
             };
         }
 
         if numer == denom {
             return Ratio {
-                numer: ConstOne::ONE,
-                denom: ConstOne::ONE,
+                numer: AssocConstOne::ONE,
+                denom: AssocConstOne::ONE,
             };
         }
 
@@ -106,25 +106,25 @@ impl<
         + Clone
         + Div<Output = T>
         + Gcd<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > Ratio<T>
 {
     #[inline]
     fn checked_reduce(numer: T, denom: T) -> Option<Self> {
-        if numer == ConstZero::ZERO {
+        if numer == AssocConstZero::ZERO {
             return Some(Ratio {
                 numer,
-                denom: ConstOne::ONE,
+                denom: AssocConstOne::ONE,
             });
         }
 
         if numer == denom {
             return Some(Ratio {
-                numer: ConstOne::ONE,
-                denom: ConstOne::ONE,
+                numer: AssocConstOne::ONE,
+                denom: AssocConstOne::ONE,
             });
         }
 
@@ -151,13 +151,13 @@ impl<
         + Div<Output = T>
         + Gcd<Output = T>
         + PartialEq
-        + ConstZero,
+        + AssocConstZero,
 > Ratio<T>
 {
     #[inline]
     fn checked_lcm(lhs: T, rhs: T) -> Option<T> {
-        if lhs == ConstZero::ZERO && rhs == ConstZero::ZERO {
-            return Some(ConstZero::ZERO);
+        if lhs == AssocConstZero::ZERO && rhs == AssocConstZero::ZERO {
+            return Some(AssocConstZero::ZERO);
         }
 
         let gcd = lhs.clone().gcd(rhs.clone());
@@ -174,10 +174,10 @@ impl<
         + Lcm<Output = T>
         + Mul<Output = T>
         + Neg<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > Add<Ratio<T>> for Ratio<T>
 {
     type Output = Ratio<T>;
@@ -207,10 +207,10 @@ impl<
         + Lcm<Output = T>
         + Mul<Output = T>
         + Neg<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > AddAssign<Ratio<T>> for Ratio<T>
 {
     #[inline]
@@ -227,10 +227,10 @@ impl<
         + Clone
         + Div<Output = T>
         + Gcd<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > CheckedAdd<Ratio<T>> for Ratio<T>
 {
     type Output = Ratio<T>;
@@ -259,10 +259,10 @@ impl<
         + Gcd<Output = T>
         + Mul<Output = T>
         + Neg<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > Add<T> for Ratio<T>
 {
     type Output = Ratio<T>;
@@ -280,10 +280,10 @@ impl<
         + Gcd<Output = T>
         + Mul<Output = T>
         + Neg<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > AddAssign<T> for Ratio<T>
 {
     #[inline]
@@ -299,10 +299,10 @@ impl<
         + Clone
         + Div<Output = T>
         + Gcd<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > CheckedAdd<T> for Ratio<T>
 {
     type Output = Ratio<T>;
@@ -324,11 +324,11 @@ impl<
         + Lcm<Output = T>
         + Mul<Output = T>
         + Neg<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
         + Sub<Output = T>
-        + ConstZero,
+        + AssocConstZero,
 > Sub<Ratio<T>> for Ratio<T>
 {
     type Output = Ratio<T>;
@@ -357,11 +357,11 @@ impl<
         + Lcm<Output = T>
         + Mul<Output = T>
         + Neg<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
         + Sub<Output = T>
-        + ConstZero,
+        + AssocConstZero,
 > SubAssign<Ratio<T>> for Ratio<T>
 {
     #[inline]
@@ -378,10 +378,10 @@ impl<
         + Clone
         + Div<Output = T>
         + Gcd<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > CheckedSub<Ratio<T>> for Ratio<T>
 {
     type Output = Ratio<T>;
@@ -409,11 +409,11 @@ impl<
         + Gcd<Output = T>
         + Mul<Output = T>
         + Neg<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
         + Sub<Output = T>
-        + ConstZero,
+        + AssocConstZero,
 > Sub<T> for Ratio<T>
 {
     type Output = Ratio<T>;
@@ -430,11 +430,11 @@ impl<
         + Gcd<Output = T>
         + Mul<Output = T>
         + Neg<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
         + Sub<Output = T>
-        + ConstZero,
+        + AssocConstZero,
 > SubAssign<T> for Ratio<T>
 {
     #[inline]
@@ -450,10 +450,10 @@ impl<
         + Clone
         + Div<Output = T>
         + Gcd<Output = T>
-        + ConstOne
+        + AssocConstOne
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > CheckedSub<T> for Ratio<T>
 {
     type Output = Ratio<T>;
@@ -587,14 +587,14 @@ impl<
         + Gcd<Output = T>
         + PartialEq
         + SignFns
-        + ConstZero,
+        + AssocConstZero,
 > CheckedDiv<Ratio<T>> for Ratio<T>
 {
     type Output = Ratio<T>;
 
     #[inline]
     fn checked_div(self, rhs: Ratio<T>) -> Option<Ratio<T>> {
-        if rhs.numer == ConstZero::ZERO {
+        if rhs.numer == AssocConstZero::ZERO {
             return None;
         }
 
@@ -636,14 +636,14 @@ impl<T: Clone + Gcd<Output = T> + Mul<Output = T> + Div<Output = T>> DivAssign<T
     }
 }
 
-impl<T: CheckedMul<Output = T> + Clone + Div<Output = T> + Gcd<Output = T> + PartialEq + ConstZero>
+impl<T: CheckedMul<Output = T> + Clone + Div<Output = T> + Gcd<Output = T> + PartialEq + AssocConstZero>
     CheckedDiv<T> for Ratio<T>
 {
     type Output = Ratio<T>;
 
     #[inline]
     fn checked_div(self, rhs: T) -> Option<Ratio<T>> {
-        if rhs == ConstZero::ZERO {
+        if rhs == AssocConstZero::ZERO {
             return None;
         }
 
@@ -798,28 +798,28 @@ impl<T: MaxExtended + MaximizerDenom> MaxExtended for Ratio<T> {
     };
 }
 
-impl<T: MinExactInteger + ConstOne> MinExactInteger for Ratio<T> {
+impl<T: MinExactInteger + AssocConstOne> MinExactInteger for Ratio<T> {
     const MIN_EXACT_INTEGER: Self = Ratio {
         numer: MinExactInteger::MIN_EXACT_INTEGER,
-        denom: ConstOne::ONE,
+        denom: AssocConstOne::ONE,
     };
 }
 
-impl<T: MaxExactInteger + ConstOne> MaxExactInteger for Ratio<T> {
+impl<T: MaxExactInteger + AssocConstOne> MaxExactInteger for Ratio<T> {
     const MAX_EXACT_INTEGER: Self = Ratio {
         numer: MaxExactInteger::MAX_EXACT_INTEGER,
-        denom: ConstOne::ONE,
+        denom: AssocConstOne::ONE,
     };
 }
 
-impl<T: MinPositive + MaxFinite + ConstOne> MinPositive for Ratio<T> {
+impl<T: MinPositive + MaxFinite + AssocConstOne> MinPositive for Ratio<T> {
     const MIN_POSITIVE: Self = Ratio {
         numer: MinPositive::MIN_POSITIVE,
         denom: MaxFinite::MAX_FINITE,
     };
 }
 
-impl<T: MaxNegative + MaxFinite + ConstOne> MaxNegative for Ratio<T> {
+impl<T: MaxNegative + MaxFinite + AssocConstOne> MaxNegative for Ratio<T> {
     const MAX_NEGATIVE: Self = Ratio {
         numer: MaxNegative::MAX_NEGATIVE,
         denom: MaxFinite::MAX_FINITE,
@@ -836,10 +836,10 @@ impl<T: Zero + One> Zero for Ratio<T> {
     }
 }
 
-impl<T: ConstZero + ConstOne> ConstZero for Ratio<T> {
+impl<T: AssocConstZero + AssocConstOne> AssocConstZero for Ratio<T> {
     const ZERO: Self = Ratio {
-        numer: ConstZero::ZERO,
-        denom: ConstOne::ONE,
+        numer: AssocConstZero::ZERO,
+        denom: AssocConstOne::ONE,
     };
 }
 
@@ -853,24 +853,24 @@ impl<T: One> One for Ratio<T> {
     }
 }
 
-impl<T: ConstOne> ConstOne for Ratio<T> {
+impl<T: AssocConstOne> AssocConstOne for Ratio<T> {
     const ONE: Self = Ratio {
-        numer: ConstOne::ONE,
-        denom: ConstOne::ONE,
+        numer: AssocConstOne::ONE,
+        denom: AssocConstOne::ONE,
     };
 }
 
-impl<T: ConstOne + MinusInfinity> MinusInfinity for Ratio<T> {
+impl<T: AssocConstOne + MinusInfinity> MinusInfinity for Ratio<T> {
     const MINUS_INFINITY: Self = Ratio {
         numer: MinusInfinity::MINUS_INFINITY,
-        denom: ConstOne::ONE,
+        denom: AssocConstOne::ONE,
     };
 }
 
-impl<T: ConstOne + PlusInfinity> PlusInfinity for Ratio<T> {
+impl<T: AssocConstOne + PlusInfinity> PlusInfinity for Ratio<T> {
     const PLUS_INFINITY: Self = Ratio {
         numer: PlusInfinity::PLUS_INFINITY,
-        denom: ConstOne::ONE,
+        denom: AssocConstOne::ONE,
     };
 }
 
@@ -884,10 +884,10 @@ impl<T: Nan + One> Nan for Ratio<T> {
     }
 }
 
-impl<T: ConstNan + ConstOne> ConstNan for Ratio<T> {
+impl<T: ConstNan + AssocConstOne> ConstNan for Ratio<T> {
     const NAN: Self = Ratio {
         numer: ConstNan::NAN,
-        denom: ConstOne::ONE,
+        denom: AssocConstOne::ONE,
     };
 }
 
@@ -915,14 +915,14 @@ impl<T: IsNegative> IsNegative for Ratio<T> {
     }
 }
 
-impl<T: ConstOne + Sgn<Output = T>> Sgn for Ratio<T> {
+impl<T: AssocConstOne + Sgn<Output = T>> Sgn for Ratio<T> {
     type Output = Ratio<T>;
 
     #[inline]
     fn sgn(self) -> Self::Output {
         Ratio {
             numer: self.numer.sgn(),
-            denom: ConstOne::ONE,
+            denom: AssocConstOne::ONE,
         }
     }
 }

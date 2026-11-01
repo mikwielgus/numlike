@@ -914,8 +914,8 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
 
             #[test]
             fn test_div_rem() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -942,7 +942,7 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
 
             #[test]
             fn test_div_euclid() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -972,8 +972,8 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
 
             #[test]
             fn test_rem_euclid() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -1003,8 +1003,8 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
 
             #[test]
             fn test_div_rem_euclid() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let five = four + one;
@@ -1030,8 +1030,8 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
 
             #[test]
             fn test_mul_add() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -1071,8 +1071,8 @@ macro_rules! test_overflowing_arith_traits_int_negative {
 
             #[test]
             fn test_div_rem() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let five = four + one;
@@ -1098,7 +1098,7 @@ macro_rules! test_overflowing_arith_traits_int_negative {
 
             #[test]
             fn test_div_euclid() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let five = two + two + one;
@@ -1123,8 +1123,8 @@ macro_rules! test_overflowing_arith_traits_int_negative {
 
             #[test]
             fn test_rem_euclid() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let five = four + one;
@@ -1149,7 +1149,7 @@ macro_rules! test_overflowing_arith_traits_int_negative {
 
             #[test]
             fn test_div_rem_euclid() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let five = two + two + one;
@@ -1171,8 +1171,8 @@ macro_rules! test_overflowing_arith_traits_int_negative {
 
             #[test]
             fn test_neg() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(OverflowingNeg::overflowing_neg(one), (-one, false));
                 assert_eq!(OverflowingNeg::overflowing_neg(-one), (one, false));
