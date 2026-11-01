@@ -285,8 +285,8 @@ macro_rules! test_round_traits_nonnegative {
 
             #[test]
             fn test_round() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -309,8 +309,8 @@ macro_rules! test_round_traits_nonnegative {
 
             #[test]
             fn test_trunc() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -333,8 +333,8 @@ macro_rules! test_round_traits_nonnegative {
 
             #[test]
             fn test_round_ties_even() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -357,8 +357,8 @@ macro_rules! test_round_traits_nonnegative {
 
             #[test]
             fn test_floor() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -381,8 +381,8 @@ macro_rules! test_round_traits_nonnegative {
 
             #[test]
             fn test_ceil() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let half = one / two;
@@ -417,7 +417,7 @@ macro_rules! test_round_traits_negative {
 
             #[test]
             fn test_round() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
                 let one_and_half = one + half;
@@ -437,7 +437,7 @@ macro_rules! test_round_traits_negative {
 
             #[test]
             fn test_trunc() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
                 let one_and_half = one + half;
@@ -445,7 +445,7 @@ macro_rules! test_round_traits_negative {
 
                 assert_eq!(Trunc::trunc(-one), -one);
                 assert_eq!(Trunc::trunc(-two), -two);
-                assert_eq!(Trunc::trunc(-half), <$ty as ConstZero>::ZERO);
+                assert_eq!(Trunc::trunc(-half), <$ty as AssocConstZero>::ZERO);
                 assert_eq!(Trunc::trunc(-one_and_half), -one);
                 assert_eq!(Trunc::trunc(-two_and_half), -two);
 
@@ -457,7 +457,7 @@ macro_rules! test_round_traits_negative {
 
             #[test]
             fn test_round_ties_even() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
                 let one_and_half = one + half;
@@ -467,7 +467,7 @@ macro_rules! test_round_traits_negative {
                 assert_eq!(RoundTiesEven::round_ties_even(-two), -two);
                 assert_eq!(
                     RoundTiesEven::round_ties_even(-half),
-                    <$ty as ConstZero>::ZERO
+                    <$ty as AssocConstZero>::ZERO
                 );
                 assert_eq!(RoundTiesEven::round_ties_even(-one_and_half), -two);
                 assert_eq!(RoundTiesEven::round_ties_even(-two_and_half), -two);
@@ -480,7 +480,7 @@ macro_rules! test_round_traits_negative {
 
             #[test]
             fn test_floor() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
                 let one_and_half = one + half;
@@ -500,7 +500,7 @@ macro_rules! test_round_traits_negative {
 
             #[test]
             fn test_ceil() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let half = one / two;
                 let one_and_half = one + half;
@@ -508,7 +508,7 @@ macro_rules! test_round_traits_negative {
 
                 assert_eq!(Ceil::ceil(-one), -one);
                 assert_eq!(Ceil::ceil(-two), -two);
-                assert_eq!(Ceil::ceil(-half), <$ty as ConstZero>::ZERO);
+                assert_eq!(Ceil::ceil(-half), <$ty as AssocConstZero>::ZERO);
                 assert_eq!(Ceil::ceil(-one_and_half), -one);
                 assert_eq!(Ceil::ceil(-two_and_half), -two);
 

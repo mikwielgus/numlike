@@ -225,8 +225,8 @@ macro_rules! test_root_traits_float_nonnegative {
 
             #[test]
             fn test_sqrt() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -238,8 +238,8 @@ macro_rules! test_root_traits_float_nonnegative {
 
             #[test]
             fn test_cbrt() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
@@ -252,8 +252,8 @@ macro_rules! test_root_traits_float_nonnegative {
 
             #[test]
             fn test_isqrt() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -266,8 +266,8 @@ macro_rules! test_root_traits_float_nonnegative {
 
             #[test]
             fn test_checked_sqrt() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -282,8 +282,8 @@ macro_rules! test_root_traits_float_nonnegative {
 
             #[test]
             fn test_checked_isqrt() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -311,7 +311,7 @@ macro_rules! test_root_traits_float_negative {
 
             #[test]
             fn test_cbrt() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let eight = four + four;
@@ -323,7 +323,7 @@ macro_rules! test_root_traits_float_negative {
 
             #[test]
             fn test_checked_sqrt() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(
                     Object::new(-one).checked_sqrt(),
@@ -334,7 +334,7 @@ macro_rules! test_root_traits_float_negative {
 
             #[test]
             fn test_checked_isqrt() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(
                     Object::new(-one).checked_isqrt(),
@@ -447,8 +447,8 @@ macro_rules! test_isqrt_traits_nonnegative {
 
             #[test]
             fn test_isqrt() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -467,8 +467,8 @@ macro_rules! test_isqrt_traits_nonnegative {
 
             #[test]
             fn test_checked_isqrt() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let three = two + one;
                 let four = two + two;
@@ -498,7 +498,7 @@ macro_rules! test_isqrt_traits_negative {
 
             #[test]
             fn test_checked_isqrt() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
 
                 assert_eq!(
                     Object::new(-one).checked_isqrt(),

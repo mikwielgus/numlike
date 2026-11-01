@@ -86,8 +86,8 @@ macro_rules! test_plain_bitshift_traits_int_nonnegative {
 
             #[test]
             fn test_shl() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -103,8 +103,8 @@ macro_rules! test_plain_bitshift_traits_int_nonnegative {
 
             #[test]
             fn test_shr() {
-                let zero = <$ty as ConstZero>::ZERO;
-                let one = <$ty as ConstOne>::ONE;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -121,7 +121,7 @@ macro_rules! test_plain_bitshift_traits_int_nonnegative {
 
             #[test]
             fn test_shl_assign() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let mut value = one;
@@ -141,7 +141,7 @@ macro_rules! test_plain_bitshift_traits_int_nonnegative {
 
             #[test]
             fn test_shr_assign() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let mut value = four;
@@ -173,7 +173,7 @@ macro_rules! test_plain_bitshift_traits_int_negative {
 
             #[test]
             fn test_shl() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -187,7 +187,7 @@ macro_rules! test_plain_bitshift_traits_int_negative {
 
             #[test]
             fn test_shr() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
 
@@ -202,7 +202,7 @@ macro_rules! test_plain_bitshift_traits_int_negative {
 
             #[test]
             fn test_shl_assign() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let mut value = -one;
@@ -222,7 +222,7 @@ macro_rules! test_plain_bitshift_traits_int_negative {
 
             #[test]
             fn test_shr_assign() {
-                let one = <$ty as ConstOne>::ONE;
+                let one = <$ty as AssocConstOne>::ONE;
                 let two = one + one;
                 let four = two + two;
                 let mut value = -four;
