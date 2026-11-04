@@ -91,7 +91,7 @@ pub trait Nan {
 
 /// Not a Number (NaN) value for a floating-point type as an associated
 /// constant.
-pub trait ConstNan {
+pub trait AssocConstNan {
     /// Not a Number (NaN) value for a floating-point type as an associated
     /// constant.
     const NAN: Self;
@@ -408,7 +408,7 @@ macro_rules! impl_elem_traits_for_float {
             }
         }
 
-        impl ConstNan for $ty {
+        impl AssocConstNan for $ty {
             const NAN: Self = <$ty>::NAN;
         }
 

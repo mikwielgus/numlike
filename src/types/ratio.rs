@@ -12,7 +12,8 @@ use core::{
 use crate::{
     cmp::{NanfixEq, NanfixPartialEq, NanmaxOrd, NanmaxPartialOrd, NanminOrd, NanminPartialOrd},
     elem::{
-        AssocConstOne, AssocConstZero, ConstNan, IsNan, MinusInfinity, Nan, One, PlusInfinity, Zero,
+        AssocConstNan, AssocConstOne, AssocConstZero, IsNan, MinusInfinity, Nan, One, PlusInfinity,
+        Zero,
     },
     fns::{Abs, CheckedAbs, Gcd, IsNegative, IsPositive, Lcm, Sgn, SignFns},
     limits::{
@@ -887,9 +888,9 @@ impl<T: Nan + One> Nan for Ratio<T> {
     }
 }
 
-impl<T: ConstNan + AssocConstOne> ConstNan for Ratio<T> {
+impl<T: AssocConstNan + AssocConstOne> AssocConstNan for Ratio<T> {
     const NAN: Self = Ratio {
-        numer: ConstNan::NAN,
+        numer: AssocConstNan::NAN,
         denom: AssocConstOne::ONE,
     };
 }
