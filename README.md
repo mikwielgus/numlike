@@ -136,10 +136,11 @@ decisions in the venerable `num-traits` crate.
   for floats.
   - `numlike` implements its own versions of these traits for all numeric
     primitives.
-- Developers of `num-traits` seem to avoid breaking changes, strongly preferring
-  to create new traits instead of making modifications to existing ones. This
-  provides stability for users, but prevents at least some of the above issues
-  from being solved.
+- Developers of `num-traits` [do not
+  want](https://github.com/rust-num/num-traits/issues/47) to [make breaking
+  changes](https://github.com/rust-num/num-traits/issues/364#issuecomment-6611885259).
+  This provides stability for a very large amount of dependents, but prevents
+  the above issues and other ones from being solved.
   - Because of that, we have decided to roll our own library (this crate).
     However, because it's in active development, we are lacking the stability of
     `num-traits` -- we are more likely to have breaking changes and bugs.
