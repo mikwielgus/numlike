@@ -2,7 +2,9 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-//! Abstract algebraic structures.
+//! Trait bundles for common algebraic structures.
+
+use core::fmt::Debug;
 
 use crate::{
     elem::{One, Zero},
@@ -11,8 +13,8 @@ use crate::{
 };
 
 /// Supertraits shared by all `*Num` traits.
-pub trait NumCommon: Clone + Default + Bounds {}
-impl<T: Clone + Default + Bounds> NumCommon for T {}
+pub trait NumCommon: Clone + Debug + Default + Bounds {}
+impl<T: Clone + Debug + Default + Bounds> NumCommon for T {}
 
 /// Has total order, has field operations.
 pub trait TofieldBundle: Ord + FieldBundle {}
