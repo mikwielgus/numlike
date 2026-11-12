@@ -291,12 +291,61 @@ pub trait ArithAssignOps<Rhs = Self>: FieldAssignOps<Rhs> + RemAssign<Rhs> {}
 impl<Rhs, T: FieldAssignOps<Rhs> + RemAssign<Rhs>> ArithAssignOps<Rhs> for T {}
 
 /// Bundle of field operations (ring operations plus division).
-pub trait FieldOps<Rhs = Self>: RingOps<Rhs> + Div<Rhs, Output = Self> {}
-impl<Rhs, T: RingOps<Rhs> + Div<Rhs, Output = Self>> FieldOps<Rhs> for T {}
+pub trait FieldOps<Rhs = Self>:
+    RingOps<Rhs> + Div<Rhs, Output = Self> + Rcp<Output = Self>
+{
+}
+impl<Rhs, T: RingOps<Rhs> + Div<Rhs, Output = Self> + Rcp<Output = Self>> FieldOps<Rhs> for T {}
+
+/// Computes reciprocal, also known as multiplicative inverse. Returns `1/x`
+/// or `x^-1`.
+pub trait Rcp {
+    /// The resulting type after applying the operation.
+    type Output;
+
+    /// Computes reciprocal, also known as multiplicative inverse. Returns `1/x`
+    /// or `x^-1`.
+    fn rcp(self) -> Self::Output;
+}
+
+impl<B: Rcp<Output = B>> Rcp for Object<B> {
+    type Output = Self;
+
+    fn rcp(self) -> Self::Output {
+        Object(<B as Rcp>::rcp(self.0))
+    }
+}
+
+impl<B: Rcp<Output = B>> Object<B> {
+    /// Computes reciprocal, also known as multiplicative inverse. Returns `1/x`
+    /// or `x^-1`.
+    pub fn rcp(self) -> Self {
+        Object(<B as Rcp>::rcp(self.0))
+    }
+}
 
 /// Bundle of field assignment operations.
-pub trait FieldAssignOps<Rhs = Self>: RingAssignOps<Rhs> + DivAssign<Rhs> {}
-impl<Rhs, T: RingAssignOps<Rhs> + DivAssign<Rhs>> FieldAssignOps<Rhs> for T {}
+pub trait FieldAssignOps<Rhs = Self>: RingAssignOps<Rhs> + DivAssign<Rhs> + RcpAssign {}
+impl<Rhs, T: RingAssignOps<Rhs> + DivAssign<Rhs> + RcpAssign> FieldAssignOps<Rhs> for T {}
+
+/// Computes reciprocal of `self` in place.
+pub trait RcpAssign {
+    /// Computes reciprocal of `self` in place.
+    fn rcp_assign(&mut self);
+}
+
+impl<B: RcpAssign> RcpAssign for Object<B> {
+    fn rcp_assign(&mut self) {
+        <B as RcpAssign>::rcp_assign(&mut self.0)
+    }
+}
+
+impl<B: RcpAssign> Object<B> {
+    /// Computes reciprocal of `self` in place.
+    pub fn rcp_assign(&mut self) {
+        <B as RcpAssign>::rcp_assign(&mut self.0)
+    }
+}
 
 /// Bundle of ring operations (addition, subtraction, multiplication, and negation).
 pub trait RingOps<Rhs = Self>:
@@ -440,17 +489,49 @@ macro_rules! impl_neg_assign_trait {
     };
 }
 
+macro_rules! impl_rcp_trait {
+    ($($ty:ty),*) => {
+        $(
+            impl Rcp for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn rcp(self) -> Self::Output {
+                    <$ty as crate::elem::FnOne>::one() / self
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! impl_rcp_assign_trait {
+    ($($ty:ty),*) => {
+        $(
+            impl RcpAssign for $ty {
+                #[inline]
+                fn rcp_assign(&mut self) {
+                    *self = Rcp::rcp(*self);
+                }
+            }
+        )*
+    };
+}
+
 macro_rules! impl_plain_arith_traits_for_signed_ints {
     (no_euclid: $ty:ty $(, $rest:ident)*) => {
         impl_div_rem_trait!($ty);
         impl_mul_add_trait!($ty);
         impl_neg_assign_trait!($ty);
+        impl_rcp_trait!($ty);
+        impl_rcp_assign_trait!($ty);
     };
     ($ty:ty $(, $rest:ident)*) => {
         impl_div_rem_trait!($ty);
         impl_euclid_traits!($ty, <$ty>::div_euclid, <$ty>::rem_euclid);
         impl_mul_add_trait!($ty);
         impl_neg_assign_trait!($ty);
+        impl_rcp_trait!($ty);
+        impl_rcp_assign_trait!($ty);
     };
 }
 
@@ -458,11 +539,15 @@ macro_rules! impl_plain_arith_traits_for_unsigned_ints {
     (no_euclid: $ty:ty $(, $rest:ident)*) => {
         impl_div_rem_trait!($ty);
         impl_mul_add_trait!($ty);
+        impl_rcp_trait!($ty);
+        impl_rcp_assign_trait!($ty);
     };
     ($ty:ty $(, $rest:ident)*) => {
         impl_div_rem_trait!($ty);
         impl_euclid_traits!($ty, <$ty>::div_euclid, <$ty>::rem_euclid);
         impl_mul_add_trait!($ty);
+        impl_rcp_trait!($ty);
+        impl_rcp_assign_trait!($ty);
     };
 }
 
@@ -470,6 +555,8 @@ macro_rules! impl_plain_arith_traits_for_floats {
     (no_euclid: $($ty:ty),*) => {
         impl_div_rem_trait!($($ty),*);
         impl_neg_assign_trait!($($ty),*);
+        impl_rcp_trait!($($ty),*);
+        impl_rcp_assign_trait!($($ty),*);
     };
     ($($ty:ty),*) => {
         impl_div_rem_trait!($($ty),*);
@@ -478,6 +565,8 @@ macro_rules! impl_plain_arith_traits_for_floats {
             impl_euclid_traits!($ty, <$ty>::div_euclid, <$ty>::rem_euclid);
         )*
         impl_neg_assign_trait!($($ty),*);
+        impl_rcp_trait!($($ty),*);
+        impl_rcp_assign_trait!($($ty),*);
     };
 }
 
@@ -733,6 +822,35 @@ macro_rules! test_plain_arith_traits_int_nonnegative {
 
                 assert_eq!(object_value, Object::new(four));
             }
+
+            #[test]
+            fn test_rcp() {
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
+                let two = one + one;
+
+                assert_eq!(Rcp::rcp(one), one);
+                assert_eq!(Rcp::rcp(two), zero);
+                assert_eq!(Object::new(two).rcp(), Object::new(Rcp::rcp(two)));
+            }
+
+            #[test]
+            fn test_rcp_assign() {
+                let one = <$ty as AssocConstOne>::ONE;
+                let two = one + one;
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let mut value = two;
+
+                RcpAssign::rcp_assign(&mut value);
+
+                assert_eq!(value, zero);
+
+                let mut object_value = Object::new(one);
+
+                object_value.rcp_assign();
+
+                assert_eq!(object_value, Object::new(one));
+            }
         }
     };
 }
@@ -910,6 +1028,35 @@ macro_rules! test_plain_arith_traits_float_nonnegative {
 
                     (Object::new(a), Object::new(b))
                 });
+            }
+
+            #[test]
+            fn test_rcp() {
+                let one = <$ty as AssocConstOne>::ONE;
+                let two = one + one;
+                let half = one / two;
+
+                assert_eq!(Rcp::rcp(two), half);
+                assert_eq!(Rcp::rcp(half), two);
+                assert_eq!(Object::new(two).rcp(), Object::new(Rcp::rcp(two)));
+            }
+
+            #[test]
+            fn test_rcp_assign() {
+                let one = <$ty as AssocConstOne>::ONE;
+                let two = one + one;
+                let half = one / two;
+                let mut value = two;
+
+                RcpAssign::rcp_assign(&mut value);
+
+                assert_eq!(value, half);
+
+                let mut object_value = Object::new(two);
+
+                object_value.rcp_assign();
+
+                assert_eq!(object_value, Object::new(half));
             }
 
             #[cfg(any(feature = "std", feature = "libm"))]
