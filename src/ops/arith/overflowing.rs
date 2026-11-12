@@ -67,7 +67,7 @@ impl<
 /// Calculates the remainder when `self` is divided by `other`.
 ///
 /// Returns a tuple of the remainder after dividing along with a boolean indicating whether an
-/// arithmetic overflow would occur. If an overflow would occur then zero is returned.
+/// arithmetic overflow would occur. If an overflow would occur then 0 is returned.
 ///
 /// # Panics
 ///
@@ -147,7 +147,7 @@ impl<Rhs, T: OverflowingDivEuclid<Rhs> + OverflowingRemEuclid<Rhs> + Overflowing
 /// Calculates the quotient of Euclidean division `self.div_euclid(other)`.
 ///
 /// Returns a tuple of the divisor along with a boolean indicating whether an arithmetic overflow would
-/// occur. If an overflow would occur then `self` is returned.
+/// occur. If an overflow would occur then unchanged `self` is returned.
 ///
 /// # Panics
 ///
@@ -257,18 +257,21 @@ impl<B: OverflowingDivRemEuclid<Output = B>> Object<B> {
 
 /// Bundle of overflowing field operations.
 pub trait OverflowingFieldOps<Rhs = Self>:
-    OverflowingRingOps<Rhs> + OverflowingDiv<Rhs, Output = Self>
+    OverflowingRingOps<Rhs> + OverflowingDiv<Rhs, Output = Self> + OverflowingRcp<Output = Self>
 {
 }
-impl<Rhs, T: OverflowingRingOps<Rhs> + OverflowingDiv<Rhs, Output = Self>> OverflowingFieldOps<Rhs>
-    for T
+impl<
+    Rhs,
+    T: OverflowingRingOps<Rhs> + OverflowingDiv<Rhs, Output = Self> + OverflowingRcp<Output = Self>,
+> OverflowingFieldOps<Rhs> for T
 {
 }
 
 /// Calculates the divisor when `self` is divided by `other`.
 ///
-/// Returns a tuple of the divisor along with a boolean indicating whether an arithmetic overflow would
-/// occur. If an overflow would occur then self is returned.
+/// Returns a tuple of the divisor along with a boolean indicating whether an
+/// arithmetic overflow would occur. If an overflow would occur then unchanged
+/// `self` is returned.
 ///
 /// # Panics
 ///
@@ -295,6 +298,42 @@ impl<B: OverflowingDiv<Output = B>> Object<B> {
     /// Calculates the divisor when `self` is divided by `other`.
     pub fn overflowing_div(self, other: Self) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingDiv>::overflowing_div(self.0, other.0);
+
+        (Object(value), overflow)
+    }
+}
+
+/// Calculates the reciprocal of `self`.
+///
+/// Returns a tuple of the reciprocal along with a boolean indicating whether an
+/// arithmetic overflow would occur. If an overflow would occur then unchanged
+/// `self` is returned.
+///
+/// # Panics
+///
+/// This function will panic if `self` is zero.
+pub trait OverflowingRcp {
+    /// The resulting type after applying the operation.
+    type Output;
+
+    /// Calculates the reciprocal of `self`.
+    fn overflowing_rcp(self) -> (Self::Output, bool);
+}
+
+impl<B: OverflowingRcp<Output = B>> OverflowingRcp for Object<B> {
+    type Output = Self;
+
+    fn overflowing_rcp(self) -> (Self::Output, bool) {
+        let (value, overflow) = <B as OverflowingRcp>::overflowing_rcp(self.0);
+
+        (Object(value), overflow)
+    }
+}
+
+impl<B: OverflowingRcp<Output = B>> Object<B> {
+    /// Calculates the reciprocal of `self`.
+    pub fn overflowing_rcp(self) -> (Self, bool) {
+        let (value, overflow) = <B as OverflowingRcp>::overflowing_rcp(self.0);
 
         (Object(value), overflow)
     }
@@ -504,6 +543,15 @@ macro_rules! impl_overflowing_field_traits_for_ints {
                     <$ty>::overflowing_neg(self)
                 }
             }
+
+            impl OverflowingRcp for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_rcp(self) -> (Self::Output, bool) {
+                    <$ty>::overflowing_div(<$ty as crate::elem::FnOne>::one(), self)
+                }
+            }
         )*
     };
 }
@@ -662,6 +710,17 @@ macro_rules! impl_overflowing_field_traits_via_inner {
                 #[inline]
                 fn overflowing_neg(self) -> (Self::Output, bool) {
                     let (value, overflowed) = self.0.overflowing_neg();
+
+                    (Self(value), overflowed)
+                }
+            }
+
+            impl OverflowingRcp for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn overflowing_rcp(self) -> (Self::Output, bool) {
+                    let (value, overflowed) = self.0.overflowing_rcp();
 
                     (Self(value), overflowed)
                 }
@@ -1055,6 +1114,21 @@ macro_rules! test_overflowing_arith_traits_int_nonnegative {
                         (Object::new(v), o)
                     }
                 );
+            }
+
+            #[test]
+            fn test_rcp() {
+                let one = <$ty as AssocConstOne>::ONE;
+                let two = one + one;
+                let zero = <$ty as AssocConstZero>::ZERO;
+
+                assert_eq!(OverflowingRcp::overflowing_rcp(one), (one, false));
+                assert_eq!(OverflowingRcp::overflowing_rcp(two), (zero, false));
+                assert_eq!(Object::new(two).overflowing_rcp(), {
+                    let (v, o) = OverflowingRcp::overflowing_rcp(two);
+
+                    (Object::new(v), o)
+                });
             }
         }
     };
