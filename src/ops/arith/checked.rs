@@ -220,10 +220,13 @@ impl<B: CheckedDivRemEuclid<Output = B>> Object<B> {
 
 /// Bundle of checked field operations.
 pub trait CheckedFieldOps<Rhs = Self>:
-    CheckedRingOps<Rhs> + CheckedDiv<Rhs, Output = Self>
+    CheckedRingOps<Rhs> + CheckedDiv<Rhs, Output = Self> + CheckedRcp<Output = Self>
 {
 }
-impl<Rhs, T: CheckedRingOps<Rhs> + CheckedDiv<Rhs, Output = Self>> CheckedFieldOps<Rhs> for T {}
+impl<Rhs, T: CheckedRingOps<Rhs> + CheckedDiv<Rhs, Output = Self> + CheckedRcp<Output = Self>>
+    CheckedFieldOps<Rhs> for T
+{
+}
 
 /// Checked division. Computes `self / other`, returning `None` if `other ==
 /// 0` or the division results in overflow.
@@ -249,6 +252,33 @@ impl<B: CheckedDiv<Output = B>> Object<B> {
     /// 0` or the division results in overflow.
     pub fn checked_div(self, other: Self) -> Option<Self> {
         <B as CheckedDiv>::checked_div(self.0, other.0).map(Object)
+    }
+}
+
+/// Checked reciprocal. Computes `1 / self`, returning `None` if `self == 0`
+/// or the division results in overflow.
+pub trait CheckedRcp {
+    /// The resulting type after applying the operation.
+    type Output;
+
+    /// Checked reciprocal. Computes `1 / self`, returning `None` if `self == 0`
+    /// or the division results in overflow.
+    fn checked_rcp(self) -> Option<Self::Output>;
+}
+
+impl<B: CheckedRcp<Output = B>> CheckedRcp for Object<B> {
+    type Output = Self;
+
+    fn checked_rcp(self) -> Option<Self::Output> {
+        <B as CheckedRcp>::checked_rcp(self.0).map(Object)
+    }
+}
+
+impl<B: CheckedRcp<Output = B>> Object<B> {
+    /// Checked reciprocal. Computes `1 / self`, returning `None` if `self == 0`
+    /// or the division results in overflow.
+    pub fn checked_rcp(self) -> Option<Self> {
+        <B as CheckedRcp>::checked_rcp(self.0).map(Object)
     }
 }
 
@@ -431,6 +461,15 @@ macro_rules! impl_checked_field_traits_for_ints {
                     <$ty>::checked_neg(self)
                 }
             }
+
+            impl CheckedRcp for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_rcp(self) -> Option<Self::Output> {
+                    <$ty>::checked_div(<$ty as crate::elem::FnOne>::one(), self)
+                }
+            }
         )*
     };
 }
@@ -576,6 +615,15 @@ macro_rules! impl_checked_field_traits_via_inner {
                 #[inline]
                 fn checked_neg(self) -> Option<Self::Output> {
                     self.0.checked_neg().map(Self)
+                }
+            }
+
+            impl CheckedRcp for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_rcp(self) -> Option<Self::Output> {
+                    self.0.checked_rcp().map(Self)
                 }
             }
         )*
@@ -730,6 +778,18 @@ macro_rules! impl_checked_field_traits_for_floats {
                 #[inline]
                 fn checked_neg(self) -> Option<Self::Output> {
                     let result = -self;
+
+                    result.is_finite().then_some(result)
+                }
+            }
+
+            impl CheckedRcp for $ty {
+                type Output = $ty;
+
+                #[inline]
+                fn checked_rcp(self) -> Option<Self::Output> {
+                    let one = <$ty as crate::elem::FnOne>::one();
+                    let result = one / self;
 
                     result.is_finite().then_some(result)
                 }
@@ -939,6 +999,21 @@ macro_rules! test_checked_arith_traits_int_nonnegative {
                 assert_eq!(
                     Object::new(two).checked_mul_add(Object::new(one), Object::new(two)),
                     CheckedMulAdd::checked_mul_add(two, one, two).map(Object::new)
+                );
+            }
+
+            #[test]
+            fn test_rcp() {
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
+                let two = one + one;
+
+                assert_eq!(CheckedRcp::checked_rcp(zero), None);
+                assert_eq!(CheckedRcp::checked_rcp(one), Some(one));
+                assert_eq!(CheckedRcp::checked_rcp(two), Some(zero));
+                assert_eq!(
+                    Object::new(two).checked_rcp(),
+                    CheckedRcp::checked_rcp(two).map(Object::new)
                 );
             }
         }
@@ -1160,6 +1235,22 @@ macro_rules! test_checked_arith_traits_float_nonnegative {
                 assert_eq!(
                     Object::new(two).checked_mul_add(Object::new(one), Object::new(two)),
                     CheckedMulAdd::checked_mul_add(two, one, two).map(Object::new)
+                );
+            }
+
+            #[test]
+            fn test_rcp() {
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
+                let two = one + one;
+                let half = one / two;
+
+                assert_eq!(CheckedRcp::checked_rcp(zero), None);
+                assert_eq!(CheckedRcp::checked_rcp(two), Some(half));
+                assert_eq!(CheckedRcp::checked_rcp(half), Some(two));
+                assert_eq!(
+                    Object::new(two).checked_rcp(),
+                    CheckedRcp::checked_rcp(two).map(Object::new)
                 );
             }
         }
