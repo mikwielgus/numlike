@@ -897,9 +897,11 @@ impl<T: FnNan + FnOne> FnNan for Ratio<T> {
     }
 }
 
-impl<T: AssocConstNan + AssocConstOne<Value = T>> AssocConstNan for Ratio<T> {
-    const NAN: Self = Ratio {
-        numer: AssocConstNan::NAN,
+impl<T: AssocConstNan<Value = T> + AssocConstOne<Value = T>> AssocConstNan for Ratio<T> {
+    type Value = Self;
+
+    const NAN: Self::Value = Ratio {
+        numer: <T as AssocConstNan>::NAN,
         denom: <T as AssocConstOne>::ONE,
     };
 }

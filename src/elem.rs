@@ -38,7 +38,7 @@ impl<B: AssocConstZero<Value = B>> Object<B> {
     pub const ZERO: Self = Object(B::ZERO);
 }
 
-/// Static functions defining a distinguished `0` value.
+/// Functions defining a distinguished `0` value.
 pub trait ZeroFns: FnZero + IsZero {}
 impl<T: FnZero + IsZero> ZeroFns for T {}
 
@@ -109,7 +109,7 @@ impl<B: AssocConstOne<Value = B>> Object<B> {
     pub const ONE: Self = Object(B::ONE);
 }
 
-/// Static functions defining a distinguished `1` value.
+/// Functions defining a distinguished `1` value.
 pub trait OneFns: FnOne + IsOne {}
 impl<T: FnOne + IsOne> OneFns for T {}
 
@@ -171,18 +171,51 @@ pub trait PlusInfinity {
     const PLUS_INFINITY: Self;
 }
 
-/// Not a Number (NaN) value for a floating-point type as an associated
-/// constant.
+/// Not a Number (NaN) value.
+pub trait Nan: AssocConstNan + NanFns {}
+impl<T: AssocConstNan + NanFns> Nan for T {}
+
+/// Not a Number (NaN) value for as an associated constant.
 pub trait AssocConstNan {
-    /// Not a Number (NaN) value for a floating-point type as an associated
-    /// constant.
-    const NAN: Self;
+    /// The type of the NaN value.
+    type Value;
+
+    /// Not a Number (NaN) value for as an associated constant.
+    const NAN: Self::Value;
 }
 
-/// Not a Number (NaN) value for a floating-point type.
+impl<B: AssocConstNan<Value = B>> AssocConstNan for Object<B> {
+    type Value = Self;
+
+    const NAN: Self::Value = Object(B::NAN);
+}
+
+impl<B: AssocConstNan<Value = B>> Object<B> {
+    /// Not a Number (NaN) value for as an associated constant.
+    pub const NAN: Self = Object(B::NAN);
+}
+
+/// Functions defining a Not a Number (NaN) value.
+pub trait NanFns: FnNan + IsNan {}
+impl<T: FnNan + IsNan> NanFns for T {}
+
+/// Not a Number (NaN) value.
 pub trait FnNan {
-    /// Returns a Not a Number (NaN) value for a floating-point type.
+    /// Not a Number (NaN) value.
     fn nan() -> Self;
+}
+
+impl<B: FnNan> FnNan for Object<B> {
+    fn nan() -> Self {
+        Object(B::nan())
+    }
+}
+
+impl<B: FnNan> Object<B> {
+    /// Not a Number (NaN) value.
+    pub fn nan() -> Self {
+        Object(B::nan())
+    }
 }
 
 /// Returns `true` if `self` is NaN and `false` otherwise.
@@ -192,6 +225,19 @@ pub trait FnNan {
 pub trait IsNan {
     /// Returns `true` if `self` is NaN and `false` otherwise.
     fn is_nan(self) -> bool;
+}
+
+impl<B: IsNan> IsNan for Object<B> {
+    fn is_nan(self) -> bool {
+        <B as IsNan>::is_nan(self.0)
+    }
+}
+
+impl<B: IsNan> Object<B> {
+    /// Returns `true` if `self` is NaN and `false` otherwise.
+    pub fn is_nan(self) -> bool {
+        <B as IsNan>::is_nan(self.0)
+    }
 }
 
 macro_rules! impl_elem_traits_for_int {
@@ -505,7 +551,9 @@ macro_rules! impl_elem_traits_for_float {
         }
 
         impl AssocConstNan for $ty {
-            const NAN: Self = <$ty>::NAN;
+            type Value = Self;
+
+            const NAN: Self::Value = <$ty>::NAN;
         }
 
         impl IsNan for $ty {
