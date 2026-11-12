@@ -15,25 +15,37 @@ use crate::types::Object;
 /// it commonly is in definitions of absorption magmas and absorption monoids,
 /// or an element that maps to the classical real zero, as it sometimes is in
 /// descriptions of tropical semirings.
-pub trait Zero {
-    /// Returns a distinguished `0` value.
-    fn zero() -> Self;
-}
+pub trait Zero: AssocConstZero + ZeroFns {}
+impl<T: AssocConstZero + ZeroFns> Zero for T {}
 
-/// Defines a distinguished `0` value like [`Zero`] does, but as an associated
-/// constant.
+/// Defines a distinguished `0` value as an associated constant.
 pub trait AssocConstZero {
+    /// The type of the distinguished `0` value.
+    type Value;
+
     /// A distinguished `0` value.
-    const ZERO: Self;
+    const ZERO: Self::Value;
 }
 
-impl<B: AssocConstZero> AssocConstZero for Object<B> {
-    const ZERO: Self = Object(B::ZERO);
+impl<B: AssocConstZero<Value = B>> AssocConstZero for Object<B> {
+    type Value = Self;
+
+    const ZERO: Self::Value = Object(B::ZERO);
 }
 
-impl<B: AssocConstZero> Object<B> {
+impl<B: AssocConstZero<Value = B>> Object<B> {
     /// A distinguished `0` value.
     pub const ZERO: Self = Object(B::ZERO);
+}
+
+/// Static functions defining a distinguished `0` value.
+pub trait ZeroFns: FnZero {}
+impl<T: FnZero> ZeroFns for T {}
+
+/// Returns a distinguished `0` value.
+pub trait FnZero {
+    /// Returns a distinguished `0` value.
+    fn zero() -> Self;
 }
 
 /// Defines a distinguished `1` value.
@@ -42,25 +54,37 @@ impl<B: AssocConstZero> Object<B> {
 /// so. It may also merely be the generating element (generator) of addition,
 /// or an element that maps to the classical real one, as it sometimes is in
 /// descriptions of tropical semirings.
-pub trait One {
-    /// Returns a distinguished `1` value.
-    fn one() -> Self;
-}
+pub trait One: AssocConstOne + OneFns {}
+impl<T: AssocConstOne + OneFns> One for T {}
 
-/// Defines a distinguished `1` value like [`One`] does, but as an associated
-/// constant.
+/// Defines a distinguished `1` value as an associated constant.
 pub trait AssocConstOne {
+    /// The type of the distinguished `1` value.
+    type Value;
+
     /// A distinguished `1` value.
-    const ONE: Self;
+    const ONE: Self::Value;
 }
 
-impl<B: AssocConstOne> AssocConstOne for Object<B> {
-    const ONE: Self = Object(B::ONE);
+impl<B: AssocConstOne<Value = B>> AssocConstOne for Object<B> {
+    type Value = Self;
+
+    const ONE: Self::Value = Object(B::ONE);
 }
 
-impl<B: AssocConstOne> Object<B> {
+impl<B: AssocConstOne<Value = B>> Object<B> {
     /// A distinguished `1` value.
     pub const ONE: Self = Object(B::ONE);
+}
+
+/// Static functions defining a distinguished `1` value.
+pub trait OneFns: FnOne {}
+impl<T: FnOne> OneFns for T {}
+
+/// Returns a distinguished `1` value.
+pub trait FnOne {
+    /// Returns a distinguished `1` value.
+    fn one() -> Self;
 }
 
 /// Negative infinity (-∞).
@@ -83,18 +107,18 @@ pub trait PlusInfinity {
     const PLUS_INFINITY: Self;
 }
 
-/// Not a Number (NaN) value for a floating-point type.
-pub trait Nan {
-    /// Returns a Not a Number (NaN) value for a floating-point type.
-    fn nan() -> Self;
-}
-
 /// Not a Number (NaN) value for a floating-point type as an associated
 /// constant.
 pub trait AssocConstNan {
     /// Not a Number (NaN) value for a floating-point type as an associated
     /// constant.
     const NAN: Self;
+}
+
+/// Not a Number (NaN) value for a floating-point type.
+pub trait FnNan {
+    /// Returns a Not a Number (NaN) value for a floating-point type.
+    fn nan() -> Self;
 }
 
 /// Returns `true` if `self` is NaN and `false` otherwise.
@@ -121,26 +145,30 @@ macro_rules! impl_elem_traits_for_int {
         test_elem_traits_negative!($ty, $negative_tests_mod);
     };
     ($ty:ty, $zero:expr, $one:expr) => {
-        impl Zero for $ty {
+        impl AssocConstZero for $ty {
+            type Value = Self;
+
+            const ZERO: Self::Value = $zero;
+        }
+
+        impl FnZero for $ty {
             #[inline]
             fn zero() -> Self {
                 $zero
             }
         }
 
-        impl AssocConstZero for $ty {
-            const ZERO: Self = $zero;
+        impl AssocConstOne for $ty {
+            type Value = Self;
+
+            const ONE: Self::Value = $one;
         }
 
-        impl One for $ty {
+        impl FnOne for $ty {
             #[inline]
             fn one() -> Self {
                 $one
             }
-        }
-
-        impl AssocConstOne for $ty {
-            const ONE: Self = $one;
         }
 
         // Ints can implement `IsNan`, they just always return false.
@@ -180,8 +208,8 @@ macro_rules! test_elem_traits_nonnegative {
                 let zero = <$ty as AssocConstZero>::ZERO;
                 let one = <$ty as AssocConstOne>::ONE;
 
-                assert_eq!(<$ty as Zero>::zero(), zero);
-                assert_eq!(<$ty as One>::one(), one);
+                assert_eq!(<$ty as FnZero>::zero(), zero);
+                assert_eq!(<$ty as FnOne>::one(), one);
 
                 assert_eq!(one - one, zero);
                 assert_eq!(one + zero, one);
@@ -371,7 +399,7 @@ impl_elem_traits_for_int!(
 
 macro_rules! impl_elem_traits_for_float {
     ($ty:ty, $nonnegative_tests_mod:ident, $negative_tests_mod:ident) => {
-        impl Zero for $ty {
+        impl FnZero for $ty {
             #[inline]
             fn zero() -> Self {
                 0.0
@@ -379,10 +407,12 @@ macro_rules! impl_elem_traits_for_float {
         }
 
         impl AssocConstZero for $ty {
-            const ZERO: Self = 0.0;
+            type Value = Self;
+
+            const ZERO: Self::Value = 0.0;
         }
 
-        impl One for $ty {
+        impl FnOne for $ty {
             #[inline]
             fn one() -> Self {
                 1.0
@@ -390,7 +420,9 @@ macro_rules! impl_elem_traits_for_float {
         }
 
         impl AssocConstOne for $ty {
-            const ONE: Self = 1.0;
+            type Value = Self;
+
+            const ONE: Self::Value = 1.0;
         }
 
         impl MinusInfinity for $ty {
@@ -401,7 +433,7 @@ macro_rules! impl_elem_traits_for_float {
             const PLUS_INFINITY: Self = <$ty>::INFINITY;
         }
 
-        impl Nan for $ty {
+        impl FnNan for $ty {
             #[inline]
             fn nan() -> Self {
                 <$ty>::NAN
