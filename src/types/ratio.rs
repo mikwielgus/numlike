@@ -12,8 +12,8 @@ use core::{
 use crate::{
     cmp::{NanfixEq, NanfixPartialEq, NanmaxOrd, NanmaxPartialOrd, NanminOrd, NanminPartialOrd},
     elem::{
-        AssocConstNan, AssocConstOne, AssocConstZero, FnNan, FnOne, FnZero, IsNan, MinusInfinity,
-        PlusInfinity,
+        AssocConstNan, AssocConstOne, AssocConstZero, FnNan, FnOne, FnZero, IsNan, IsOne, IsZero,
+        MinusInfinity, PlusInfinity,
     },
     fns::{Abs, CheckedAbs, Gcd, IsNegative, IsPositive, Lcm, Sgn, SignFns},
     limits::{
@@ -911,6 +911,20 @@ impl<T: IsNan> IsNan for Ratio<T> {
         // so we believe it will be the most natural to assume ratio is NaN not
         // only when its numerator is NaN, but also when denominator is.
         self.numer.is_nan() || self.denom.is_nan()
+    }
+}
+
+impl<T: IsZero> IsZero for Ratio<T> {
+    #[inline]
+    fn is_zero(self) -> bool {
+        self.numer.is_zero()
+    }
+}
+
+impl<T: IsOne> IsOne for Ratio<T> {
+    #[inline]
+    fn is_one(self) -> bool {
+        self.numer.is_one() && self.denom.is_one()
     }
 }
 

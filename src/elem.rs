@@ -39,8 +39,8 @@ impl<B: AssocConstZero<Value = B>> Object<B> {
 }
 
 /// Static functions defining a distinguished `0` value.
-pub trait ZeroFns: FnZero {}
-impl<T: FnZero> ZeroFns for T {}
+pub trait ZeroFns: FnZero + IsZero {}
+impl<T: FnZero + IsZero> ZeroFns for T {}
 
 /// Returns a distinguished `0` value.
 pub trait FnZero {
@@ -58,6 +58,25 @@ impl<B: FnZero> Object<B> {
     /// Returns a distinguished `0` value.
     pub fn zero() -> Self {
         Object(B::zero())
+    }
+}
+
+/// Returns `true` if `self` is zero and `false` otherwise.
+pub trait IsZero {
+    /// Returns `true` if `self` is zero and `false` otherwise.
+    fn is_zero(self) -> bool;
+}
+
+impl<B: IsZero> IsZero for Object<B> {
+    fn is_zero(self) -> bool {
+        <B as IsZero>::is_zero(self.0)
+    }
+}
+
+impl<B: IsZero> Object<B> {
+    /// Returns `true` if `self` is zero and `false` otherwise.
+    pub fn is_zero(self) -> bool {
+        <B as IsZero>::is_zero(self.0)
     }
 }
 
@@ -91,8 +110,8 @@ impl<B: AssocConstOne<Value = B>> Object<B> {
 }
 
 /// Static functions defining a distinguished `1` value.
-pub trait OneFns: FnOne {}
-impl<T: FnOne> OneFns for T {}
+pub trait OneFns: FnOne + IsOne {}
+impl<T: FnOne + IsOne> OneFns for T {}
 
 /// Returns a distinguished `1` value.
 pub trait FnOne {
@@ -107,9 +126,28 @@ impl<B: FnOne> FnOne for Object<B> {
 }
 
 impl<B: FnOne> Object<B> {
-    /// Returns a distinguished `0` value.
+    /// Returns a distinguished `1` value.
     pub fn one() -> Self {
         Object(B::one())
+    }
+}
+
+/// Returns `true` if `self` is one and `false` otherwise.
+pub trait IsOne {
+    /// Returns `true` if `self` is one and `false` otherwise.
+    fn is_one(self) -> bool;
+}
+
+impl<B: IsOne> IsOne for Object<B> {
+    fn is_one(self) -> bool {
+        <B as IsOne>::is_one(self.0)
+    }
+}
+
+impl<B: IsOne> Object<B> {
+    /// Returns `true` if `self` is one and `false` otherwise.
+    pub fn is_one(self) -> bool {
+        <B as IsOne>::is_one(self.0)
     }
 }
 

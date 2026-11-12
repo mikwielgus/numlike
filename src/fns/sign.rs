@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+pub use crate::elem::{IsOne, IsZero};
+
 use crate::types::Object;
 
 /// Bundle of sign-related functions.
@@ -43,25 +45,6 @@ impl<B: IsNegative> Object<B> {
     /// Returns `true` if `self` is negative and `false` otherwise.
     pub fn is_negative(self) -> bool {
         <B as IsNegative>::is_negative(self.0)
-    }
-}
-
-/// Returns `true` if `self` is zero and `false` otherwise.
-pub trait IsZero {
-    /// Returns `true` if `self` is zero and `false` otherwise.
-    fn is_zero(self) -> bool;
-}
-
-impl<B: IsZero> IsZero for Object<B> {
-    fn is_zero(self) -> bool {
-        <B as IsZero>::is_zero(self.0)
-    }
-}
-
-impl<B: IsZero> Object<B> {
-    /// Returns `true` if `self` is zero and `false` otherwise.
-    pub fn is_zero(self) -> bool {
-        <B as IsZero>::is_zero(self.0)
     }
 }
 
@@ -175,6 +158,13 @@ macro_rules! impl_sign_traits_for_unsigned_int {
             }
         }
 
+        impl IsOne for $ty {
+            #[inline]
+            fn is_one(self) -> bool {
+                self == 1
+            }
+        }
+
         impl Sgn for $ty {
             type Output = $ty;
 
@@ -258,6 +248,19 @@ macro_rules! sign_traits_nonnegative_tests {
             }
 
             #[test]
+            fn test_is_one() {
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
+                let two = one + one;
+
+                assert!(!IsOne::is_one(zero));
+                assert!(IsOne::is_one(one));
+                assert!(!IsOne::is_one(two));
+
+                assert_eq!(Object::new(one).is_one(), IsOne::is_one(one));
+            }
+
+            #[test]
             fn test_sgn() {
                 let zero = <$ty as AssocConstZero>::ZERO;
                 let one = <$ty as AssocConstOne>::ONE;
@@ -333,6 +336,13 @@ macro_rules! impl_sign_traits_for_unsigned_int_via_inner {
             }
         }
 
+        impl IsOne for $ty {
+            #[inline]
+            fn is_one(self) -> bool {
+                IsOne::is_one(self.0)
+            }
+        }
+
         impl Sgn for $ty {
             type Output = $ty;
 
@@ -387,6 +397,13 @@ macro_rules! impl_sign_traits_for_signed_int {
             #[inline]
             fn is_zero(self) -> bool {
                 self == 0
+            }
+        }
+
+        impl IsOne for $ty {
+            #[inline]
+            fn is_one(self) -> bool {
+                self == 1
             }
         }
 
@@ -480,6 +497,20 @@ macro_rules! sign_traits_negative_tests {
             }
 
             #[test]
+            fn test_is_one() {
+                let zero = <$ty as AssocConstZero>::ZERO;
+                let one = <$ty as AssocConstOne>::ONE;
+                let two = one + one;
+
+                assert!(!IsOne::is_one(-zero));
+                assert!(!IsOne::is_one(-one));
+                assert!(!IsOne::is_one(-two));
+                assert!(IsOne::is_one(one));
+
+                assert_eq!(Object::new(one).is_one(), IsOne::is_one(one));
+            }
+
+            #[test]
             fn test_sgn() {
                 let zero = <$ty as AssocConstZero>::ZERO;
                 let one = <$ty as AssocConstOne>::ONE;
@@ -555,6 +586,13 @@ macro_rules! impl_sign_traits_for_signed_int_via_inner {
             }
         }
 
+        impl IsOne for $ty {
+            #[inline]
+            fn is_one(self) -> bool {
+                IsOne::is_one(self.0)
+            }
+        }
+
         impl Sgn for $ty {
             type Output = $ty;
 
@@ -610,6 +648,13 @@ macro_rules! impl_sign_traits_for_float {
             #[inline]
             fn is_zero(self) -> bool {
                 self == 0.0
+            }
+        }
+
+        impl IsOne for $ty {
+            #[inline]
+            fn is_one(self) -> bool {
+                self == 1.0
             }
         }
 
