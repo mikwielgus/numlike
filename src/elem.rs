@@ -156,9 +156,69 @@ impl<B: IsOne> Object<B> {
 /// This is an infinity going in the negative direction. This trait is not for
 /// a directionless infinity, such as the one present in Riemann sphere and in
 /// projectively extended reals.
-pub trait MinusInfinity {
+pub trait MinusInfinity: AssocConstMinusInfinity + MinusInfinityFns {}
+impl<T: AssocConstMinusInfinity + MinusInfinityFns> MinusInfinity for T {}
+
+/// Negative infinity (-∞) as an associated constant.
+pub trait AssocConstMinusInfinity {
+    /// The type of the negative infinity value.
+    type Value;
+
     /// Negative infinity (-∞).
-    const MINUS_INFINITY: Self;
+    const MINUS_INFINITY: Self::Value;
+}
+
+impl<B: AssocConstMinusInfinity<Value = B>> AssocConstMinusInfinity for Object<B> {
+    type Value = Self;
+
+    const MINUS_INFINITY: Self::Value = Object(B::MINUS_INFINITY);
+}
+
+impl<B: AssocConstMinusInfinity<Value = B>> Object<B> {
+    /// Negative infinity (-∞).
+    pub const MINUS_INFINITY: Self = Object(B::MINUS_INFINITY);
+}
+
+/// Functions defining negative infinity (-∞).
+pub trait MinusInfinityFns: FnMinusInfinity + IsMinusInfinity {}
+impl<T: FnMinusInfinity + IsMinusInfinity> MinusInfinityFns for T {}
+
+/// Returns negative infinity (-∞).
+pub trait FnMinusInfinity {
+    /// Returns negative infinity (-∞).
+    fn minus_infinity() -> Self;
+}
+
+impl<B: FnMinusInfinity> FnMinusInfinity for Object<B> {
+    fn minus_infinity() -> Self {
+        Object(B::minus_infinity())
+    }
+}
+
+impl<B: FnMinusInfinity> Object<B> {
+    /// Returns negative infinity (-∞).
+    pub fn minus_infinity() -> Self {
+        Object(B::minus_infinity())
+    }
+}
+
+/// Returns `true` if `self` is negative infinity and `false` otherwise.
+pub trait IsMinusInfinity {
+    /// Returns `true` if `self` is negative infinity and `false` otherwise.
+    fn is_minus_infinity(self) -> bool;
+}
+
+impl<B: IsMinusInfinity> IsMinusInfinity for Object<B> {
+    fn is_minus_infinity(self) -> bool {
+        <B as IsMinusInfinity>::is_minus_infinity(self.0)
+    }
+}
+
+impl<B: IsMinusInfinity> Object<B> {
+    /// Returns `true` if `self` is negative infinity and `false` otherwise.
+    pub fn is_minus_infinity(self) -> bool {
+        <B as IsMinusInfinity>::is_minus_infinity(self.0)
+    }
 }
 
 /// Positive infinity (+∞).
@@ -166,9 +226,69 @@ pub trait MinusInfinity {
 /// This is an infinity going in the positive direction. This trait is not
 /// for a directionless infinity, such as the one present in Riemann sphere and in
 /// projectively extended reals.
-pub trait PlusInfinity {
+pub trait PlusInfinity: AssocConstPlusInfinity + PlusInfinityFns {}
+impl<T: AssocConstPlusInfinity + PlusInfinityFns> PlusInfinity for T {}
+
+/// Positive infinity (+∞) as an associated constant.
+pub trait AssocConstPlusInfinity {
+    /// The type of the positive infinity value.
+    type Value;
+
     /// Positive infinity (+∞).
-    const PLUS_INFINITY: Self;
+    const PLUS_INFINITY: Self::Value;
+}
+
+impl<B: AssocConstPlusInfinity<Value = B>> AssocConstPlusInfinity for Object<B> {
+    type Value = Self;
+
+    const PLUS_INFINITY: Self::Value = Object(B::PLUS_INFINITY);
+}
+
+impl<B: AssocConstPlusInfinity<Value = B>> Object<B> {
+    /// Positive infinity (+∞).
+    pub const PLUS_INFINITY: Self = Object(B::PLUS_INFINITY);
+}
+
+/// Functions defining positive infinity (+∞).
+pub trait PlusInfinityFns: FnPlusInfinity + IsPlusInfinity {}
+impl<T: FnPlusInfinity + IsPlusInfinity> PlusInfinityFns for T {}
+
+/// Returns positive infinity (+∞).
+pub trait FnPlusInfinity {
+    /// Returns positive infinity (+∞).
+    fn plus_infinity() -> Self;
+}
+
+impl<B: FnPlusInfinity> FnPlusInfinity for Object<B> {
+    fn plus_infinity() -> Self {
+        Object(B::plus_infinity())
+    }
+}
+
+impl<B: FnPlusInfinity> Object<B> {
+    /// Returns positive infinity (+∞).
+    pub fn plus_infinity() -> Self {
+        Object(B::plus_infinity())
+    }
+}
+
+/// Returns `true` if `self` is positive infinity and `false` otherwise.
+pub trait IsPlusInfinity {
+    /// Returns `true` if `self` is positive infinity and `false` otherwise.
+    fn is_plus_infinity(self) -> bool;
+}
+
+impl<B: IsPlusInfinity> IsPlusInfinity for Object<B> {
+    fn is_plus_infinity(self) -> bool {
+        <B as IsPlusInfinity>::is_plus_infinity(self.0)
+    }
+}
+
+impl<B: IsPlusInfinity> Object<B> {
+    /// Returns `true` if `self` is positive infinity and `false` otherwise.
+    pub fn is_plus_infinity(self) -> bool {
+        <B as IsPlusInfinity>::is_plus_infinity(self.0)
+    }
 }
 
 /// Not a Number (NaN) value.
@@ -285,6 +405,20 @@ macro_rules! impl_elem_traits_for_int {
         impl IsNan for $ty {
             #[inline]
             fn is_nan(self) -> bool {
+                false
+            }
+        }
+
+        impl IsMinusInfinity for $ty {
+            #[inline]
+            fn is_minus_infinity(self) -> bool {
+                false
+            }
+        }
+
+        impl IsPlusInfinity for $ty {
+            #[inline]
+            fn is_plus_infinity(self) -> bool {
                 false
             }
         }
@@ -535,12 +669,44 @@ macro_rules! impl_elem_traits_for_float {
             const ONE: Self::Value = 1.0;
         }
 
-        impl MinusInfinity for $ty {
-            const MINUS_INFINITY: Self = <$ty>::NEG_INFINITY;
+        impl AssocConstMinusInfinity for $ty {
+            type Value = Self;
+
+            const MINUS_INFINITY: Self::Value = <$ty>::NEG_INFINITY;
         }
 
-        impl PlusInfinity for $ty {
-            const PLUS_INFINITY: Self = <$ty>::INFINITY;
+        impl FnMinusInfinity for $ty {
+            #[inline]
+            fn minus_infinity() -> Self {
+                <$ty>::NEG_INFINITY
+            }
+        }
+
+        impl IsMinusInfinity for $ty {
+            #[inline]
+            fn is_minus_infinity(self) -> bool {
+                self.is_infinite() && self.is_sign_negative()
+            }
+        }
+
+        impl AssocConstPlusInfinity for $ty {
+            type Value = Self;
+
+            const PLUS_INFINITY: Self::Value = <$ty>::INFINITY;
+        }
+
+        impl FnPlusInfinity for $ty {
+            #[inline]
+            fn plus_infinity() -> Self {
+                <$ty>::INFINITY
+            }
+        }
+
+        impl IsPlusInfinity for $ty {
+            #[inline]
+            fn is_plus_infinity(self) -> bool {
+                self.is_infinite() && self.is_sign_positive()
+            }
         }
 
         impl FnNan for $ty {

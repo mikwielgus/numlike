@@ -12,8 +12,9 @@ use core::{
 use crate::{
     cmp::{NanfixEq, NanfixPartialEq, NanmaxOrd, NanmaxPartialOrd, NanminOrd, NanminPartialOrd},
     elem::{
-        AssocConstNan, AssocConstOne, AssocConstZero, FnNan, FnOne, FnZero, IsNan, IsOne, IsZero,
-        MinusInfinity, PlusInfinity,
+        AssocConstMinusInfinity, AssocConstNan, AssocConstOne, AssocConstPlusInfinity,
+        AssocConstZero, FnMinusInfinity, FnNan, FnOne, FnPlusInfinity, FnZero, IsMinusInfinity,
+        IsNan, IsOne, IsPlusInfinity, IsZero,
     },
     fns::{Abs, CheckedAbs, Gcd, IsNegative, IsPositive, Lcm, Sgn, SignFns},
     limits::{
@@ -873,18 +874,46 @@ impl<T: AssocConstOne<Value = T>> AssocConstOne for Ratio<T> {
     };
 }
 
-impl<T: AssocConstOne<Value = T> + MinusInfinity> MinusInfinity for Ratio<T> {
-    const MINUS_INFINITY: Self = Ratio {
-        numer: MinusInfinity::MINUS_INFINITY,
+impl<T: AssocConstMinusInfinity<Value = T> + AssocConstOne<Value = T>> AssocConstMinusInfinity
+    for Ratio<T>
+{
+    type Value = Self;
+
+    const MINUS_INFINITY: Self::Value = Ratio {
+        numer: <T as AssocConstMinusInfinity>::MINUS_INFINITY,
         denom: <T as AssocConstOne>::ONE,
     };
 }
 
-impl<T: AssocConstOne<Value = T> + PlusInfinity> PlusInfinity for Ratio<T> {
-    const PLUS_INFINITY: Self = Ratio {
-        numer: PlusInfinity::PLUS_INFINITY,
+impl<T: FnMinusInfinity + FnOne> FnMinusInfinity for Ratio<T> {
+    #[inline]
+    fn minus_infinity() -> Self {
+        Ratio {
+            numer: <T as FnMinusInfinity>::minus_infinity(),
+            denom: FnOne::one(),
+        }
+    }
+}
+
+impl<T: AssocConstPlusInfinity<Value = T> + AssocConstOne<Value = T>> AssocConstPlusInfinity
+    for Ratio<T>
+{
+    type Value = Self;
+
+    const PLUS_INFINITY: Self::Value = Ratio {
+        numer: <T as AssocConstPlusInfinity>::PLUS_INFINITY,
         denom: <T as AssocConstOne>::ONE,
     };
+}
+
+impl<T: FnPlusInfinity + FnOne> FnPlusInfinity for Ratio<T> {
+    #[inline]
+    fn plus_infinity() -> Self {
+        Ratio {
+            numer: <T as FnPlusInfinity>::plus_infinity(),
+            denom: FnOne::one(),
+        }
+    }
 }
 
 impl<T: FnNan + FnOne> FnNan for Ratio<T> {
@@ -920,6 +949,20 @@ impl<T: IsZero> IsZero for Ratio<T> {
     #[inline]
     fn is_zero(self) -> bool {
         self.numer.is_zero()
+    }
+}
+
+impl<T: IsMinusInfinity> IsMinusInfinity for Ratio<T> {
+    #[inline]
+    fn is_minus_infinity(self) -> bool {
+        self.numer.is_minus_infinity()
+    }
+}
+
+impl<T: IsPlusInfinity> IsPlusInfinity for Ratio<T> {
+    #[inline]
+    fn is_plus_infinity(self) -> bool {
+        self.numer.is_plus_infinity()
     }
 }
 
