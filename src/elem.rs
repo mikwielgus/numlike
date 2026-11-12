@@ -48,6 +48,19 @@ pub trait FnZero {
     fn zero() -> Self;
 }
 
+impl<B: FnZero> FnZero for Object<B> {
+    fn zero() -> Self {
+        Object(B::zero())
+    }
+}
+
+impl<B: FnZero> Object<B> {
+    /// Returns a distinguished `0` value.
+    pub fn zero() -> Self {
+        Object(B::zero())
+    }
+}
+
 /// Defines a distinguished `1` value.
 ///
 /// This is usually the multiplicative identity, but it does not have to be
@@ -85,6 +98,19 @@ impl<T: FnOne> OneFns for T {}
 pub trait FnOne {
     /// Returns a distinguished `1` value.
     fn one() -> Self;
+}
+
+impl<B: FnOne> FnOne for Object<B> {
+    fn one() -> Self {
+        Object(B::one())
+    }
+}
+
+impl<B: FnOne> Object<B> {
+    /// Returns a distinguished `0` value.
+    pub fn one() -> Self {
+        Object(B::one())
+    }
 }
 
 /// Negative infinity (-∞).
