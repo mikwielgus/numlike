@@ -297,14 +297,14 @@ pub trait FieldOps<Rhs = Self>:
 }
 impl<Rhs, T: RingOps<Rhs> + Div<Rhs, Output = Self> + Rcp<Output = Self>> FieldOps<Rhs> for T {}
 
-/// Computes reciprocal, also known as multiplicative inverse. Returns `1/x`
-/// or `x^-1`.
+/// Reciprocal, also known as multiplicative inverse. Computes `1 / self`
+/// (`= self^-1`).
 pub trait Rcp {
     /// The resulting type after applying the operation.
     type Output;
 
-    /// Computes reciprocal, also known as multiplicative inverse. Returns `1/x`
-    /// or `x^-1`.
+    /// Reciprocal, also known as multiplicative inverse. Computes `1 / self`
+    /// (`= self^-1`).
     fn rcp(self) -> Self::Output;
 }
 
@@ -317,8 +317,7 @@ impl<B: Rcp<Output = B>> Rcp for Object<B> {
 }
 
 impl<B: Rcp<Output = B>> Object<B> {
-    /// Computes reciprocal, also known as multiplicative inverse. Returns `1/x`
-    /// or `x^-1`.
+    /// Reciprocal, also known as the multiplicative inverse. Computes `1 / self` (`= self^-1`).
     pub fn rcp(self) -> Self {
         Object(<B as Rcp>::rcp(self.0))
     }
