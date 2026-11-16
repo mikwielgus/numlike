@@ -22,6 +22,7 @@ pub trait CheckedShl {
 impl<B: CheckedShl<Output = B>> CheckedShl for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_shl(self, rhs: u32) -> Option<Self::Output> {
         <B as CheckedShl>::checked_shl(self.0, rhs).map(Object)
     }
@@ -30,6 +31,7 @@ impl<B: CheckedShl<Output = B>> CheckedShl for Object<B> {
 impl<B: CheckedShl<Output = B>> Object<B> {
     /// Checked shift left. Computes `self << rhs`, returning `None` if `rhs` is larger
     /// than or equal to the number of bits in `self`.
+    #[inline(always)]
     pub fn checked_shl(self, rhs: u32) -> Option<Self> {
         <B as CheckedShl>::checked_shl(self.0, rhs).map(Object)
     }
@@ -49,6 +51,7 @@ pub trait CheckedShr {
 impl<B: CheckedShr<Output = B>> CheckedShr for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_shr(self, rhs: u32) -> Option<Self::Output> {
         <B as CheckedShr>::checked_shr(self.0, rhs).map(Object)
     }
@@ -57,6 +60,7 @@ impl<B: CheckedShr<Output = B>> CheckedShr for Object<B> {
 impl<B: CheckedShr<Output = B>> Object<B> {
     /// Checked shift right. Computes `self >> rhs`, returning `None` if `rhs` is
     /// larger than or equal to the number of bits in `self`.
+    #[inline(always)]
     pub fn checked_shr(self, rhs: u32) -> Option<Self> {
         <B as CheckedShr>::checked_shr(self.0, rhs).map(Object)
     }

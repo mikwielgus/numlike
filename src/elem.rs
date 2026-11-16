@@ -49,6 +49,7 @@ pub trait FnZero {
 }
 
 impl<B: FnZero> FnZero for Object<B> {
+    #[inline(always)]
     fn zero() -> Self {
         Object(B::zero())
     }
@@ -56,6 +57,7 @@ impl<B: FnZero> FnZero for Object<B> {
 
 impl<B: FnZero> Object<B> {
     /// Returns a distinguished `0` value.
+    #[inline(always)]
     pub fn zero() -> Self {
         Object(B::zero())
     }
@@ -68,6 +70,7 @@ pub trait IsZero {
 }
 
 impl<B: IsZero> IsZero for Object<B> {
+    #[inline(always)]
     fn is_zero(self) -> bool {
         <B as IsZero>::is_zero(self.0)
     }
@@ -75,6 +78,7 @@ impl<B: IsZero> IsZero for Object<B> {
 
 impl<B: IsZero> Object<B> {
     /// Returns `true` if `self` is zero and `false` otherwise.
+    #[inline(always)]
     pub fn is_zero(self) -> bool {
         <B as IsZero>::is_zero(self.0)
     }
@@ -120,6 +124,7 @@ pub trait FnOne {
 }
 
 impl<B: FnOne> FnOne for Object<B> {
+    #[inline(always)]
     fn one() -> Self {
         Object(B::one())
     }
@@ -127,6 +132,7 @@ impl<B: FnOne> FnOne for Object<B> {
 
 impl<B: FnOne> Object<B> {
     /// Returns a distinguished `1` value.
+    #[inline(always)]
     pub fn one() -> Self {
         Object(B::one())
     }
@@ -139,6 +145,7 @@ pub trait IsOne {
 }
 
 impl<B: IsOne> IsOne for Object<B> {
+    #[inline(always)]
     fn is_one(self) -> bool {
         <B as IsOne>::is_one(self.0)
     }
@@ -146,6 +153,7 @@ impl<B: IsOne> IsOne for Object<B> {
 
 impl<B: IsOne> Object<B> {
     /// Returns `true` if `self` is one and `false` otherwise.
+    #[inline(always)]
     pub fn is_one(self) -> bool {
         <B as IsOne>::is_one(self.0)
     }
@@ -190,6 +198,7 @@ pub trait FnMinusInfinity {
 }
 
 impl<B: FnMinusInfinity> FnMinusInfinity for Object<B> {
+    #[inline(always)]
     fn minus_infinity() -> Self {
         Object(B::minus_infinity())
     }
@@ -197,6 +206,7 @@ impl<B: FnMinusInfinity> FnMinusInfinity for Object<B> {
 
 impl<B: FnMinusInfinity> Object<B> {
     /// Returns negative infinity (-∞).
+    #[inline(always)]
     pub fn minus_infinity() -> Self {
         Object(B::minus_infinity())
     }
@@ -209,6 +219,7 @@ pub trait IsMinusInfinity {
 }
 
 impl<B: IsMinusInfinity> IsMinusInfinity for Object<B> {
+    #[inline(always)]
     fn is_minus_infinity(self) -> bool {
         <B as IsMinusInfinity>::is_minus_infinity(self.0)
     }
@@ -216,6 +227,7 @@ impl<B: IsMinusInfinity> IsMinusInfinity for Object<B> {
 
 impl<B: IsMinusInfinity> Object<B> {
     /// Returns `true` if `self` is negative infinity and `false` otherwise.
+    #[inline(always)]
     pub fn is_minus_infinity(self) -> bool {
         <B as IsMinusInfinity>::is_minus_infinity(self.0)
     }
@@ -260,6 +272,7 @@ pub trait FnPlusInfinity {
 }
 
 impl<B: FnPlusInfinity> FnPlusInfinity for Object<B> {
+    #[inline(always)]
     fn plus_infinity() -> Self {
         Object(B::plus_infinity())
     }
@@ -267,6 +280,7 @@ impl<B: FnPlusInfinity> FnPlusInfinity for Object<B> {
 
 impl<B: FnPlusInfinity> Object<B> {
     /// Returns positive infinity (+∞).
+    #[inline(always)]
     pub fn plus_infinity() -> Self {
         Object(B::plus_infinity())
     }
@@ -279,6 +293,7 @@ pub trait IsPlusInfinity {
 }
 
 impl<B: IsPlusInfinity> IsPlusInfinity for Object<B> {
+    #[inline(always)]
     fn is_plus_infinity(self) -> bool {
         <B as IsPlusInfinity>::is_plus_infinity(self.0)
     }
@@ -286,6 +301,7 @@ impl<B: IsPlusInfinity> IsPlusInfinity for Object<B> {
 
 impl<B: IsPlusInfinity> Object<B> {
     /// Returns `true` if `self` is positive infinity and `false` otherwise.
+    #[inline(always)]
     pub fn is_plus_infinity(self) -> bool {
         <B as IsPlusInfinity>::is_plus_infinity(self.0)
     }
@@ -326,6 +342,7 @@ pub trait FnNan {
 }
 
 impl<B: FnNan> FnNan for Object<B> {
+    #[inline(always)]
     fn nan() -> Self {
         Object(B::nan())
     }
@@ -333,6 +350,7 @@ impl<B: FnNan> FnNan for Object<B> {
 
 impl<B: FnNan> Object<B> {
     /// Not a Number (NaN) value.
+    #[inline(always)]
     pub fn nan() -> Self {
         Object(B::nan())
     }
@@ -348,6 +366,7 @@ pub trait IsNan {
 }
 
 impl<B: IsNan> IsNan for Object<B> {
+    #[inline(always)]
     fn is_nan(self) -> bool {
         <B as IsNan>::is_nan(self.0)
     }
@@ -355,6 +374,7 @@ impl<B: IsNan> IsNan for Object<B> {
 
 impl<B: IsNan> Object<B> {
     /// Returns `true` if `self` is NaN and `false` otherwise.
+    #[inline(always)]
     pub fn is_nan(self) -> bool {
         <B as IsNan>::is_nan(self.0)
     }

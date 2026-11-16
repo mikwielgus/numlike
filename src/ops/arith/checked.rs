@@ -32,6 +32,7 @@ pub trait CheckedMulAdd<A = Self, B = Self> {
 impl<B: CheckedMulAdd<Output = B>> CheckedMulAdd for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_mul_add(self, a: Self, b: Self) -> Option<Self::Output> {
         <B as CheckedMulAdd>::checked_mul_add(self.0, a.0, b.0).map(Object)
     }
@@ -40,6 +41,7 @@ impl<B: CheckedMulAdd<Output = B>> CheckedMulAdd for Object<B> {
 impl<B: CheckedMulAdd<Output = B>> Object<B> {
     /// Checked fused multiply-add. Computes `(self * a) + b`, returning `None`
     /// if overflow occurred or the result is not finite.
+    #[inline(always)]
     pub fn checked_mul_add(self, a: Self, b: Self) -> Option<Self> {
         <B as CheckedMulAdd>::checked_mul_add(self.0, a.0, b.0).map(Object)
     }
@@ -77,6 +79,7 @@ pub trait CheckedRem<Rhs = Self> {
 impl<B: CheckedRem<Output = B>> CheckedRem for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_rem(self, other: Self) -> Option<Self::Output> {
         <B as CheckedRem>::checked_rem(self.0, other.0).map(Object)
     }
@@ -85,6 +88,7 @@ impl<B: CheckedRem<Output = B>> CheckedRem for Object<B> {
 impl<B: CheckedRem<Output = B>> Object<B> {
     /// Checked remainder. Computes `self % other`, returning `None` if `other
     /// == 0` or the division results in overflow.
+    #[inline(always)]
     pub fn checked_rem(self, other: Self) -> Option<Self> {
         <B as CheckedRem>::checked_rem(self.0, other.0).map(Object)
     }
@@ -106,6 +110,7 @@ pub trait CheckedDivRem<Rhs> {
 impl<B: CheckedDivRem<B, Output = B>> CheckedDivRem<Object<B>> for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_div_rem(self, other: Self) -> Option<(Self::Output, Self::Output)> {
         <B as CheckedDivRem<B>>::checked_div_rem(self.0, other.0)
             .map(|(a, b)| (Object(a), Object(b)))
@@ -116,6 +121,7 @@ impl<B: CheckedDivRem<B, Output = B>> Object<B> {
     /// Checked simultaneous quotient and remainder. Computes
     /// `(self / other, self % other)`, returning `None` if `other == 0` or the
     /// division results in overflow.
+    #[inline(always)]
     pub fn checked_div_rem(self, other: Self) -> Option<(Self, Self)> {
         <B as CheckedDivRem<B>>::checked_div_rem(self.0, other.0)
             .map(|(a, b)| (Object(a), Object(b)))
@@ -146,6 +152,7 @@ pub trait CheckedDivEuclid<Rhs = Self> {
 impl<B: CheckedDivEuclid<Output = B>> CheckedDivEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_div_euclid(self, other: Self) -> Option<Self::Output> {
         <B as CheckedDivEuclid>::checked_div_euclid(self.0, other.0).map(Object)
     }
@@ -154,6 +161,7 @@ impl<B: CheckedDivEuclid<Output = B>> CheckedDivEuclid for Object<B> {
 impl<B: CheckedDivEuclid<Output = B>> Object<B> {
     /// Checked Euclidean division. Computes `self.div_euclid(other)`,
     /// returning `None` if `other == 0` or the division results in overflow.
+    #[inline(always)]
     pub fn checked_div_euclid(self, other: Self) -> Option<Self> {
         <B as CheckedDivEuclid>::checked_div_euclid(self.0, other.0).map(Object)
     }
@@ -173,6 +181,7 @@ pub trait CheckedRemEuclid<Rhs = Self> {
 impl<B: CheckedRemEuclid<Output = B>> CheckedRemEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_rem_euclid(self, other: Self) -> Option<Self::Output> {
         <B as CheckedRemEuclid>::checked_rem_euclid(self.0, other.0).map(Object)
     }
@@ -181,6 +190,7 @@ impl<B: CheckedRemEuclid<Output = B>> CheckedRemEuclid for Object<B> {
 impl<B: CheckedRemEuclid<Output = B>> Object<B> {
     /// Checked Euclidean remainder. Computes `self.rem_euclid(other)`,
     /// returning `None` if `other == 0` or the division results in overflow.
+    #[inline(always)]
     pub fn checked_rem_euclid(self, other: Self) -> Option<Self> {
         <B as CheckedRemEuclid>::checked_rem_euclid(self.0, other.0).map(Object)
     }
@@ -202,6 +212,7 @@ pub trait CheckedDivRemEuclid<Rhs = Self> {
 impl<B: CheckedDivRemEuclid<Output = B>> CheckedDivRemEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_div_rem_euclid(self, other: Self) -> Option<(Self::Output, Self::Output)> {
         <B as CheckedDivRemEuclid>::checked_div_rem_euclid(self.0, other.0)
             .map(|(a, b)| (Object(a), Object(b)))
@@ -212,6 +223,7 @@ impl<B: CheckedDivRemEuclid<Output = B>> Object<B> {
     /// Checked simultaneous Euclidean quotient and remainder. Computes
     /// `(self.div_euclid(other), self.rem_euclid(other))`, returning `None` if
     /// `other == 0` or the division results in overflow.
+    #[inline(always)]
     pub fn checked_div_rem_euclid(self, other: Self) -> Option<(Self, Self)> {
         <B as CheckedDivRemEuclid>::checked_div_rem_euclid(self.0, other.0)
             .map(|(a, b)| (Object(a), Object(b)))
@@ -242,6 +254,7 @@ pub trait CheckedDiv<Rhs = Self> {
 impl<B: CheckedDiv<Output = B>> CheckedDiv for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_div(self, other: Self) -> Option<Self::Output> {
         <B as CheckedDiv>::checked_div(self.0, other.0).map(Object)
     }
@@ -250,6 +263,7 @@ impl<B: CheckedDiv<Output = B>> CheckedDiv for Object<B> {
 impl<B: CheckedDiv<Output = B>> Object<B> {
     /// Checked division. Computes `self / other`, returning `None` if `other ==
     /// 0` or the division results in overflow.
+    #[inline(always)]
     pub fn checked_div(self, other: Self) -> Option<Self> {
         <B as CheckedDiv>::checked_div(self.0, other.0).map(Object)
     }
@@ -269,6 +283,7 @@ pub trait CheckedRcp {
 impl<B: CheckedRcp<Output = B>> CheckedRcp for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_rcp(self) -> Option<Self::Output> {
         <B as CheckedRcp>::checked_rcp(self.0).map(Object)
     }
@@ -277,6 +292,7 @@ impl<B: CheckedRcp<Output = B>> CheckedRcp for Object<B> {
 impl<B: CheckedRcp<Output = B>> Object<B> {
     /// Checked reciprocal. Computes `1 / self`, returning `None` if `self == 0`
     /// or the division results in overflow.
+    #[inline(always)]
     pub fn checked_rcp(self) -> Option<Self> {
         <B as CheckedRcp>::checked_rcp(self.0).map(Object)
     }
@@ -314,6 +330,7 @@ pub trait CheckedAdd<Rhs = Self> {
 impl<B: CheckedAdd<Output = B>> CheckedAdd for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_add(self, other: Self) -> Option<Self::Output> {
         <B as CheckedAdd>::checked_add(self.0, other.0).map(Object)
     }
@@ -322,6 +339,7 @@ impl<B: CheckedAdd<Output = B>> CheckedAdd for Object<B> {
 impl<B: CheckedAdd<Output = B>> Object<B> {
     /// Checked addition. Computes `self + other`, returning `None` if overflow
     /// or occurred.
+    #[inline(always)]
     pub fn checked_add(self, other: Self) -> Option<Self> {
         <B as CheckedAdd>::checked_add(self.0, other.0).map(Object)
     }
@@ -341,6 +359,7 @@ pub trait CheckedSub<Rhs = Self> {
 impl<B: CheckedSub<Output = B>> CheckedSub for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_sub(self, other: Self) -> Option<Self::Output> {
         <B as CheckedSub>::checked_sub(self.0, other.0).map(Object)
     }
@@ -349,6 +368,7 @@ impl<B: CheckedSub<Output = B>> CheckedSub for Object<B> {
 impl<B: CheckedSub<Output = B>> Object<B> {
     /// Checked subtraction. Computes `self - other`, returning `None` if
     /// overflow occurred.
+    #[inline(always)]
     pub fn checked_sub(self, other: Self) -> Option<Self> {
         <B as CheckedSub>::checked_sub(self.0, other.0).map(Object)
     }
@@ -368,6 +388,7 @@ pub trait CheckedMul<Rhs = Self> {
 impl<B: CheckedMul<Output = B>> CheckedMul for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_mul(self, other: Self) -> Option<Self::Output> {
         <B as CheckedMul>::checked_mul(self.0, other.0).map(Object)
     }
@@ -376,6 +397,7 @@ impl<B: CheckedMul<Output = B>> CheckedMul for Object<B> {
 impl<B: CheckedMul<Output = B>> Object<B> {
     /// Checked multiplication. Computes `self * other`, returning `None` if
     /// overflow occurred.
+    #[inline(always)]
     pub fn checked_mul(self, other: Self) -> Option<Self> {
         <B as CheckedMul>::checked_mul(self.0, other.0).map(Object)
     }
@@ -393,6 +415,7 @@ pub trait CheckedNeg {
 impl<B: CheckedNeg<Output = B>> CheckedNeg for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn checked_neg(self) -> Option<Self::Output> {
         <B as CheckedNeg>::checked_neg(self.0).map(Object)
     }
@@ -400,6 +423,7 @@ impl<B: CheckedNeg<Output = B>> CheckedNeg for Object<B> {
 
 impl<B: CheckedNeg<Output = B>> Object<B> {
     /// Checked negation. Computes `-self`, returning `None` if `self == MIN`.
+    #[inline(always)]
     pub fn checked_neg(self) -> Option<Self> {
         <B as CheckedNeg>::checked_neg(self.0).map(Object)
     }

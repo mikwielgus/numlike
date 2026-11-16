@@ -23,6 +23,7 @@ pub trait ToBeBytes {
 impl<B: ToBeBytes> ToBeBytes for Object<B> {
     type Output = <B as ToBeBytes>::Output;
 
+    #[inline(always)]
     fn to_be_bytes(self) -> Self::Output {
         <B as ToBeBytes>::to_be_bytes(self.0)
     }
@@ -31,6 +32,7 @@ impl<B: ToBeBytes> ToBeBytes for Object<B> {
 impl<B: ToBeBytes> Object<B> {
     /// Returns the memory representation of this number as a byte array in
     /// big-endian (network) byte order.
+    #[inline(always)]
     pub fn to_be_bytes(self) -> <B as ToBeBytes>::Output {
         <B as ToBeBytes>::to_be_bytes(self.0)
     }
@@ -50,6 +52,7 @@ pub trait ToLeBytes {
 impl<B: ToLeBytes> ToLeBytes for Object<B> {
     type Output = <B as ToLeBytes>::Output;
 
+    #[inline(always)]
     fn to_le_bytes(self) -> Self::Output {
         <B as ToLeBytes>::to_le_bytes(self.0)
     }
@@ -58,6 +61,7 @@ impl<B: ToLeBytes> ToLeBytes for Object<B> {
 impl<B: ToLeBytes> Object<B> {
     /// Returns the memory representation of this number as a byte array in
     /// little-endian byte order.
+    #[inline(always)]
     pub fn to_le_bytes(self) -> <B as ToLeBytes>::Output {
         <B as ToLeBytes>::to_le_bytes(self.0)
     }
@@ -80,6 +84,7 @@ pub trait ToNeBytes {
 impl<B: ToNeBytes> ToNeBytes for Object<B> {
     type Output = <B as ToNeBytes>::Output;
 
+    #[inline(always)]
     fn to_ne_bytes(self) -> Self::Output {
         <B as ToNeBytes>::to_ne_bytes(self.0)
     }
@@ -88,6 +93,7 @@ impl<B: ToNeBytes> ToNeBytes for Object<B> {
 impl<B: ToNeBytes> Object<B> {
     /// Returns the memory representation of this number as a byte array in
     /// native byte order.
+    #[inline(always)]
     pub fn to_ne_bytes(self) -> <B as ToNeBytes>::Output {
         <B as ToNeBytes>::to_ne_bytes(self.0)
     }
@@ -107,6 +113,7 @@ pub trait FromBeBytes {
 impl<B: FromBeBytes> FromBeBytes for Object<B> {
     type Output = <B as FromBeBytes>::Output;
 
+    #[inline(always)]
     fn from_be_bytes(bytes: Self::Output) -> Self {
         Object(<B as FromBeBytes>::from_be_bytes(bytes))
     }
@@ -115,6 +122,7 @@ impl<B: FromBeBytes> FromBeBytes for Object<B> {
 impl<B: FromBeBytes> Object<B> {
     /// Creates a value from its representation as a byte array in big-endian
     /// byte order.
+    #[inline(always)]
     pub fn from_be_bytes(bytes: <B as FromBeBytes>::Output) -> Self {
         Object(<B as FromBeBytes>::from_be_bytes(bytes))
     }
@@ -134,6 +142,7 @@ pub trait FromLeBytes {
 impl<B: FromLeBytes> FromLeBytes for Object<B> {
     type Output = <B as FromLeBytes>::Output;
 
+    #[inline(always)]
     fn from_le_bytes(bytes: Self::Output) -> Self {
         Object(<B as FromLeBytes>::from_le_bytes(bytes))
     }
@@ -142,6 +151,7 @@ impl<B: FromLeBytes> FromLeBytes for Object<B> {
 impl<B: FromLeBytes> Object<B> {
     /// Creates a value from its representation as a byte array in little-endian
     /// byte order.
+    #[inline(always)]
     pub fn from_le_bytes(bytes: <B as FromLeBytes>::Output) -> Self {
         Object(<B as FromLeBytes>::from_le_bytes(bytes))
     }
@@ -167,6 +177,7 @@ pub trait FromNeBytes {
 impl<B: FromNeBytes> FromNeBytes for Object<B> {
     type Output = <B as FromNeBytes>::Output;
 
+    #[inline(always)]
     fn from_ne_bytes(bytes: Self::Output) -> Self {
         Object(<B as FromNeBytes>::from_ne_bytes(bytes))
     }
@@ -178,6 +189,7 @@ impl<B: FromNeBytes> Object<B> {
     ///
     /// As the target platform’s native endianness is used, portable code should
     /// use [`from_be_bytes`] or [`from_le_bytes`], as appropriate, instead.
+    #[inline(always)]
     pub fn from_ne_bytes(bytes: <B as FromNeBytes>::Output) -> Self {
         Object(<B as FromNeBytes>::from_ne_bytes(bytes))
     }

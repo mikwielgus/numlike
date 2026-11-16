@@ -17,6 +17,7 @@ pub trait IsPositive {
 }
 
 impl<B: IsPositive> IsPositive for Object<B> {
+    #[inline(always)]
     fn is_positive(self) -> bool {
         <B as IsPositive>::is_positive(self.0)
     }
@@ -24,6 +25,7 @@ impl<B: IsPositive> IsPositive for Object<B> {
 
 impl<B: IsPositive> Object<B> {
     /// Returns `true` if `self` is positive and `false` otherwise.
+    #[inline(always)]
     pub fn is_positive(self) -> bool {
         <B as IsPositive>::is_positive(self.0)
     }
@@ -36,6 +38,7 @@ pub trait IsNegative {
 }
 
 impl<B: IsNegative> IsNegative for Object<B> {
+    #[inline(always)]
     fn is_negative(self) -> bool {
         <B as IsNegative>::is_negative(self.0)
     }
@@ -43,6 +46,7 @@ impl<B: IsNegative> IsNegative for Object<B> {
 
 impl<B: IsNegative> Object<B> {
     /// Returns `true` if `self` is negative and `false` otherwise.
+    #[inline(always)]
     pub fn is_negative(self) -> bool {
         <B as IsNegative>::is_negative(self.0)
     }
@@ -64,6 +68,7 @@ pub trait Sgn {
 impl<B: Sgn> Sgn for Object<B> {
     type Output = Object<<B as Sgn>::Output>;
 
+    #[inline(always)]
     fn sgn(self) -> Self::Output {
         Object(<B as Sgn>::sgn(self.0))
     }
@@ -71,6 +76,7 @@ impl<B: Sgn> Sgn for Object<B> {
 
 impl<B: Sgn> Object<B> {
     /// Returns a number representing sign of `self`.
+    #[inline(always)]
     pub fn sgn(self) -> Object<<B as Sgn>::Output> {
         Object(<B as Sgn>::sgn(self.0))
     }
@@ -96,6 +102,7 @@ pub trait Abs {
 impl<B: Abs> Abs for Object<B> {
     type Output = Object<<B as Abs>::Output>;
 
+    #[inline(always)]
     fn abs(self) -> Self::Output {
         Object(<B as Abs>::abs(self.0))
     }
@@ -103,6 +110,7 @@ impl<B: Abs> Abs for Object<B> {
 
 impl<B: Abs> Object<B> {
     /// Computes the absolute value of `self`.
+    #[inline(always)]
     pub fn abs(self) -> Object<<B as Abs>::Output> {
         Object(<B as Abs>::abs(self.0))
     }
@@ -122,6 +130,7 @@ pub trait CheckedAbs {
 impl<B: CheckedAbs> CheckedAbs for Object<B> {
     type Output = Object<<B as CheckedAbs>::Output>;
 
+    #[inline(always)]
     fn checked_abs(self) -> Option<Self::Output> {
         <B as CheckedAbs>::checked_abs(self.0).map(Object)
     }
@@ -130,6 +139,7 @@ impl<B: CheckedAbs> CheckedAbs for Object<B> {
 impl<B: CheckedAbs> Object<B> {
     /// Checked absolute value. Computes `self.abs()`, returning `None` if
     /// `self` is the minimum value of a signed integer type.
+    #[inline(always)]
     pub fn checked_abs(self) -> Option<Object<<B as CheckedAbs>::Output>> {
         <B as CheckedAbs>::checked_abs(self.0).map(Object)
     }

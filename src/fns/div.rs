@@ -25,6 +25,7 @@ where
 {
     type Output = Object<<B as GcdLcm<Rhs>>::Output>;
 
+    #[inline(always)]
     fn gcd_lcm(self, rhs: Rhs) -> (Self::Output, Self::Output) {
         let (gcd, lcm) = <B as GcdLcm<Rhs>>::gcd_lcm(self.0, rhs);
 
@@ -35,6 +36,7 @@ where
 impl<B> Object<B> {
     /// Calculate the greatest common divisor (GCD) and least common multiple
     /// (LCM) together.
+    #[inline(always)]
     pub fn gcd_lcm<Rhs>(
         self,
         rhs: Rhs,
@@ -66,6 +68,7 @@ where
 {
     type Output = Object<<B as Gcd<Rhs>>::Output>;
 
+    #[inline(always)]
     fn gcd(self, rhs: Rhs) -> Self::Output {
         Object(<B as Gcd<Rhs>>::gcd(self.0, rhs))
     }
@@ -73,6 +76,7 @@ where
 
 impl<B> Object<B> {
     /// Calculate the greatest common divisor (GCD).
+    #[inline(always)]
     pub fn gcd<Rhs>(self, rhs: Rhs) -> Object<<B as Gcd<Rhs>>::Output>
     where
         B: Gcd<Rhs>,
@@ -96,6 +100,7 @@ where
 {
     type Output = Object<<B as Lcm<Rhs>>::Output>;
 
+    #[inline(always)]
     fn lcm(self, rhs: Rhs) -> Self::Output {
         Object(<B as Lcm<Rhs>>::lcm(self.0, rhs))
     }
@@ -103,6 +108,7 @@ where
 
 impl<B> Object<B> {
     /// Calculate the least common multiple (LCM).
+    #[inline(always)]
     pub fn lcm<Rhs>(self, rhs: Rhs) -> Object<<B as Lcm<Rhs>>::Output>
     where
         B: Lcm<Rhs>,

@@ -25,6 +25,7 @@ pub trait SinCos {
 impl<B: SinCos> SinCos for Object<B> {
     type Output = Object<<B as SinCos>::Output>;
 
+    #[inline(always)]
     fn sin_cos(self) -> (Self::Output, Self::Output) {
         let (sin, cos) = <B as SinCos>::sin_cos(self.0);
 
@@ -35,6 +36,7 @@ impl<B: SinCos> SinCos for Object<B> {
 impl<B: SinCos> Object<B> {
     /// Simultaneously computes the sine and cosine of the number, `x`. Returns
     /// `(sin(x), cos(x))`.
+    #[inline(always)]
     pub fn sin_cos(self) -> (Object<<B as SinCos>::Output>, Object<<B as SinCos>::Output>) {
         let (sin, cos) = <B as SinCos>::sin_cos(self.0);
 
@@ -58,6 +60,7 @@ pub trait Sin {
 impl<B: Sin> Sin for Object<B> {
     type Output = Object<<B as Sin>::Output>;
 
+    #[inline(always)]
     fn sin(self) -> Self::Output {
         Object(<B as Sin>::sin(self.0))
     }
@@ -65,6 +68,7 @@ impl<B: Sin> Sin for Object<B> {
 
 impl<B: Sin> Object<B> {
     /// Computes the sine of a number (in radians).
+    #[inline(always)]
     pub fn sin(self) -> Object<<B as Sin>::Output> {
         Object(<B as Sin>::sin(self.0))
     }
@@ -82,6 +86,7 @@ pub trait Cos {
 impl<B: Cos> Cos for Object<B> {
     type Output = Object<<B as Cos>::Output>;
 
+    #[inline(always)]
     fn cos(self) -> Self::Output {
         Object(<B as Cos>::cos(self.0))
     }
@@ -89,6 +94,7 @@ impl<B: Cos> Cos for Object<B> {
 
 impl<B: Cos> Object<B> {
     /// Computes the cosine of a number (in radians).
+    #[inline(always)]
     pub fn cos(self) -> Object<<B as Cos>::Output> {
         Object(<B as Cos>::cos(self.0))
     }
@@ -106,6 +112,7 @@ pub trait Tan {
 impl<B: Tan> Tan for Object<B> {
     type Output = Object<<B as Tan>::Output>;
 
+    #[inline(always)]
     fn tan(self) -> Self::Output {
         Object(<B as Tan>::tan(self.0))
     }
@@ -113,6 +120,7 @@ impl<B: Tan> Tan for Object<B> {
 
 impl<B: Tan> Object<B> {
     /// Computes the tangent of a number (in radians).
+    #[inline(always)]
     pub fn tan(self) -> Object<<B as Tan>::Output> {
         Object(<B as Tan>::tan(self.0))
     }
@@ -132,6 +140,7 @@ pub trait CheckedTan {
 impl<B: CheckedTan> CheckedTan for Object<B> {
     type Output = Object<<B as CheckedTan>::Output>;
 
+    #[inline(always)]
     fn checked_tan(self) -> Option<Self::Output> {
         <B as CheckedTan>::checked_tan(self.0).map(Object)
     }
@@ -141,6 +150,7 @@ impl<B: CheckedTan> Object<B> {
     /// Computes the tangent of a number (in radians).
     ///
     /// Returns `None` if the result is not finite.
+    #[inline(always)]
     pub fn checked_tan(self) -> Option<Object<<B as CheckedTan>::Output>> {
         <B as CheckedTan>::checked_tan(self.0).map(Object)
     }
@@ -165,6 +175,7 @@ where
 {
     type Output = Object<<B as Atan2<Rhs>>::Output>;
 
+    #[inline(always)]
     fn atan2(self, rhs: Rhs) -> Self::Output {
         Object(<B as Atan2<Rhs>>::atan2(self.0, rhs))
     }
@@ -172,6 +183,7 @@ where
 
 impl<B> Object<B> {
     /// Computes the four quadrant arctangent of `self` (`y`) and `rhs` (`x`) in radians.
+    #[inline(always)]
     pub fn atan2<Rhs>(self, rhs: Rhs) -> Object<<B as Atan2<Rhs>>::Output>
     where
         B: Atan2<Rhs>,
@@ -200,6 +212,7 @@ pub trait Asin {
 impl<B: Asin> Asin for Object<B> {
     type Output = Object<<B as Asin>::Output>;
 
+    #[inline(always)]
     fn asin(self) -> Self::Output {
         Object(<B as Asin>::asin(self.0))
     }
@@ -209,6 +222,7 @@ impl<B: Asin> Object<B> {
     /// Computes the arcsine of a number. Return value is in radians in
     /// the range [-pi/2, pi/2] or NaN if the number is outside the range
     /// [-1, 1].
+    #[inline(always)]
     pub fn asin(self) -> Object<<B as Asin>::Output> {
         Object(<B as Asin>::asin(self.0))
     }
@@ -230,6 +244,7 @@ pub trait Acos {
 impl<B: Acos> Acos for Object<B> {
     type Output = Object<<B as Acos>::Output>;
 
+    #[inline(always)]
     fn acos(self) -> Self::Output {
         Object(<B as Acos>::acos(self.0))
     }
@@ -239,6 +254,7 @@ impl<B: Acos> Object<B> {
     /// Computes the arccosine of a number. Return value is in radians in
     /// the range [0, pi] or NaN if the number is outside the range
     /// [-1, 1].
+    #[inline(always)]
     pub fn acos(self) -> Object<<B as Acos>::Output> {
         Object(<B as Acos>::acos(self.0))
     }
@@ -258,6 +274,7 @@ pub trait Atan {
 impl<B: Atan> Atan for Object<B> {
     type Output = Object<<B as Atan>::Output>;
 
+    #[inline(always)]
     fn atan(self) -> Self::Output {
         Object(<B as Atan>::atan(self.0))
     }
@@ -266,6 +283,7 @@ impl<B: Atan> Atan for Object<B> {
 impl<B: Atan> Object<B> {
     /// Computes the arctangent of a number. Return value is in radians in the
     /// range [-pi/2, pi/2];
+    #[inline(always)]
     pub fn atan(self) -> Object<<B as Atan>::Output> {
         Object(<B as Atan>::atan(self.0))
     }
@@ -292,6 +310,7 @@ pub trait CheckedAsin {
 impl<B: CheckedAsin> CheckedAsin for Object<B> {
     type Output = Object<<B as CheckedAsin>::Output>;
 
+    #[inline(always)]
     fn checked_asin(self) -> Option<Self::Output> {
         <B as CheckedAsin>::checked_asin(self.0).map(Object)
     }
@@ -303,6 +322,7 @@ impl<B: CheckedAsin> Object<B> {
     ///
     /// Returns `None` if the number is outside the range [-1, 1], or if the
     /// result is not finite.
+    #[inline(always)]
     pub fn checked_asin(self) -> Option<Object<<B as CheckedAsin>::Output>> {
         <B as CheckedAsin>::checked_asin(self.0).map(Object)
     }
@@ -325,6 +345,7 @@ pub trait CheckedAcos {
 impl<B: CheckedAcos> CheckedAcos for Object<B> {
     type Output = Object<<B as CheckedAcos>::Output>;
 
+    #[inline(always)]
     fn checked_acos(self) -> Option<Self::Output> {
         <B as CheckedAcos>::checked_acos(self.0).map(Object)
     }
@@ -336,6 +357,7 @@ impl<B: CheckedAcos> Object<B> {
     ///
     /// Returns `None` if the number is outside the range [-1, 1], or if the
     /// result is not finite.
+    #[inline(always)]
     pub fn checked_acos(self) -> Option<Object<<B as CheckedAcos>::Output>> {
         <B as CheckedAcos>::checked_acos(self.0).map(Object)
     }

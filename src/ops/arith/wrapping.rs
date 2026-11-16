@@ -28,6 +28,7 @@ pub trait WrappingMulAdd<A = Self, B = Self> {
 impl<B: WrappingMulAdd<Output = B>> WrappingMulAdd for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_mul_add(self, a: Self, b: Self) -> Self::Output {
         Object(<B as WrappingMulAdd>::wrapping_mul_add(self.0, a.0, b.0))
     }
@@ -36,6 +37,7 @@ impl<B: WrappingMulAdd<Output = B>> WrappingMulAdd for Object<B> {
 impl<B: WrappingMulAdd<Output = B>> Object<B> {
     /// Wrapping (modular) fused multiply-add. Computes `(self * a) + b`,
     /// wrapping around at the boundary of the type.
+    #[inline(always)]
     pub fn wrapping_mul_add(self, a: Self, b: Self) -> Self {
         Object(<B as WrappingMulAdd>::wrapping_mul_add(self.0, a.0, b.0))
     }
@@ -81,6 +83,7 @@ pub trait WrappingRem<Rhs = Self> {
 impl<B: WrappingRem<Output = B>> WrappingRem for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_rem(self, other: Self) -> Self::Output {
         Object(<B as WrappingRem>::wrapping_rem(self.0, other.0))
     }
@@ -89,6 +92,7 @@ impl<B: WrappingRem<Output = B>> WrappingRem for Object<B> {
 impl<B: WrappingRem<Output = B>> Object<B> {
     /// Wrapping (modular) remainder. Computes `self % other`, wrapping around at the
     /// boundary of the type.
+    #[inline(always)]
     pub fn wrapping_rem(self, other: Self) -> Self {
         Object(<B as WrappingRem>::wrapping_rem(self.0, other.0))
     }
@@ -112,6 +116,7 @@ pub trait WrappingDivRem<Rhs> {
 impl<B: WrappingDivRem<B, Output = B>> WrappingDivRem<Object<B>> for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_div_rem(self, other: Self) -> (Self::Output, Self::Output) {
         let (a, b) = <B as WrappingDivRem<B>>::wrapping_div_rem(self.0, other.0);
 
@@ -122,6 +127,7 @@ impl<B: WrappingDivRem<B, Output = B>> WrappingDivRem<Object<B>> for Object<B> {
 impl<B: WrappingDivRem<B, Output = B>> Object<B> {
     /// Wrapping simultaneous quotient and remainder. Computes
     /// `(self / other, self % other)`, wrapping around at the boundary of the type.
+    #[inline(always)]
     pub fn wrapping_div_rem(self, other: Self) -> (Self, Self) {
         let (a, b) = <B as WrappingDivRem<B>>::wrapping_div_rem(self.0, other.0);
 
@@ -161,6 +167,7 @@ pub trait WrappingDivEuclid<Rhs = Self> {
 impl<B: WrappingDivEuclid<Output = B>> WrappingDivEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_div_euclid(self, other: Self) -> Self::Output {
         Object(<B as WrappingDivEuclid>::wrapping_div_euclid(
             self.0, other.0,
@@ -171,6 +178,7 @@ impl<B: WrappingDivEuclid<Output = B>> WrappingDivEuclid for Object<B> {
 impl<B: WrappingDivEuclid<Output = B>> Object<B> {
     /// Wrapping Euclidean division. Computes `self.div_euclid(other)`,
     /// wrapping around at the boundary of the type.
+    #[inline(always)]
     pub fn wrapping_div_euclid(self, other: Self) -> Self {
         Object(<B as WrappingDivEuclid>::wrapping_div_euclid(
             self.0, other.0,
@@ -199,6 +207,7 @@ pub trait WrappingRemEuclid<Rhs = Self> {
 impl<B: WrappingRemEuclid<Output = B>> WrappingRemEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_rem_euclid(self, other: Self) -> Self::Output {
         Object(<B as WrappingRemEuclid>::wrapping_rem_euclid(
             self.0, other.0,
@@ -209,6 +218,7 @@ impl<B: WrappingRemEuclid<Output = B>> WrappingRemEuclid for Object<B> {
 impl<B: WrappingRemEuclid<Output = B>> Object<B> {
     /// Wrapping Euclidean remainder. Computes `self.rem_euclid(other)`, wrapping around
     /// at the boundary of the type.
+    #[inline(always)]
     pub fn wrapping_rem_euclid(self, other: Self) -> Self {
         Object(<B as WrappingRemEuclid>::wrapping_rem_euclid(
             self.0, other.0,
@@ -236,6 +246,7 @@ pub trait WrappingDivRemEuclid<Rhs = Self> {
 impl<B: WrappingDivRemEuclid<Output = B>> WrappingDivRemEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_div_rem_euclid(self, other: Self) -> (Self::Output, Self::Output) {
         let (a, b) = <B as WrappingDivRemEuclid>::wrapping_div_rem_euclid(self.0, other.0);
 
@@ -247,6 +258,7 @@ impl<B: WrappingDivRemEuclid<Output = B>> Object<B> {
     /// Wrapping simultaneous Euclidean quotient and remainder. Computes
     /// `(self.div_euclid(other), self.rem_euclid(other))`, wrapping around at the
     /// boundary of the type.
+    #[inline(always)]
     pub fn wrapping_div_rem_euclid(self, other: Self) -> (Self, Self) {
         let (a, b) = <B as WrappingDivRemEuclid>::wrapping_div_rem_euclid(self.0, other.0);
 
@@ -283,6 +295,7 @@ pub trait WrappingDiv<Rhs = Self> {
 impl<B: WrappingDiv<Output = B>> WrappingDiv for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_div(self, other: Self) -> Self::Output {
         Object(<B as WrappingDiv>::wrapping_div(self.0, other.0))
     }
@@ -291,6 +304,7 @@ impl<B: WrappingDiv<Output = B>> WrappingDiv for Object<B> {
 impl<B: WrappingDiv<Output = B>> Object<B> {
     /// Wrapping (modular) division. Computes `self / other`, wrapping around at the
     /// boundary of the type.
+    #[inline(always)]
     pub fn wrapping_div(self, other: Self) -> Self {
         Object(<B as WrappingDiv>::wrapping_div(self.0, other.0))
     }
@@ -328,6 +342,7 @@ pub trait WrappingAdd<Rhs = Self> {
 impl<B: WrappingAdd<Output = B>> WrappingAdd for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_add(self, other: Self) -> Self::Output {
         Object(<B as WrappingAdd>::wrapping_add(self.0, other.0))
     }
@@ -336,6 +351,7 @@ impl<B: WrappingAdd<Output = B>> WrappingAdd for Object<B> {
 impl<B: WrappingAdd<Output = B>> Object<B> {
     /// Wrapping (modular) addition. Computes `self + other`, wrapping around at the
     /// boundary of the type.
+    #[inline(always)]
     pub fn wrapping_add(self, other: Self) -> Self {
         Object(<B as WrappingAdd>::wrapping_add(self.0, other.0))
     }
@@ -355,6 +371,7 @@ pub trait WrappingSub<Rhs = Self> {
 impl<B: WrappingSub<Output = B>> WrappingSub for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_sub(self, other: Self) -> Self::Output {
         Object(<B as WrappingSub>::wrapping_sub(self.0, other.0))
     }
@@ -363,6 +380,7 @@ impl<B: WrappingSub<Output = B>> WrappingSub for Object<B> {
 impl<B: WrappingSub<Output = B>> Object<B> {
     /// Wrapping (modular) subtraction. Computes `self - other`, wrapping around at the
     /// boundary of the type.
+    #[inline(always)]
     pub fn wrapping_sub(self, other: Self) -> Self {
         Object(<B as WrappingSub>::wrapping_sub(self.0, other.0))
     }
@@ -382,6 +400,7 @@ pub trait WrappingMul<Rhs = Self> {
 impl<B: WrappingMul<Output = B>> WrappingMul for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_mul(self, other: Self) -> Self::Output {
         Object(<B as WrappingMul>::wrapping_mul(self.0, other.0))
     }
@@ -390,6 +409,7 @@ impl<B: WrappingMul<Output = B>> WrappingMul for Object<B> {
 impl<B: WrappingMul<Output = B>> Object<B> {
     /// Wrapping (modular) multiplication. Computes `self * other`, wrapping around at
     /// the boundary of the type.
+    #[inline(always)]
     pub fn wrapping_mul(self, other: Self) -> Self {
         Object(<B as WrappingMul>::wrapping_mul(self.0, other.0))
     }
@@ -413,6 +433,7 @@ pub trait WrappingNeg {
 impl<B: WrappingNeg<Output = B>> WrappingNeg for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_neg(self) -> Self::Output {
         Object(<B as WrappingNeg>::wrapping_neg(self.0))
     }
@@ -421,6 +442,7 @@ impl<B: WrappingNeg<Output = B>> WrappingNeg for Object<B> {
 impl<B: WrappingNeg<Output = B>> Object<B> {
     /// Wrapping (modular) negation. Computes `-self`, wrapping around at the boundary
     /// of the type.
+    #[inline(always)]
     pub fn wrapping_neg(self) -> Self {
         Object(<B as WrappingNeg>::wrapping_neg(self.0))
     }

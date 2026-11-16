@@ -24,6 +24,7 @@ pub trait Round {
 impl<B: Round> Round for Object<B> {
     type Output = Object<<B as Round>::Output>;
 
+    #[inline(always)]
     fn round(self) -> Self::Output {
         Object(<B as Round>::round(self.0))
     }
@@ -32,6 +33,7 @@ impl<B: Round> Round for Object<B> {
 impl<B: Round> Object<B> {
     /// Returns the nearest integer to `self`. If a value is half-way between two
     /// integers, round away from `0.0`.
+    #[inline(always)]
     pub fn round(self) -> Object<<B as Round>::Output> {
         Object(<B as Round>::round(self.0))
     }
@@ -53,6 +55,7 @@ pub trait Trunc {
 impl<B: Trunc> Trunc for Object<B> {
     type Output = Object<<B as Trunc>::Output>;
 
+    #[inline(always)]
     fn trunc(self) -> Self::Output {
         Object(<B as Trunc>::trunc(self.0))
     }
@@ -61,6 +64,7 @@ impl<B: Trunc> Trunc for Object<B> {
 impl<B: Trunc> Object<B> {
     /// Returns the integer part of `self`.
     /// This means that non-integer numbers are always truncated towards zero.
+    #[inline(always)]
     pub fn trunc(self) -> Object<<B as Trunc>::Output> {
         Object(<B as Trunc>::trunc(self.0))
     }
@@ -82,6 +86,7 @@ pub trait RoundTiesEven {
 impl<B: RoundTiesEven> RoundTiesEven for Object<B> {
     type Output = Object<<B as RoundTiesEven>::Output>;
 
+    #[inline(always)]
     fn round_ties_even(self) -> Self::Output {
         Object(<B as RoundTiesEven>::round_ties_even(self.0))
     }
@@ -90,6 +95,7 @@ impl<B: RoundTiesEven> RoundTiesEven for Object<B> {
 impl<B: RoundTiesEven> Object<B> {
     /// Returns the nearest integer to a number. Rounds half-way cases to the number
     /// with an even least significant digit.
+    #[inline(always)]
     pub fn round_ties_even(self) -> Object<<B as RoundTiesEven>::Output> {
         Object(<B as RoundTiesEven>::round_ties_even(self.0))
     }
@@ -109,6 +115,7 @@ pub trait Floor {
 impl<B: Floor> Floor for Object<B> {
     type Output = Object<<B as Floor>::Output>;
 
+    #[inline(always)]
     fn floor(self) -> Self::Output {
         Object(<B as Floor>::floor(self.0))
     }
@@ -116,6 +123,7 @@ impl<B: Floor> Floor for Object<B> {
 
 impl<B: Floor> Object<B> {
     /// Returns the largest integer that is less than or equal to `self`.
+    #[inline(always)]
     pub fn floor(self) -> Object<<B as Floor>::Output> {
         Object(<B as Floor>::floor(self.0))
     }
@@ -135,6 +143,7 @@ pub trait Ceil {
 impl<B: Ceil> Ceil for Object<B> {
     type Output = Object<<B as Ceil>::Output>;
 
+    #[inline(always)]
     fn ceil(self) -> Self::Output {
         Object(<B as Ceil>::ceil(self.0))
     }
@@ -142,6 +151,7 @@ impl<B: Ceil> Ceil for Object<B> {
 
 impl<B: Ceil> Object<B> {
     /// Returns the smallest integer that is greater than or equal to `self`.
+    #[inline(always)]
     pub fn ceil(self) -> Object<<B as Ceil>::Output> {
         Object(<B as Ceil>::ceil(self.0))
     }

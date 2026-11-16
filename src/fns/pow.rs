@@ -33,6 +33,7 @@ where
 {
     type Output = Object<<B as Pow<Rhs>>::Output>;
 
+    #[inline(always)]
     fn pow(self, rhs: Rhs) -> Self::Output {
         Object(<B as Pow<Rhs>>::pow(self.0, rhs))
     }
@@ -40,6 +41,7 @@ where
 
 impl<B> Object<B> {
     /// Raises `self` to the power of `rhs`.
+    #[inline(always)]
     pub fn pow<Rhs>(self, rhs: Rhs) -> Object<<B as Pow<Rhs>>::Output>
     where
         B: Pow<Rhs>,
@@ -65,6 +67,7 @@ where
 {
     type Output = Object<<B as CheckedPow<Rhs>>::Output>;
 
+    #[inline(always)]
     fn checked_pow(self, rhs: Rhs) -> Option<Self::Output> {
         <B as CheckedPow<Rhs>>::checked_pow(self.0, rhs).map(Object)
     }
@@ -73,6 +76,7 @@ where
 impl<B> Object<B> {
     /// Checked exponentiation. Computes `self.pow(rhs)`, returning `None` if
     /// overflow occurred or the result is not finite.
+    #[inline(always)]
     pub fn checked_pow<Rhs>(self, rhs: Rhs) -> Option<Object<<B as CheckedPow<Rhs>>::Output>>
     where
         B: CheckedPow<Rhs>,

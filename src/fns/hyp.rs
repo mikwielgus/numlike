@@ -23,6 +23,7 @@ pub trait Sinh {
 impl<B: Sinh> Sinh for Object<B> {
     type Output = Object<<B as Sinh>::Output>;
 
+    #[inline(always)]
     fn sinh(self) -> Self::Output {
         Object(<B as Sinh>::sinh(self.0))
     }
@@ -30,6 +31,7 @@ impl<B: Sinh> Sinh for Object<B> {
 
 impl<B: Sinh> Object<B> {
     /// Hyperbolic sine function.
+    #[inline(always)]
     pub fn sinh(self) -> Object<<B as Sinh>::Output> {
         Object(<B as Sinh>::sinh(self.0))
     }
@@ -47,6 +49,7 @@ pub trait Cosh {
 impl<B: Cosh> Cosh for Object<B> {
     type Output = Object<<B as Cosh>::Output>;
 
+    #[inline(always)]
     fn cosh(self) -> Self::Output {
         Object(<B as Cosh>::cosh(self.0))
     }
@@ -54,6 +57,7 @@ impl<B: Cosh> Cosh for Object<B> {
 
 impl<B: Cosh> Object<B> {
     /// Hyperbolic cosine function.
+    #[inline(always)]
     pub fn cosh(self) -> Object<<B as Cosh>::Output> {
         Object(<B as Cosh>::cosh(self.0))
     }
@@ -71,6 +75,7 @@ pub trait Tanh {
 impl<B: Tanh> Tanh for Object<B> {
     type Output = Object<<B as Tanh>::Output>;
 
+    #[inline(always)]
     fn tanh(self) -> Self::Output {
         Object(<B as Tanh>::tanh(self.0))
     }
@@ -78,6 +83,7 @@ impl<B: Tanh> Tanh for Object<B> {
 
 impl<B: Tanh> Object<B> {
     /// Hyperbolic tangent function.
+    #[inline(always)]
     pub fn tanh(self) -> Object<<B as Tanh>::Output> {
         Object(<B as Tanh>::tanh(self.0))
     }
@@ -101,6 +107,7 @@ pub trait CheckedSinh {
 impl<B: CheckedSinh> CheckedSinh for Object<B> {
     type Output = Object<<B as CheckedSinh>::Output>;
 
+    #[inline(always)]
     fn checked_sinh(self) -> Option<Self::Output> {
         <B as CheckedSinh>::checked_sinh(self.0).map(Object)
     }
@@ -110,6 +117,7 @@ impl<B: CheckedSinh> Object<B> {
     /// Hyperbolic sine function.
     ///
     /// Returns `None` if the result is not finite.
+    #[inline(always)]
     pub fn checked_sinh(self) -> Option<Object<<B as CheckedSinh>::Output>> {
         <B as CheckedSinh>::checked_sinh(self.0).map(Object)
     }
@@ -129,6 +137,7 @@ pub trait CheckedCosh {
 impl<B: CheckedCosh> CheckedCosh for Object<B> {
     type Output = Object<<B as CheckedCosh>::Output>;
 
+    #[inline(always)]
     fn checked_cosh(self) -> Option<Self::Output> {
         <B as CheckedCosh>::checked_cosh(self.0).map(Object)
     }
@@ -138,6 +147,7 @@ impl<B: CheckedCosh> Object<B> {
     /// Hyperbolic cosine function.
     ///
     /// Returns `None` if the result is not finite.
+    #[inline(always)]
     pub fn checked_cosh(self) -> Option<Object<<B as CheckedCosh>::Output>> {
         <B as CheckedCosh>::checked_cosh(self.0).map(Object)
     }
@@ -161,6 +171,7 @@ pub trait Asinh {
 impl<B: Asinh> Asinh for Object<B> {
     type Output = Object<<B as Asinh>::Output>;
 
+    #[inline(always)]
     fn asinh(self) -> Self::Output {
         Object(<B as Asinh>::asinh(self.0))
     }
@@ -168,6 +179,7 @@ impl<B: Asinh> Asinh for Object<B> {
 
 impl<B: Asinh> Object<B> {
     /// Inverse hyperbolic sine function.
+    #[inline(always)]
     pub fn asinh(self) -> Object<<B as Asinh>::Output> {
         Object(<B as Asinh>::asinh(self.0))
     }
@@ -185,6 +197,7 @@ pub trait Acosh {
 impl<B: Acosh> Acosh for Object<B> {
     type Output = Object<<B as Acosh>::Output>;
 
+    #[inline(always)]
     fn acosh(self) -> Self::Output {
         Object(<B as Acosh>::acosh(self.0))
     }
@@ -192,6 +205,7 @@ impl<B: Acosh> Acosh for Object<B> {
 
 impl<B: Acosh> Object<B> {
     /// Inverse hyperbolic cosine function.
+    #[inline(always)]
     pub fn acosh(self) -> Object<<B as Acosh>::Output> {
         Object(<B as Acosh>::acosh(self.0))
     }
@@ -209,6 +223,7 @@ pub trait Atanh {
 impl<B: Atanh> Atanh for Object<B> {
     type Output = Object<<B as Atanh>::Output>;
 
+    #[inline(always)]
     fn atanh(self) -> Self::Output {
         Object(<B as Atanh>::atanh(self.0))
     }
@@ -216,6 +231,7 @@ impl<B: Atanh> Atanh for Object<B> {
 
 impl<B: Atanh> Object<B> {
     /// Inverse hyperbolic tangent function.
+    #[inline(always)]
     pub fn atanh(self) -> Object<<B as Atanh>::Output> {
         Object(<B as Atanh>::atanh(self.0))
     }
@@ -248,6 +264,7 @@ pub trait CheckedAcosh {
 impl<B: CheckedAcosh> CheckedAcosh for Object<B> {
     type Output = Object<<B as CheckedAcosh>::Output>;
 
+    #[inline(always)]
     fn checked_acosh(self) -> Option<Self::Output> {
         <B as CheckedAcosh>::checked_acosh(self.0).map(Object)
     }
@@ -257,6 +274,7 @@ impl<B: CheckedAcosh> Object<B> {
     /// Inverse hyperbolic cosine function.
     ///
     /// Returns `None` if the result is not finite.
+    #[inline(always)]
     pub fn checked_acosh(self) -> Option<Object<<B as CheckedAcosh>::Output>> {
         <B as CheckedAcosh>::checked_acosh(self.0).map(Object)
     }
@@ -276,6 +294,7 @@ pub trait CheckedAtanh {
 impl<B: CheckedAtanh> CheckedAtanh for Object<B> {
     type Output = Object<<B as CheckedAtanh>::Output>;
 
+    #[inline(always)]
     fn checked_atanh(self) -> Option<Self::Output> {
         <B as CheckedAtanh>::checked_atanh(self.0).map(Object)
     }
@@ -285,6 +304,7 @@ impl<B: CheckedAtanh> Object<B> {
     /// Inverse hyperbolic tangent function.
     ///
     /// Returns `None` if the result is not finite.
+    #[inline(always)]
     pub fn checked_atanh(self) -> Option<Object<<B as CheckedAtanh>::Output>> {
         <B as CheckedAtanh>::checked_atanh(self.0).map(Object)
     }

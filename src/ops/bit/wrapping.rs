@@ -30,6 +30,7 @@ pub trait WrappingShl {
 impl<B: WrappingShl<Output = B>> WrappingShl for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_shl(self, rhs: u32) -> Self::Output {
         Object(<B as WrappingShl>::wrapping_shl(self.0, rhs))
     }
@@ -39,6 +40,7 @@ impl<B: WrappingShl<Output = B>> Object<B> {
     /// Panic-free bitwise shift-left; yields `self << mask(rhs)`, where `mask`
     /// removes any high-order bits of `rhs` that would cause the shift to exceed
     /// the bitwidth of the type.
+    #[inline(always)]
     pub fn wrapping_shl(self, rhs: u32) -> Self {
         Object(<B as WrappingShl>::wrapping_shl(self.0, rhs))
     }
@@ -70,6 +72,7 @@ pub trait WrappingShr {
 impl<B: WrappingShr<Output = B>> WrappingShr for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn wrapping_shr(self, rhs: u32) -> Self::Output {
         Object(<B as WrappingShr>::wrapping_shr(self.0, rhs))
     }
@@ -79,6 +82,7 @@ impl<B: WrappingShr<Output = B>> Object<B> {
     /// Panic-free bitwise shift-right; yields `self >> mask(rhs)`, where `mask`
     /// removes any high-order bits of `rhs` that would cause the shift to exceed
     /// the bitwidth of the type.
+    #[inline(always)]
     pub fn wrapping_shr(self, rhs: u32) -> Self {
         Object(<B as WrappingShr>::wrapping_shr(self.0, rhs))
     }

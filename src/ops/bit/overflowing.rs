@@ -24,6 +24,7 @@ pub trait OverflowingShl {
 impl<B: OverflowingShl<Output = B>> OverflowingShl for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_shl(self, rhs: u32) -> (Self::Output, bool) {
         let (value, overflow) = <B as OverflowingShl>::overflowing_shl(self.0, rhs);
 
@@ -33,6 +34,7 @@ impl<B: OverflowingShl<Output = B>> OverflowingShl for Object<B> {
 
 impl<B: OverflowingShl<Output = B>> Object<B> {
     /// Shifts self left by `rhs` bits.
+    #[inline(always)]
     pub fn overflowing_shl(self, rhs: u32) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingShl>::overflowing_shl(self.0, rhs);
 
@@ -56,6 +58,7 @@ pub trait OverflowingShr {
 impl<B: OverflowingShr<Output = B>> OverflowingShr for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_shr(self, rhs: u32) -> (Self::Output, bool) {
         let (value, overflow) = <B as OverflowingShr>::overflowing_shr(self.0, rhs);
 
@@ -65,6 +68,7 @@ impl<B: OverflowingShr<Output = B>> OverflowingShr for Object<B> {
 
 impl<B: OverflowingShr<Output = B>> Object<B> {
     /// Shifts self right by `rhs` bits.
+    #[inline(always)]
     pub fn overflowing_shr(self, rhs: u32) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingShr>::overflowing_shr(self.0, rhs);
 

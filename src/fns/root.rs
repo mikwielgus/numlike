@@ -24,6 +24,7 @@ pub trait Sqrt {
 impl<B: Sqrt> Sqrt for Object<B> {
     type Output = Object<<B as Sqrt>::Output>;
 
+    #[inline(always)]
     fn sqrt(self) -> Self::Output {
         Object(<B as Sqrt>::sqrt(self.0))
     }
@@ -31,6 +32,7 @@ impl<B: Sqrt> Sqrt for Object<B> {
 
 impl<B: Sqrt> Object<B> {
     /// Returns the square root of a number.
+    #[inline(always)]
     pub fn sqrt(self) -> Object<<B as Sqrt>::Output> {
         Object(<B as Sqrt>::sqrt(self.0))
     }
@@ -48,6 +50,7 @@ pub trait Cbrt {
 impl<B: Cbrt> Cbrt for Object<B> {
     type Output = Object<<B as Cbrt>::Output>;
 
+    #[inline(always)]
     fn cbrt(self) -> Self::Output {
         Object(<B as Cbrt>::cbrt(self.0))
     }
@@ -55,6 +58,7 @@ impl<B: Cbrt> Cbrt for Object<B> {
 
 impl<B: Cbrt> Object<B> {
     /// Returns the cube root of a number.
+    #[inline(always)]
     pub fn cbrt(self) -> Object<<B as Cbrt>::Output> {
         Object(<B as Cbrt>::cbrt(self.0))
     }
@@ -75,6 +79,7 @@ pub trait CheckedSqrt {
 impl<B: CheckedSqrt> CheckedSqrt for Object<B> {
     type Output = Object<<B as CheckedSqrt>::Output>;
 
+    #[inline(always)]
     fn checked_sqrt(self) -> Option<Self::Output> {
         <B as CheckedSqrt>::checked_sqrt(self.0).map(Object)
     }
@@ -85,6 +90,7 @@ impl<B: CheckedSqrt> Object<B> {
     ///
     /// Returns `None` if the result is not finite (including when `self` is a
     /// negative number other than `-0.0`).
+    #[inline(always)]
     pub fn checked_sqrt(self) -> Option<Object<<B as CheckedSqrt>::Output>> {
         <B as CheckedSqrt>::checked_sqrt(self.0).map(Object)
     }
@@ -110,6 +116,7 @@ pub trait Isqrt {
 impl<B: Isqrt> Isqrt for Object<B> {
     type Output = Object<<B as Isqrt>::Output>;
 
+    #[inline(always)]
     fn isqrt(self) -> Self::Output {
         Object(<B as Isqrt>::isqrt(self.0))
     }
@@ -117,6 +124,7 @@ impl<B: Isqrt> Isqrt for Object<B> {
 
 impl<B: Isqrt> Object<B> {
     /// Returns the integer square root of the number, rounded down.
+    #[inline(always)]
     pub fn isqrt(self) -> Object<<B as Isqrt>::Output> {
         Object(<B as Isqrt>::isqrt(self.0))
     }
@@ -140,6 +148,7 @@ pub trait CheckedIsqrt {
 impl<B: CheckedIsqrt> CheckedIsqrt for Object<B> {
     type Output = Object<<B as CheckedIsqrt>::Output>;
 
+    #[inline(always)]
     fn checked_isqrt(self) -> Option<Self::Output> {
         <B as CheckedIsqrt>::checked_isqrt(self.0).map(Object)
     }
@@ -149,6 +158,7 @@ impl<B: CheckedIsqrt> Object<B> {
     /// Returns the integer square root of the number, rounded down.
     ///
     /// Returns `None` if `self` is negative, or if the result is not finite.
+    #[inline(always)]
     pub fn checked_isqrt(self) -> Option<Object<<B as CheckedIsqrt>::Output>> {
         <B as CheckedIsqrt>::checked_isqrt(self.0).map(Object)
     }

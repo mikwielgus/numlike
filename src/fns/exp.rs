@@ -20,6 +20,7 @@ pub trait Exp {
 impl<B: Exp> Exp for Object<B> {
     type Output = Object<<B as Exp>::Output>;
 
+    #[inline(always)]
     fn exp(self) -> Self::Output {
         Object(<B as Exp>::exp(self.0))
     }
@@ -27,6 +28,7 @@ impl<B: Exp> Exp for Object<B> {
 
 impl<B: Exp> Object<B> {
     /// Returns `e^(self)` (the exponential function).
+    #[inline(always)]
     pub fn exp(self) -> Object<<B as Exp>::Output> {
         Object(<B as Exp>::exp(self.0))
     }
@@ -44,6 +46,7 @@ pub trait Exp2 {
 impl<B: Exp2> Exp2 for Object<B> {
     type Output = Object<<B as Exp2>::Output>;
 
+    #[inline(always)]
     fn exp2(self) -> Self::Output {
         Object(<B as Exp2>::exp2(self.0))
     }
@@ -51,6 +54,7 @@ impl<B: Exp2> Exp2 for Object<B> {
 
 impl<B: Exp2> Object<B> {
     /// Returns `2^(self)`.
+    #[inline(always)]
     pub fn exp2(self) -> Object<<B as Exp2>::Output> {
         Object(<B as Exp2>::exp2(self.0))
     }
@@ -70,6 +74,7 @@ pub trait ExpM1 {
 impl<B: ExpM1> ExpM1 for Object<B> {
     type Output = Object<<B as ExpM1>::Output>;
 
+    #[inline(always)]
     fn exp_m1(self) -> Self::Output {
         Object(<B as ExpM1>::exp_m1(self.0))
     }
@@ -78,6 +83,7 @@ impl<B: ExpM1> ExpM1 for Object<B> {
 impl<B: ExpM1> Object<B> {
     /// Returns `e^(self) - 1` in a way that is accurate even if the
     /// number is close to zero.
+    #[inline(always)]
     pub fn exp_m1(self) -> Object<<B as ExpM1>::Output> {
         Object(<B as ExpM1>::exp_m1(self.0))
     }
@@ -101,6 +107,7 @@ pub trait CheckedExp {
 impl<B: CheckedExp> CheckedExp for Object<B> {
     type Output = Object<<B as CheckedExp>::Output>;
 
+    #[inline(always)]
     fn checked_exp(self) -> Option<Self::Output> {
         <B as CheckedExp>::checked_exp(self.0).map(Object)
     }
@@ -110,6 +117,7 @@ impl<B: CheckedExp> Object<B> {
     /// Returns `e^(self)`, (the exponential function).
     ///
     /// Returns `None` if the result is not finite.
+    #[inline(always)]
     pub fn checked_exp(self) -> Option<Object<<B as CheckedExp>::Output>> {
         <B as CheckedExp>::checked_exp(self.0).map(Object)
     }
@@ -129,6 +137,7 @@ pub trait CheckedExp2 {
 impl<B: CheckedExp2> CheckedExp2 for Object<B> {
     type Output = Object<<B as CheckedExp2>::Output>;
 
+    #[inline(always)]
     fn checked_exp2(self) -> Option<Self::Output> {
         <B as CheckedExp2>::checked_exp2(self.0).map(Object)
     }
@@ -138,6 +147,7 @@ impl<B: CheckedExp2> Object<B> {
     /// Returns `2^(self)`.
     ///
     /// Returns `None` if the result is not finite.
+    #[inline(always)]
     pub fn checked_exp2(self) -> Option<Object<<B as CheckedExp2>::Output>> {
         <B as CheckedExp2>::checked_exp2(self.0).map(Object)
     }
@@ -159,6 +169,7 @@ pub trait CheckedExpM1 {
 impl<B: CheckedExpM1> CheckedExpM1 for Object<B> {
     type Output = Object<<B as CheckedExpM1>::Output>;
 
+    #[inline(always)]
     fn checked_exp_m1(self) -> Option<Self::Output> {
         <B as CheckedExpM1>::checked_exp_m1(self.0).map(Object)
     }
@@ -169,6 +180,7 @@ impl<B: CheckedExpM1> Object<B> {
     /// number is close to zero.
     ///
     /// Returns `None` if the result is not finite.
+    #[inline(always)]
     pub fn checked_exp_m1(self) -> Option<Object<<B as CheckedExpM1>::Output>> {
         <B as CheckedExpM1>::checked_exp_m1(self.0).map(Object)
     }

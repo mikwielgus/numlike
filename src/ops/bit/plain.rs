@@ -48,6 +48,7 @@ pub trait NotAssign {
 }
 
 impl<B: NotAssign> NotAssign for Object<B> {
+    #[inline(always)]
     fn not_assign(&mut self) {
         <B as NotAssign>::not_assign(&mut self.0)
     }
@@ -55,6 +56,7 @@ impl<B: NotAssign> NotAssign for Object<B> {
 
 impl<B: NotAssign> Object<B> {
     /// Inverts all bits of `self` in place.
+    #[inline(always)]
     pub fn not_assign(&mut self) {
         <B as NotAssign>::not_assign(&mut self.0)
     }

@@ -41,6 +41,7 @@ pub trait MulAdd<A = Self, B = Self> {
 impl<B: MulAdd<Output = B>> MulAdd for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn mul_add(self, a: Self, b: Self) -> Self::Output {
         Object(<B as MulAdd>::mul_add(self.0, a.0, b.0))
     }
@@ -49,6 +50,7 @@ impl<B: MulAdd<Output = B>> MulAdd for Object<B> {
 impl<B: MulAdd<Output = B>> Object<B> {
     /// Fused multiply-add. Computes `(self * a) + b` with only one rounding
     /// error, yielding a more accurate result than an unfused multiply-add.
+    #[inline(always)]
     pub fn mul_add(self, a: Self, b: Self) -> Self {
         Object(<B as MulAdd>::mul_add(self.0, a.0, b.0))
     }
@@ -69,6 +71,7 @@ pub trait MulAddAssign<A = Self, B = Self> {
 }
 
 impl<B: MulAddAssign> MulAddAssign for Object<B> {
+    #[inline(always)]
     fn mul_add_assign(&mut self, a: Self, b: Self) {
         <B as MulAddAssign>::mul_add_assign(&mut self.0, a.0, b.0)
     }
@@ -78,6 +81,7 @@ impl<B: MulAddAssign> Object<B> {
     /// Fused multiply-add assignment. Computes `*self = (*self * a) + b` with
     /// only one rounding error, yielding a more accurate result than an unfused
     /// multiply-add.
+    #[inline(always)]
     pub fn mul_add_assign(&mut self, a: Self, b: Self) {
         <B as MulAddAssign>::mul_add_assign(&mut self.0, a.0, b.0)
     }
@@ -109,6 +113,7 @@ pub trait DivRem<Rhs> {
 impl<B: DivRem<B, Output = B>> DivRem<Object<B>> for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn div_rem(self, other: Self) -> (Self::Output, Self::Output) {
         let (a, b) = <B as DivRem<B>>::div_rem(self.0, other.0);
 
@@ -119,6 +124,7 @@ impl<B: DivRem<B, Output = B>> DivRem<Object<B>> for Object<B> {
 impl<B: DivRem<B, Output = B>> Object<B> {
     /// Simultaneously computes the quotient and remainder of `self` divided by
     /// `other`.
+    #[inline(always)]
     pub fn div_rem(self, other: Self) -> (Self, Self) {
         let (a, b) = <B as DivRem<B>>::div_rem(self.0, other.0);
 
@@ -157,6 +163,7 @@ pub trait DivEuclid<Rhs = Self> {
 impl<B: DivEuclid<Output = B>> DivEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn div_euclid(self, other: Self) -> Self::Output {
         Object(<B as DivEuclid>::div_euclid(self.0, other.0))
     }
@@ -164,6 +171,7 @@ impl<B: DivEuclid<Output = B>> DivEuclid for Object<B> {
 
 impl<B: DivEuclid<Output = B>> Object<B> {
     /// Calculates the quotient of Euclidean division of `self` by `other`.
+    #[inline(always)]
     pub fn div_euclid(self, other: Self) -> Self {
         Object(<B as DivEuclid>::div_euclid(self.0, other.0))
     }
@@ -180,6 +188,7 @@ pub trait DivEuclidAssign<Rhs = Self> {
 }
 
 impl<B: DivEuclidAssign> DivEuclidAssign for Object<B> {
+    #[inline(always)]
     fn div_euclid_assign(&mut self, other: Self) {
         <B as DivEuclidAssign>::div_euclid_assign(&mut self.0, other.0)
     }
@@ -188,6 +197,7 @@ impl<B: DivEuclidAssign> DivEuclidAssign for Object<B> {
 impl<B: DivEuclidAssign> Object<B> {
     /// Calculates the quotient of Euclidean division of `self` by `other`,
     /// writing the result back to `self`.
+    #[inline(always)]
     pub fn div_euclid_assign(&mut self, other: Self) {
         <B as DivEuclidAssign>::div_euclid_assign(&mut self.0, other.0)
     }
@@ -216,6 +226,7 @@ pub trait RemEuclid<Rhs = Self> {
 impl<B: RemEuclid<Output = B>> RemEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn rem_euclid(self, other: Self) -> Self::Output {
         Object(<B as RemEuclid>::rem_euclid(self.0, other.0))
     }
@@ -224,6 +235,7 @@ impl<B: RemEuclid<Output = B>> RemEuclid for Object<B> {
 impl<B: RemEuclid<Output = B>> Object<B> {
     /// Calculates the least nonnegative remainder of `self` when
     /// divided by `other`.
+    #[inline(always)]
     pub fn rem_euclid(self, other: Self) -> Self {
         Object(<B as RemEuclid>::rem_euclid(self.0, other.0))
     }
@@ -240,6 +252,7 @@ pub trait RemEuclidAssign<Rhs = Self> {
 }
 
 impl<B: RemEuclidAssign> RemEuclidAssign for Object<B> {
+    #[inline(always)]
     fn rem_euclid_assign(&mut self, other: Self) {
         <B as RemEuclidAssign>::rem_euclid_assign(&mut self.0, other.0)
     }
@@ -248,6 +261,7 @@ impl<B: RemEuclidAssign> RemEuclidAssign for Object<B> {
 impl<B: RemEuclidAssign> Object<B> {
     /// Calculates the least nonnegative remainder of `self` when divided by
     /// `other`, writing the result back to `self`.
+    #[inline(always)]
     pub fn rem_euclid_assign(&mut self, other: Self) {
         <B as RemEuclidAssign>::rem_euclid_assign(&mut self.0, other.0)
     }
@@ -269,6 +283,7 @@ pub trait DivRemEuclid<Rhs = Self> {
 impl<B: DivRemEuclid<Output = B>> DivRemEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn div_rem_euclid(self, other: Self) -> (Self::Output, Self::Output) {
         let (a, b) = <B as DivRemEuclid>::div_rem_euclid(self.0, other.0);
 
@@ -279,6 +294,7 @@ impl<B: DivRemEuclid<Output = B>> DivRemEuclid for Object<B> {
 impl<B: DivRemEuclid<Output = B>> Object<B> {
     /// Simultaneously computes the Euclidean quotient and remainder of `self`
     /// divided by `other`.
+    #[inline(always)]
     pub fn div_rem_euclid(self, other: Self) -> (Self, Self) {
         let (a, b) = <B as DivRemEuclid>::div_rem_euclid(self.0, other.0);
 
@@ -311,6 +327,7 @@ pub trait Rcp {
 impl<B: Rcp<Output = B>> Rcp for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn rcp(self) -> Self::Output {
         Object(<B as Rcp>::rcp(self.0))
     }
@@ -318,6 +335,7 @@ impl<B: Rcp<Output = B>> Rcp for Object<B> {
 
 impl<B: Rcp<Output = B>> Object<B> {
     /// Reciprocal, also known as the multiplicative inverse. Computes `1 / self` (`= self^-1`).
+    #[inline(always)]
     pub fn rcp(self) -> Self {
         Object(<B as Rcp>::rcp(self.0))
     }
@@ -334,6 +352,7 @@ pub trait RcpAssign {
 }
 
 impl<B: RcpAssign> RcpAssign for Object<B> {
+    #[inline(always)]
     fn rcp_assign(&mut self) {
         <B as RcpAssign>::rcp_assign(&mut self.0)
     }
@@ -341,6 +360,7 @@ impl<B: RcpAssign> RcpAssign for Object<B> {
 
 impl<B: RcpAssign> Object<B> {
     /// Computes reciprocal of `self` in place.
+    #[inline(always)]
     pub fn rcp_assign(&mut self) {
         <B as RcpAssign>::rcp_assign(&mut self.0)
     }
@@ -378,6 +398,7 @@ pub trait NegAssign {
 }
 
 impl<B: NegAssign> NegAssign for Object<B> {
+    #[inline(always)]
     fn neg_assign(&mut self) {
         <B as NegAssign>::neg_assign(&mut self.0)
     }
@@ -385,6 +406,7 @@ impl<B: NegAssign> NegAssign for Object<B> {
 
 impl<B: NegAssign> Object<B> {
     /// Negates `self` in place.
+    #[inline(always)]
     pub fn neg_assign(&mut self) {
         <B as NegAssign>::neg_assign(&mut self.0)
     }

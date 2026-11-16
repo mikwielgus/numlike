@@ -17,6 +17,7 @@ pub trait Cmp0 {
 }
 
 impl<B: Cmp0> Cmp0 for Object<B> {
+    #[inline(always)]
     fn cmp0(&self) -> Ordering {
         <B as Cmp0>::cmp0(&self.0)
     }
@@ -25,6 +26,7 @@ impl<B: Cmp0> Cmp0 for Object<B> {
 impl<B: Cmp0> Object<B> {
     /// Compare the value to zero. This is just `sgn` function, but returns
     /// `Ordering`.
+    #[inline(always)]
     pub fn cmp0(&self) -> Ordering {
         <B as Cmp0>::cmp0(&self.0)
     }
@@ -123,6 +125,7 @@ pub trait NanfixPartialEq<Rhs: ?Sized = Self> {
 }
 
 impl<B: NanfixPartialEq> NanfixPartialEq for Object<B> {
+    #[inline(always)]
     fn nanfix_eq(&self, other: &Self) -> bool {
         <B as NanfixPartialEq>::nanfix_eq(&self.0, &other.0)
     }
@@ -131,12 +134,14 @@ impl<B: NanfixPartialEq> NanfixPartialEq for Object<B> {
 impl<B: NanfixPartialEq> Object<B> {
     /// Test whether self and the other value are equal, treating NaN as equal
     /// to itself.
+    #[inline(always)]
     pub fn nanfix_eq(&self, other: &Self) -> bool {
         <B as NanfixPartialEq>::nanfix_eq(&self.0, &other.0)
     }
 
     /// Test whether self and the other value not equal, treating NaN as equal
     /// to itself.
+    #[inline(always)]
     pub fn nanfix_ne(&self, other: &Self) -> bool {
         <B as NanfixPartialEq>::nanfix_ne(&self.0, &other.0)
     }
@@ -187,6 +192,7 @@ pub trait NanminPartialOrd<Rhs: ?Sized = Self>: NanfixPartialEq {
 }
 
 impl<B: NanminPartialOrd> NanminPartialOrd for Object<B> {
+    #[inline(always)]
     fn nanmin_partial_cmp(&self, other: &Self) -> Option<Ordering> {
         <B as NanminPartialOrd>::nanmin_partial_cmp(&self.0, &other.0)
     }
@@ -195,26 +201,31 @@ impl<B: NanminPartialOrd> NanminPartialOrd for Object<B> {
 impl<B: NanminPartialOrd> Object<B> {
     /// This method returns an (NaN-min) ordering between self and other values
     /// if one exists.
+    #[inline(always)]
     pub fn nanmin_partial_cmp(&self, other: &Self) -> Option<Ordering> {
         <B as NanminPartialOrd>::nanmin_partial_cmp(&self.0, &other.0)
     }
 
     /// Checks if `self` is (NaN-min) less than `other`.
+    #[inline(always)]
     pub fn nanmin_lt(&self, other: &Self) -> bool {
         <B as NanminPartialOrd>::nanmin_lt(&self.0, &other.0)
     }
 
     /// Checks if `self` is (NaN-min) less or equal to `other`.
+    #[inline(always)]
     pub fn nanmin_le(&self, other: &Self) -> bool {
         <B as NanminPartialOrd>::nanmin_le(&self.0, &other.0)
     }
 
     /// Checks if `self` is (NaN-min) greater than `other`.
+    #[inline(always)]
     pub fn nanmin_gt(&self, other: &Self) -> bool {
         <B as NanminPartialOrd>::nanmin_gt(&self.0, &other.0)
     }
 
     /// Checks if `self` is (NaN-min) greater or equal to `other`.
+    #[inline(always)]
     pub fn nanmin_ge(&self, other: &Self) -> bool {
         <B as NanminPartialOrd>::nanmin_ge(&self.0, &other.0)
     }
@@ -235,6 +246,7 @@ pub trait NanminOrd<Rhs: ?Sized = Self>: NanfixEq + NanminPartialOrd {
 }
 
 impl<B: NanminOrd> NanminOrd for Object<B> {
+    #[inline(always)]
     fn nanmin_cmp(&self, other: &Self) -> Ordering {
         <B as NanminOrd>::nanmin_cmp(&self.0, &other.0)
     }
@@ -245,6 +257,7 @@ impl<B: NanminOrd> Object<B> {
     ///
     /// By convention, `self.nanmin_cmp(&other)` returns the ordering matching
     /// the expression `self <operator> other` if true.
+    #[inline(always)]
     pub fn nanmin_cmp(&self, other: &Self) -> Ordering {
         <B as NanminOrd>::nanmin_cmp(&self.0, &other.0)
     }
@@ -286,6 +299,7 @@ pub trait NanmaxPartialOrd<Rhs: ?Sized = Self>: NanfixPartialEq {
 }
 
 impl<B: NanmaxPartialOrd> NanmaxPartialOrd for Object<B> {
+    #[inline(always)]
     fn nanmax_partial_cmp(&self, other: &Self) -> Option<Ordering> {
         <B as NanmaxPartialOrd>::nanmax_partial_cmp(&self.0, &other.0)
     }
@@ -294,26 +308,31 @@ impl<B: NanmaxPartialOrd> NanmaxPartialOrd for Object<B> {
 impl<B: NanmaxPartialOrd> Object<B> {
     /// This method returns an (NaN-max) ordering between self and other values
     /// if one exists.
+    #[inline(always)]
     pub fn nanmax_partial_cmp(&self, other: &Self) -> Option<Ordering> {
         <B as NanmaxPartialOrd>::nanmax_partial_cmp(&self.0, &other.0)
     }
 
     /// Checks if `self` is (NaN-max) less than `other`.
+    #[inline(always)]
     pub fn nanmax_lt(&self, other: &Self) -> bool {
         <B as NanmaxPartialOrd>::nanmax_lt(&self.0, &other.0)
     }
 
     /// Checks if `self` is (NaN-max) less or equal to `other`.
+    #[inline(always)]
     pub fn nanmax_le(&self, other: &Self) -> bool {
         <B as NanmaxPartialOrd>::nanmax_le(&self.0, &other.0)
     }
 
     /// Checks if `self` is (NaN-max) greater than `other`.
+    #[inline(always)]
     pub fn nanmax_gt(&self, other: &Self) -> bool {
         <B as NanmaxPartialOrd>::nanmax_gt(&self.0, &other.0)
     }
 
     /// Checks if `self` is (NaN-max) greater or equal to `other`.
+    #[inline(always)]
     pub fn nanmax_ge(&self, other: &Self) -> bool {
         <B as NanmaxPartialOrd>::nanmax_ge(&self.0, &other.0)
     }
@@ -334,6 +353,7 @@ pub trait NanmaxOrd<Rhs: ?Sized = Self>: NanfixEq + NanmaxPartialOrd {
 }
 
 impl<B: NanmaxOrd> NanmaxOrd for Object<B> {
+    #[inline(always)]
     fn nanmax_cmp(&self, other: &Self) -> Ordering {
         <B as NanmaxOrd>::nanmax_cmp(&self.0, &other.0)
     }
@@ -344,6 +364,7 @@ impl<B: NanmaxOrd> Object<B> {
     ///
     /// By convention, `self.nanmax_cmp(&other)` returns the ordering matching
     /// the expression `self <operator> other` if true.
+    #[inline(always)]
     pub fn nanmax_cmp(&self, other: &Self) -> Ordering {
         <B as NanmaxOrd>::nanmax_cmp(&self.0, &other.0)
     }

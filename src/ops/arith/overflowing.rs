@@ -30,6 +30,7 @@ pub trait OverflowingMulAdd<A = Self, B = Self> {
 impl<B: OverflowingMulAdd<Output = B>> OverflowingMulAdd for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_mul_add(self, a: Self, b: Self) -> (Self::Output, bool) {
         let (value, overflow) = <B as OverflowingMulAdd>::overflowing_mul_add(self.0, a.0, b.0);
 
@@ -39,6 +40,7 @@ impl<B: OverflowingMulAdd<Output = B>> OverflowingMulAdd for Object<B> {
 
 impl<B: OverflowingMulAdd<Output = B>> Object<B> {
     /// Overflowing fused multiply-add. Computes `(self * a) + b`.
+    #[inline(always)]
     pub fn overflowing_mul_add(self, a: Self, b: Self) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingMulAdd>::overflowing_mul_add(self.0, a.0, b.0);
 
@@ -83,6 +85,7 @@ pub trait OverflowingRem<Rhs = Self> {
 impl<B: OverflowingRem<Output = B>> OverflowingRem for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_rem(self, other: Self) -> (Self::Output, bool) {
         let (value, overflow) = <B as OverflowingRem>::overflowing_rem(self.0, other.0);
 
@@ -92,6 +95,7 @@ impl<B: OverflowingRem<Output = B>> OverflowingRem for Object<B> {
 
 impl<B: OverflowingRem<Output = B>> Object<B> {
     /// Calculates the remainder when `self` is divided by `other`.
+    #[inline(always)]
     pub fn overflowing_rem(self, other: Self) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingRem>::overflowing_rem(self.0, other.0);
 
@@ -118,6 +122,7 @@ pub trait OverflowingDivRem<Rhs> {
 impl<B: OverflowingDivRem<B, Output = B>> OverflowingDivRem<Object<B>> for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_div_rem(self, other: Self) -> ((Self::Output, Self::Output), bool) {
         let ((a, b), overflow) = <B as OverflowingDivRem<B>>::overflowing_div_rem(self.0, other.0);
 
@@ -127,6 +132,7 @@ impl<B: OverflowingDivRem<B, Output = B>> OverflowingDivRem<Object<B>> for Objec
 
 impl<B: OverflowingDivRem<B, Output = B>> Object<B> {
     /// Calculates the quotient and remainder when `self` is divided by `other`.
+    #[inline(always)]
     pub fn overflowing_div_rem(self, other: Self) -> ((Self, Self), bool) {
         let ((a, b), overflow) = <B as OverflowingDivRem<B>>::overflowing_div_rem(self.0, other.0);
 
@@ -163,6 +169,7 @@ pub trait OverflowingDivEuclid<Rhs = Self> {
 impl<B: OverflowingDivEuclid<Output = B>> OverflowingDivEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_div_euclid(self, other: Self) -> (Self::Output, bool) {
         let (value, overflow) =
             <B as OverflowingDivEuclid>::overflowing_div_euclid(self.0, other.0);
@@ -173,6 +180,7 @@ impl<B: OverflowingDivEuclid<Output = B>> OverflowingDivEuclid for Object<B> {
 
 impl<B: OverflowingDivEuclid<Output = B>> Object<B> {
     /// Calculates the quotient of Euclidean division `self.div_euclid(other)`.
+    #[inline(always)]
     pub fn overflowing_div_euclid(self, other: Self) -> (Self, bool) {
         let (value, overflow) =
             <B as OverflowingDivEuclid>::overflowing_div_euclid(self.0, other.0);
@@ -200,6 +208,7 @@ pub trait OverflowingRemEuclid<Rhs = Self> {
 impl<B: OverflowingRemEuclid<Output = B>> OverflowingRemEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_rem_euclid(self, other: Self) -> (Self::Output, bool) {
         let (value, overflow) =
             <B as OverflowingRemEuclid>::overflowing_rem_euclid(self.0, other.0);
@@ -210,6 +219,7 @@ impl<B: OverflowingRemEuclid<Output = B>> OverflowingRemEuclid for Object<B> {
 
 impl<B: OverflowingRemEuclid<Output = B>> Object<B> {
     /// Overflowing Euclidean remainder. Calculates `self.rem_euclid(other)`.
+    #[inline(always)]
     pub fn overflowing_rem_euclid(self, other: Self) -> (Self, bool) {
         let (value, overflow) =
             <B as OverflowingRemEuclid>::overflowing_rem_euclid(self.0, other.0);
@@ -237,6 +247,7 @@ pub trait OverflowingDivRemEuclid<Rhs = Self> {
 impl<B: OverflowingDivRemEuclid<Output = B>> OverflowingDivRemEuclid for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_div_rem_euclid(self, other: Self) -> ((Self::Output, Self::Output), bool) {
         let ((a, b), overflow) =
             <B as OverflowingDivRemEuclid>::overflowing_div_rem_euclid(self.0, other.0);
@@ -247,6 +258,7 @@ impl<B: OverflowingDivRemEuclid<Output = B>> OverflowingDivRemEuclid for Object<
 
 impl<B: OverflowingDivRemEuclid<Output = B>> Object<B> {
     /// Calculates the Euclidean quotient and remainder when `self` is divided by `other`.
+    #[inline(always)]
     pub fn overflowing_div_rem_euclid(self, other: Self) -> ((Self, Self), bool) {
         let ((a, b), overflow) =
             <B as OverflowingDivRemEuclid>::overflowing_div_rem_euclid(self.0, other.0);
@@ -287,6 +299,7 @@ pub trait OverflowingDiv<Rhs = Self> {
 impl<B: OverflowingDiv<Output = B>> OverflowingDiv for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_div(self, other: Self) -> (Self::Output, bool) {
         let (value, overflow) = <B as OverflowingDiv>::overflowing_div(self.0, other.0);
 
@@ -296,6 +309,7 @@ impl<B: OverflowingDiv<Output = B>> OverflowingDiv for Object<B> {
 
 impl<B: OverflowingDiv<Output = B>> Object<B> {
     /// Calculates the divisor when `self` is divided by `other`.
+    #[inline(always)]
     pub fn overflowing_div(self, other: Self) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingDiv>::overflowing_div(self.0, other.0);
 
@@ -323,6 +337,7 @@ pub trait OverflowingRcp {
 impl<B: OverflowingRcp<Output = B>> OverflowingRcp for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_rcp(self) -> (Self::Output, bool) {
         let (value, overflow) = <B as OverflowingRcp>::overflowing_rcp(self.0);
 
@@ -332,6 +347,7 @@ impl<B: OverflowingRcp<Output = B>> OverflowingRcp for Object<B> {
 
 impl<B: OverflowingRcp<Output = B>> Object<B> {
     /// Calculates the reciprocal of `self`.
+    #[inline(always)]
     pub fn overflowing_rcp(self) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingRcp>::overflowing_rcp(self.0);
 
@@ -373,6 +389,7 @@ pub trait OverflowingAdd<Rhs = Self> {
 impl<B: OverflowingAdd<Output = B>> OverflowingAdd for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_add(self, other: Self) -> (Self::Output, bool) {
         let (value, overflow) = <B as OverflowingAdd>::overflowing_add(self.0, other.0);
 
@@ -384,6 +401,7 @@ impl<B: OverflowingAdd<Output = B>> Object<B> {
     /// Returns a tuple of the addition along with a boolean indicating
     /// whether an arithmetic overflow would occur. If an overflow would have
     /// occurred then the wrapped value is returned.
+    #[inline(always)]
     pub fn overflowing_add(self, other: Self) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingAdd>::overflowing_add(self.0, other.0);
 
@@ -405,6 +423,7 @@ pub trait OverflowingSub<Rhs = Self> {
 impl<B: OverflowingSub<Output = B>> OverflowingSub for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_sub(self, other: Self) -> (Self::Output, bool) {
         let (value, overflow) = <B as OverflowingSub>::overflowing_sub(self.0, other.0);
 
@@ -415,6 +434,7 @@ impl<B: OverflowingSub<Output = B>> OverflowingSub for Object<B> {
 impl<B: OverflowingSub<Output = B>> Object<B> {
     /// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic overflow
     /// would occur. If an overflow would have occurred then the wrapped value is returned.
+    #[inline(always)]
     pub fn overflowing_sub(self, other: Self) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingSub>::overflowing_sub(self.0, other.0);
 
@@ -437,6 +457,7 @@ pub trait OverflowingMul<Rhs = Self> {
 impl<B: OverflowingMul<Output = B>> OverflowingMul for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_mul(self, other: Self) -> (Self::Output, bool) {
         let (value, overflow) = <B as OverflowingMul>::overflowing_mul(self.0, other.0);
 
@@ -446,6 +467,7 @@ impl<B: OverflowingMul<Output = B>> OverflowingMul for Object<B> {
 
 impl<B: OverflowingMul<Output = B>> Object<B> {
     /// Calculates the multiplication of `self` and `other`.
+    #[inline(always)]
     pub fn overflowing_mul(self, other: Self) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingMul>::overflowing_mul(self.0, other.0);
 
@@ -469,6 +491,7 @@ pub trait OverflowingNeg {
 impl<B: OverflowingNeg<Output = B>> OverflowingNeg for Object<B> {
     type Output = Self;
 
+    #[inline(always)]
     fn overflowing_neg(self) -> (Self::Output, bool) {
         let (value, overflow) = <B as OverflowingNeg>::overflowing_neg(self.0);
 
@@ -480,6 +503,7 @@ impl<B: OverflowingNeg<Output = B>> Object<B> {
     /// Returns a tuple of the negated version of self along with a boolean indicating whether an overflow
     /// happened. If `self` is the minimum value, then the minimum value will be returned again and `true`
     /// will be returned for an overflow happening.
+    #[inline(always)]
     pub fn overflowing_neg(self) -> (Self, bool) {
         let (value, overflow) = <B as OverflowingNeg>::overflowing_neg(self.0);
 
