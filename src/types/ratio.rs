@@ -21,7 +21,7 @@ use crate::{
         MaxExactInteger, MaxExtended, MaxFinite, MaxNegative, MaximizerDenom, MinExactInteger,
         MinExtended, MinFinite, MinPositive, MinimizerDenom,
     },
-    ops::{CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedSub, NegAssign},
+    ops::{CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedSub, NegAssign, Rcp},
 };
 
 /// A ratio between two numbers, with arbitrary numeric type as field.
@@ -697,6 +697,25 @@ impl<T: CheckedNeg<Output = T>> CheckedNeg for Ratio<T> {
             numer: self.numer.checked_neg()?,
             denom: self.denom,
         })
+    }
+}
+
+impl<
+    T: Clone
+        + Div<Output = T>
+        + Gcd<Output = T>
+        + Neg<Output = T>
+        + AssocConstOne<Value = T>
+        + PartialEq
+        + SignFns
+        + AssocConstZero<Value = T>,
+> Rcp for Ratio<T>
+{
+    type Output = Ratio<T>;
+
+    #[inline]
+    fn rcp(self) -> Ratio<T> {
+        Ratio::new(self.denom, self.numer)
     }
 }
 
