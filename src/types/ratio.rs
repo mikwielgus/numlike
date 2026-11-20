@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-//! A ratio between two numbers.
+//! A ratio between two numbers, with arbitrary numeric type as field.
 
 use core::{
     cmp::Ordering,
@@ -24,7 +24,7 @@ use crate::{
     ops::{CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedSub, NegAssign},
 };
 
-/// A ratio between two numbers.
+/// A ratio between two numbers, with arbitrary numeric type as field.
 #[derive(Clone, Copy, Debug)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Ratio<T> {
@@ -34,6 +34,7 @@ pub struct Ratio<T> {
 
 impl<T: Clone> Ratio<T> {
     /// Returns the ratio's numerator by value.
+    #[inline]
     pub fn numer(&self) -> T {
         self.numer.clone()
     }
@@ -45,12 +46,14 @@ impl<T: Clone> Ratio<T> {
 }
 
 impl<T> Ratio<T> {
-    /// Returns the ratio's numerator by immutable reference.
+    /// Returns the ratio's numerator as immutable reference.
+    #[inline]
     pub fn numer_ref(&self) -> &T {
         &self.numer
     }
 
-    /// Returns the ratio's denominator by immutable reference.
+    /// Returns the ratio's denominator as immutable reference.
+    #[inline]
     pub fn denom_ref(&self) -> &T {
         &self.denom
     }

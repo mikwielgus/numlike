@@ -6,6 +6,8 @@
 
 mod object;
 mod ratio;
+mod vector2;
 
 pub use object::*;
 pub use ratio::*;
+pub use vector2::*;
