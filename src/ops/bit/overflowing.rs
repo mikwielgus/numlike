@@ -4,7 +4,7 @@
 
 use crate::types::Object;
 
-/// Bundle of overflowing bitwise shift operations.
+/// Kit of overflowing bitwise shift operations.
 pub trait OverflowingBitOps: OverflowingShl + OverflowingShr {}
 impl<T: OverflowingShl + OverflowingShr> OverflowingBitOps for T {}
 

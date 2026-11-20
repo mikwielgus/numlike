@@ -4,7 +4,7 @@
 
 use crate::types::Object;
 
-/// Bundle of checked bitwise shift operations.
+/// Kit of checked bitwise shift operations.
 pub trait CheckedBitOps: CheckedShl + CheckedShr {}
 impl<T: CheckedShl + CheckedShr> CheckedBitOps for T {}
 

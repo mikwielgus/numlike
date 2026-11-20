@@ -9,17 +9,17 @@ use core::ops::{
 
 use crate::types::Object;
 
-/// Bundle of bitwise operations, including assign variants.
+/// Kit of bitwise operations, including assign variants.
 pub trait FullBitOps<Rhs = Self>: BitOps<Rhs> + BitAssignOps<Rhs> {}
 
-/// Bundle of bitwise operations.
+/// Kit of bitwise operations.
 pub trait BitOps<Rhs = Self>:
     BitAnd<Rhs> + BitOr<Rhs> + BitXor<Rhs> + Not + Shl<Rhs> + Shr<Rhs>
 {
 }
 impl<Rhs, T: BitAnd<Rhs> + BitOr<Rhs> + BitXor<Rhs> + Not + Shl<Rhs> + Shr<Rhs>> BitOps<Rhs> for T {}
 
-/// Bundle of bitwise assignment operations.
+/// Kit of bitwise assignment operations.
 pub trait BitAssignOps<Rhs = Self>:
     BitAndAssign<Rhs>
     + BitOrAssign<Rhs>

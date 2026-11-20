@@ -4,7 +4,7 @@
 
 use crate::types::Object;
 
-/// Bundle of exponential functions.
+/// Kit of exponential functions.
 pub trait ExpFns: Exp + Exp2 + ExpM1 {}
 impl<T: Exp + Exp2 + ExpM1> ExpFns for T {}
 
@@ -89,7 +89,7 @@ impl<B: ExpM1> Object<B> {
     }
 }
 
-/// Bundle of checked exponential functions.
+/// Kit of checked exponential functions.
 pub trait CheckedExpFns: CheckedExp + CheckedExp2 + CheckedExpM1 {}
 impl<T: CheckedExp + CheckedExp2 + CheckedExpM1> CheckedExpFns for T {}
 

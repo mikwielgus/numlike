@@ -4,13 +4,13 @@
 
 use crate::types::Object;
 
-/// Bundle of overflowing arithmetic and fused arithmetic operations.
+/// Kit of overflowing arithmetic and fused arithmetic operations.
 pub trait FullOverflowingArithOps<Rhs = Self>:
     OverflowingArithOps<Rhs> + OverflowingFusedArithOps<Rhs>
 {
 }
 
-/// Bundle of overflowing fused arithmetic operations.
+/// Kit of overflowing fused arithmetic operations.
 pub trait OverflowingFusedArithOps<Rhs = Self>: OverflowingMulAdd<Rhs, Rhs> {}
 impl<Rhs, T: OverflowingMulAdd<Rhs, Rhs>> OverflowingFusedArithOps<Rhs> for T {}
 
@@ -48,7 +48,7 @@ impl<B: OverflowingMulAdd<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of overflowing arithmetic operations.
+/// Kit of overflowing arithmetic operations.
 pub trait OverflowingArithOps<Rhs = Self>:
     OverflowingEuclidOps<Rhs>
     + OverflowingFieldOps<Rhs>
@@ -140,7 +140,7 @@ impl<B: OverflowingDivRem<B, Output = B>> Object<B> {
     }
 }
 
-/// Bundle of overflowing Euclidean division operations.
+/// Kit of overflowing Euclidean division operations.
 pub trait OverflowingEuclidOps<Rhs>:
     OverflowingDivEuclid<Rhs> + OverflowingRemEuclid<Rhs> + OverflowingDivRemEuclid<Rhs>
 {
@@ -267,7 +267,7 @@ impl<B: OverflowingDivRemEuclid<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of overflowing field operations.
+/// Kit of overflowing field operations.
 pub trait OverflowingFieldOps<Rhs = Self>:
     OverflowingRingOps<Rhs> + OverflowingDiv<Rhs, Output = Self> + OverflowingRcp<Output = Self>
 {
@@ -355,7 +355,7 @@ impl<B: OverflowingRcp<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of overflowing ring operations.
+/// Kit of overflowing ring operations.
 pub trait OverflowingRingOps<Rhs = Self>:
     OverflowingAdd<Rhs, Output = Self>
     + OverflowingSub<Rhs, Output = Self>

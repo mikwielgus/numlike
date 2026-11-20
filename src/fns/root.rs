@@ -6,7 +6,7 @@
 use crate::fns::round::Floor;
 use crate::types::Object;
 
-/// Bundle of root-finding functions.
+/// Kit of root-finding functions.
 pub trait RootFns: Sqrt + Cbrt {}
 impl<T: Sqrt + Cbrt> RootFns for T {}
 

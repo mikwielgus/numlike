@@ -7,7 +7,7 @@ use crate::types::Object;
 /*pub trait FullHypFns<Rhs = Self>: HypFns + InvHypFns<Rhs> {}
 impl<Rhs, T: HypFns + InvHypFns<Rhs>> FullHypFns<Rhs> for T {}*/
 
-/// Bundle of hyperbolic functions.
+/// Kit of hyperbolic functions.
 pub trait HypFns: Sinh + Cosh + Tanh {}
 impl<T: Sinh + Cosh + Tanh> HypFns for T {}
 
@@ -89,7 +89,7 @@ impl<B: Tanh> Object<B> {
     }
 }
 
-/// Bundle of checked hyperbolic functions.
+/// Kit of checked hyperbolic functions.
 pub trait CheckedHypFns: CheckedSinh + CheckedCosh {}
 impl<T: CheckedSinh + CheckedCosh> CheckedHypFns for T {}
 
@@ -155,7 +155,7 @@ impl<B: CheckedCosh> Object<B> {
 
 // No checked `atanh` because it does not have restricted domain.
 
-/// Bundle of inverse hyperbolic functions.
+/// Kit of inverse hyperbolic functions.
 pub trait InvHypFns<Rhs = Self>: Asinh + Acosh + Atanh {}
 impl<Rhs, T: Asinh + Acosh + Atanh> InvHypFns<Rhs> for T {}
 
@@ -237,7 +237,7 @@ impl<B: Atanh> Object<B> {
     }
 }
 
-/// Bundle of checked inverse hyperbolic functions.
+/// Kit of checked inverse hyperbolic functions.
 pub trait CheckedInvHypFns<Rhs = Self>: /*CheckedAsinh +*/ CheckedAcosh + CheckedAtanh {}
 impl<Rhs, T: CheckedAcosh + CheckedAtanh> CheckedInvHypFns<Rhs> for T {}
 

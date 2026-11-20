@@ -4,7 +4,7 @@
 
 use crate::types::Object;
 
-/// Bundle of rounding functions.
+/// Kit of rounding functions.
 pub trait RoundFns: Round + Trunc + RoundTiesEven + Floor + Ceil {}
 impl<T: Round + Trunc + RoundTiesEven + Floor + Ceil> RoundFns for T {}
 

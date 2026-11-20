@@ -6,7 +6,7 @@ pub use crate::elem::{IsOne, IsZero};
 
 use crate::types::Object;
 
-/// Bundle of sign-related functions.
+/// Kit of sign-related functions.
 pub trait SignFns: IsPositive + IsNegative + IsZero + Sgn + Abs {}
 impl<T: IsPositive + IsNegative + IsZero + Sgn + Abs> SignFns for T {}
 

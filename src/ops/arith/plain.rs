@@ -8,7 +8,7 @@ use core::ops::{
 
 use crate::types::Object;
 
-/// Bundle of arithmetic and fused arithmetic operations, including assign variants.
+/// Kit of arithmetic and fused arithmetic operations, including assign variants.
 pub trait FullArithOps<Rhs = Self>:
     ArithOps<Rhs> + ArithAssignOps<Rhs> + FusedArithOps<Rhs> + FusedArithAssignOps<Rhs>
 {
@@ -18,7 +18,7 @@ impl<Rhs, T: ArithOps<Rhs> + ArithAssignOps<Rhs> + FusedArithOps<Rhs> + FusedAri
 {
 }
 
-/// Bundle of fused arithmetic operations.
+/// Kit of fused arithmetic operations.
 pub trait FusedArithOps<Rhs = Self>: MulAdd<Rhs, Rhs> {}
 impl<Rhs, T: MulAdd<Rhs, Rhs>> FusedArithOps<Rhs> for T {}
 
@@ -56,7 +56,7 @@ impl<B: MulAdd<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of fused arithmetic assignment operations.
+/// Kit of fused arithmetic assignment operations.
 pub trait FusedArithAssignOps<Rhs = Self>: MulAddAssign<Rhs, Rhs> {}
 impl<Rhs, T: MulAddAssign<Rhs, Rhs>> FusedArithAssignOps<Rhs> for T {}
 
@@ -87,7 +87,7 @@ impl<B: MulAddAssign> Object<B> {
     }
 }
 
-/// Bundle of arithmetic operations.
+/// Kit of arithmetic operations.
 pub trait ArithOps<Rhs = Self>:
     EuclidOps<Rhs> + FieldOps<Rhs> + Rem<Rhs, Output = Self> + DivRem<Rhs, Output = Self>
 {
@@ -132,7 +132,7 @@ impl<B: DivRem<B, Output = B>> Object<B> {
     }
 }
 
-/// Bundle of Euclidean division operations.
+/// Kit of Euclidean division operations.
 pub trait EuclidOps<Rhs>: DivEuclid<Rhs> + RemEuclid<Rhs> + DivRemEuclid<Rhs> {}
 impl<Rhs, T: DivEuclid<Rhs> + RemEuclid<Rhs> + DivRemEuclid<Rhs>> EuclidOps<Rhs> for T {}
 
@@ -302,11 +302,11 @@ impl<B: DivRemEuclid<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of arithmetic assignment operations.
+/// Kit of arithmetic assignment operations.
 pub trait ArithAssignOps<Rhs = Self>: FieldAssignOps<Rhs> + RemAssign<Rhs> {}
 impl<Rhs, T: FieldAssignOps<Rhs> + RemAssign<Rhs>> ArithAssignOps<Rhs> for T {}
 
-/// Bundle of field operations (ring operations plus division).
+/// Kit of field operations (ring operations plus division).
 pub trait FieldOps<Rhs = Self>:
     RingOps<Rhs> + Div<Rhs, Output = Self> + Rcp<Output = Self>
 {
@@ -341,7 +341,7 @@ impl<B: Rcp<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of field assignment operations.
+/// Kit of field assignment operations.
 pub trait FieldAssignOps<Rhs = Self>: RingAssignOps<Rhs> + DivAssign<Rhs> + RcpAssign {}
 impl<Rhs, T: RingAssignOps<Rhs> + DivAssign<Rhs> + RcpAssign> FieldAssignOps<Rhs> for T {}
 
@@ -366,7 +366,7 @@ impl<B: RcpAssign> Object<B> {
     }
 }
 
-/// Bundle of ring operations (addition, subtraction, multiplication, and negation).
+/// Kit of ring operations (addition, subtraction, multiplication, and negation).
 pub trait RingOps<Rhs = Self>:
     Add<Rhs, Output = Self> + Sub<Rhs, Output = Self> + Mul<Rhs, Output = Self> + Neg<Output = Self>
 {
@@ -381,7 +381,7 @@ impl<
 {
 }
 
-/// Bundle of ring assignment operations.
+/// Kit of ring assignment operations.
 pub trait RingAssignOps<Rhs = Self>:
     AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + NegAssign
 {

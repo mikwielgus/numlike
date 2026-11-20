@@ -4,7 +4,7 @@
 
 use crate::types::Object;
 
-/// Bundle of floating-point logarithm functions.
+/// Kit of floating-point logarithm functions.
 pub trait LogFns<Rhs = Self>: Log<Rhs> + Ln + Log2 + Log10 + Ln1p {}
 impl<Rhs, T: Log<Rhs> + Ln + Log2 + Log10 + Ln1p> LogFns<Rhs> for T {}
 
@@ -161,7 +161,7 @@ impl<B: Ln1p> Object<B> {
     }
 }
 
-/// Bundle of checked floating-point logarithm functions.
+/// Kit of checked floating-point logarithm functions.
 pub trait CheckedLogFns<Rhs = Self>:
     CheckedLog<Rhs> + CheckedLn + CheckedLog2 + CheckedLog10 + CheckedLn1p
 {
@@ -334,7 +334,7 @@ impl<B: CheckedLn1p> Object<B> {
     }
 }
 
-/// Bundle of integer logarithm functions.
+/// Kit of integer logarithm functions.
 pub trait IlogFns<Rhs = Self>: Ilog<Rhs> + Ilog2 + Ilog10 {}
 impl<Rhs, T: Ilog<Rhs> + Ilog2 + Ilog10> IlogFns<Rhs> for T {}
 
@@ -442,7 +442,7 @@ impl<B: Ilog10> Object<B> {
     }
 }
 
-/// Bundle of checked integer logarithm functions.
+/// Kit of checked integer logarithm functions.
 pub trait CheckedIlogFns<Rhs = Self>: CheckedIlog<Rhs> + CheckedIlog2 + CheckedIlog10 {}
 impl<Rhs, T: CheckedIlog<Rhs> + CheckedIlog2 + CheckedIlog10> CheckedIlogFns<Rhs> for T {}
 

@@ -8,7 +8,7 @@ use core::num::{Saturating, Wrapping};
 
 use crate::types::Object;
 
-/// Bundle of limits for a floating-point numeric type.
+/// Kit of limits for a floating-point numeric type.
 pub trait FloatLimits:
     Limits
     + Digits
@@ -179,7 +179,7 @@ impl<B: MaxBase10Exponent> Object<B> {
     pub const MAX_BASE_10_EXPONENT: i32 = <B as MaxBase10Exponent>::MAX_BASE_10_EXPONENT;
 }
 
-/// Bundle of all defined limits for a numeric type.
+/// Kit of all defined limits for a numeric type.
 pub trait Limits: Bounds + Bits {}
 impl<T: Bounds + Bits> Limits for T {}
 
@@ -198,11 +198,11 @@ impl<B: Bits> Object<B> {
     pub const BITS: u32 = <B as Bits>::BITS;
 }
 
-/// Bundle of all defined minimum and maximum value limits for a numeric type.
+/// Kit of all defined minimum and maximum value limits for a numeric type.
 pub trait Bounds: FiniteBounds + ExtendedBounds + ExactIntegerBounds {}
 impl<T: FiniteBounds + ExtendedBounds + ExactIntegerBounds> Bounds for T {}
 
-/// Bundle of the finite minimum and maximum values of a numeric type.
+/// Kit of the finite minimum and maximum values of a numeric type.
 pub trait FiniteBounds: MinFinite + MaxFinite {}
 impl<T: MinFinite + MaxFinite> FiniteBounds for T {}
 
@@ -236,7 +236,7 @@ impl<B: MaxFinite> Object<B> {
     pub const MAX_FINITE: Self = Object(<B as MaxFinite>::MAX_FINITE);
 }
 
-/// Bundle of the extended (i.e. also containing negative and positive
+/// Kit of the extended (i.e. also containing negative and positive
 /// infinities) minimum and maximum values of a numeric type.
 pub trait ExtendedBounds: MinExtended + MaxExtended {}
 impl<T: MinExtended + MaxExtended> ExtendedBounds for T {}
@@ -271,7 +271,7 @@ impl<B: MaxExtended> Object<B> {
     pub const MAX_EXTENDED: Self = Object(<B as MaxExtended>::MAX_EXTENDED);
 }
 
-/// Bundle of the minimum and maximum exact integer values of a numeric type.
+/// Kit of the minimum and maximum exact integer values of a numeric type.
 pub trait ExactIntegerBounds: MinExactInteger + MaxExactInteger {}
 impl<T: MinExactInteger + MaxExactInteger> ExactIntegerBounds for T {}
 
@@ -330,7 +330,7 @@ impl<B: MaxExactInteger> Object<B> {
     pub const MAX_EXACT_INTEGER: Self = Object(<B as MaxExactInteger>::MAX_EXACT_INTEGER);
 }
 
-/// Bundle of the minimum positive and maximum negative values of a numeric
+/// Kit of the minimum positive and maximum negative values of a numeric
 /// type.
 pub trait NearestsToAssocConstZero: MinPositive + MaxNegative {}
 impl<T: MinPositive + MaxNegative> NearestsToAssocConstZero for T {}
@@ -371,7 +371,7 @@ impl<B: MaxNegative> Object<B> {
     pub const MAX_NEGATIVE: Self = Object(<B as MaxNegative>::MAX_NEGATIVE);
 }
 
-/// Bundle of the ratio-minimizing and -maximizing denominator values of a
+/// Kit of the ratio-minimizing and -maximizing denominator values of a
 /// numeric type.
 pub trait ExtremizerDenoms: MinimizerDenom + MaximizerDenom {}
 impl<T: MinimizerDenom + MaximizerDenom> ExtremizerDenoms for T {}

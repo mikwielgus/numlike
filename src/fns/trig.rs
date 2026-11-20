@@ -7,7 +7,7 @@ use crate::types::Object;
 /*pub trait FullTrigFns<Rhs = Self>: TrigFns + InvTrigFns<Rhs> {}
 impl<Rhs, T: TrigFns + InvTrigFns<Rhs>> FullTrigFns<Rhs> for T {}*/
 
-/// Bundle of trigonometric functions.
+/// Kit of trigonometric functions.
 pub trait TrigFns: ClassicalTrigFns + SinCos {}
 impl<T: ClassicalTrigFns + SinCos> TrigFns for T {}
 
@@ -44,7 +44,7 @@ impl<B: SinCos> Object<B> {
     }
 }
 
-/// Bundle of classical trigonometric functions.
+/// Kit of classical trigonometric functions.
 pub trait ClassicalTrigFns: Sin + Cos + Tan {}
 impl<T: Sin + Cos + Tan> ClassicalTrigFns for T {}
 
@@ -156,7 +156,7 @@ impl<B: CheckedTan> Object<B> {
     }
 }
 
-/// Bundle of inverse trigonometric functions.
+/// Kit of inverse trigonometric functions.
 pub trait InvTrigFns<Rhs = Self>: ClassicalInvTrigFns<Rhs> + Atan2<Rhs> {}
 impl<Rhs, T: ClassicalInvTrigFns<Rhs> + Atan2<Rhs>> InvTrigFns<Rhs> for T {}
 
@@ -192,7 +192,7 @@ impl<B> Object<B> {
     }
 }
 
-/// Bundle of classical inverse trigonometric functions.
+/// Kit of classical inverse trigonometric functions.
 pub trait ClassicalInvTrigFns<Rhs = Self>: Asin + Acos + Atan {}
 impl<Rhs, T: Asin + Acos + Atan> ClassicalInvTrigFns<Rhs> for T {}
 
@@ -289,7 +289,7 @@ impl<B: Atan> Object<B> {
     }
 }
 
-/// Bundle of checked classical inverse trigonometric functions.
+/// Kit of checked classical inverse trigonometric functions.
 pub trait CheckedClassicalInvTrigFns<Rhs = Self>: CheckedAsin + CheckedAcos {}
 impl<Rhs, T: CheckedAsin + CheckedAcos> CheckedClassicalInvTrigFns<Rhs> for T {}
 

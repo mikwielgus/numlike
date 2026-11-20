@@ -8,13 +8,13 @@ use crate::ops::MulAdd;
 use crate::ops::{DivEuclid, RemEuclid};
 use crate::types::Object;
 
-/// Bundle of checked arithmetic and fused arithmetic operations.
+/// Kit of checked arithmetic and fused arithmetic operations.
 pub trait CheckedPlainArithOps<Rhs = Self>:
     CheckedArithOps<Rhs> + CheckedFusedArithOps<Rhs>
 {
 }
 
-/// Bundle of checked fused arithmetic operations.
+/// Kit of checked fused arithmetic operations.
 pub trait CheckedFusedArithOps<Rhs = Self>: CheckedMulAdd<Rhs, Rhs> {}
 impl<Rhs, T: CheckedMulAdd<Rhs, Rhs>> CheckedFusedArithOps<Rhs> for T {}
 
@@ -47,7 +47,7 @@ impl<B: CheckedMulAdd<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of checked arithmetic operations.
+/// Kit of checked arithmetic operations.
 pub trait CheckedArithOps<Rhs = Self>:
     CheckedEuclidOps<Rhs>
     + CheckedFieldOps<Rhs>
@@ -128,7 +128,7 @@ impl<B: CheckedDivRem<B, Output = B>> Object<B> {
     }
 }
 
-/// Bundle of checked Euclidean division operations.
+/// Kit of checked Euclidean division operations.
 pub trait CheckedEuclidOps<Rhs>:
     CheckedDivEuclid<Rhs> + CheckedRemEuclid<Rhs> + CheckedDivRemEuclid<Rhs>
 {
@@ -230,7 +230,7 @@ impl<B: CheckedDivRemEuclid<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of checked field operations.
+/// Kit of checked field operations.
 pub trait CheckedFieldOps<Rhs = Self>:
     CheckedRingOps<Rhs> + CheckedDiv<Rhs, Output = Self> + CheckedRcp<Output = Self>
 {
@@ -298,7 +298,7 @@ impl<B: CheckedRcp<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of checked ring operations.
+/// Kit of checked ring operations.
 pub trait CheckedRingOps<Rhs = Self>:
     CheckedAdd<Rhs, Output = Self>
     + CheckedSub<Rhs, Output = Self>

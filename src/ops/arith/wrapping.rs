@@ -4,13 +4,13 @@
 
 use crate::types::Object;
 
-/// Bundle of wrapping arithmetic and fused arithmetic operations.
+/// Kit of wrapping arithmetic and fused arithmetic operations.
 pub trait FullWrappingArithOps<Rhs = Self>:
     WrappingArithOps<Rhs> + WrappingFusedArithOps<Rhs>
 {
 }
 
-/// Bundle of wrapping fused arithmetic operations.
+/// Kit of wrapping fused arithmetic operations.
 pub trait WrappingFusedArithOps<Rhs = Self>: WrappingMulAdd<Rhs, Rhs> {}
 impl<Rhs, T: WrappingMulAdd<Rhs, Rhs>> WrappingFusedArithOps<Rhs> for T {}
 
@@ -43,7 +43,7 @@ impl<B: WrappingMulAdd<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of wrapping arithmetic operations.
+/// Kit of wrapping arithmetic operations.
 pub trait WrappingArithOps<Rhs = Self>:
     WrappingEuclidOps<Rhs>
     + WrappingFieldOps<Rhs>
@@ -135,7 +135,7 @@ impl<B: WrappingDivRem<B, Output = B>> Object<B> {
     }
 }
 
-/// Bundle of wrapping Euclidean division operations.
+/// Kit of wrapping Euclidean division operations.
 pub trait WrappingEuclidOps<Rhs>:
     WrappingDivEuclid<Rhs> + WrappingRemEuclid<Rhs> + WrappingDivRemEuclid<Rhs>
 {
@@ -266,7 +266,7 @@ impl<B: WrappingDivRemEuclid<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of wrapping field operations.
+/// Kit of wrapping field operations.
 pub trait WrappingFieldOps<Rhs = Self>:
     WrappingRingOps<Rhs> + WrappingDiv<Rhs, Output = Self>
 {
@@ -310,7 +310,7 @@ impl<B: WrappingDiv<Output = B>> Object<B> {
     }
 }
 
-/// Bundle of wrapping ring operations.
+/// Kit of wrapping ring operations.
 pub trait WrappingRingOps<Rhs = Self>:
     WrappingAdd<Rhs, Output = Self>
     + WrappingSub<Rhs, Output = Self>
