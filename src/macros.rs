@@ -260,6 +260,15 @@ macro_rules! impl_maplike_traits_for_scalar {
             }
         }
 
+        impl<$t> ::maplike::ops::SetOrExpandTo<usize> for $type<$t> {
+            type Output = Option<Self>;
+
+            #[inline(always)]
+            fn set_or_expand_to(&mut self, index: usize, value: Self) -> Option<Self> {
+                ::maplike::ops::Set::set(self, index, value)
+            }
+        }
+
         impl<$t> ::maplike::ops::Modify<usize> for $type<$t> {
             #[inline(always)]
             fn modify<F>(&mut self, index: &usize, f: F)
