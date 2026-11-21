@@ -41,6 +41,12 @@ impl<T> Vector2<T> {
     pub fn y_ref(&self) -> &T {
         &self.y
     }
+
+    /// Create a vector from its components.
+    #[inline]
+    pub fn new(x: T, y: T) -> Self {
+        Self { x, y }
+    }
 }
 
 impl<T: Add<Output = T>> Add for Vector2<T> {
