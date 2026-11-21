@@ -217,3 +217,108 @@ macro_rules! for_misc {
         $m!(());
     };
 }
+
+#[cfg(feature = "maplike")]
+macro_rules! impl_maplike_traits_for_scalar {
+    ($t:ident, $type:ident) => {
+        impl<$t> ::maplike::abc::Container for $type<$t> {
+            type Value = Self;
+        }
+
+        impl<$t> ::maplike::abc::Keyed for $type<$t> {
+            type Key = usize;
+        }
+
+        impl<$t> ::maplike::ctors::WithOne<$type<$t>> for $type<$t> {
+            #[inline(always)]
+            fn with_one(value: Self) -> Self {
+                value
+            }
+        }
+
+        impl<$t> ::maplike::ops::ContainsKey<usize> for $type<$t> {
+            #[inline(always)]
+            fn contains_key(&self, index: &usize) -> bool {
+                *index == 0
+            }
+        }
+
+        impl<$t> ::maplike::ops::Get<usize> for $type<$t> {
+            #[inline(always)]
+            fn get(&self, index: &usize) -> Option<&Self> {
+                if *index == 0 { Some(self) } else { None }
+            }
+        }
+
+        impl<$t> ::maplike::ops::Set<usize> for $type<$t> {
+            type Output = Option<Self>;
+
+            #[inline(always)]
+            fn set(&mut self, index: usize, value: Self) -> Option<Self> {
+                assert_eq!(index, 0);
+                Some(core::mem::replace(self, value))
+            }
+        }
+
+        impl<$t> ::maplike::ops::Modify<usize> for $type<$t> {
+            #[inline(always)]
+            fn modify<F>(&mut self, index: &usize, f: F)
+            where
+                F: FnOnce(&mut Self),
+            {
+                assert_eq!(*index, 0);
+                f(self)
+            }
+        }
+
+        impl<$t> ::maplike::ops::Put<$type<$t>> for $type<$t> {
+            #[inline(always)]
+            fn put(&mut self, value: Self) -> Option<Self> {
+                Some(core::mem::replace(self, value))
+            }
+        }
+
+        impl<$t> ::maplike::ops::Len for $type<$t> {
+            #[inline(always)]
+            fn len(&self) -> usize {
+                1
+            }
+        }
+
+        impl<'a, $t: 'a> ::maplike::iter::Values<'a> for $type<$t> {
+            type Values = core::iter::Once<&'a Self>;
+
+            #[inline(always)]
+            fn values(&'a self) -> Self::Values {
+                core::iter::once(self)
+            }
+        }
+
+        impl<$t> ::maplike::iter::IntoValues for $type<$t> {
+            type IntoValues = core::iter::Once<Self>;
+
+            #[inline(always)]
+            fn into_values(self) -> Self::IntoValues {
+                core::iter::once(self)
+            }
+        }
+
+        impl<'a, $t: 'a> ::maplike::iter::Iter<'a, usize> for $type<$t> {
+            type Iter = core::iter::Once<(usize, &'a Self)>;
+
+            #[inline(always)]
+            fn iter(&'a self) -> Self::Iter {
+                core::iter::once((0, self))
+            }
+        }
+
+        impl<$t> ::maplike::iter::IntoIter<usize> for $type<$t> {
+            type IntoIter = core::iter::Enumerate<core::iter::Once<Self>>;
+
+            #[inline(always)]
+            fn into_iter(self) -> Self::IntoIter {
+                core::iter::once(self).enumerate()
+            }
+        }
+    };
+}

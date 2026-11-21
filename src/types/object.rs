@@ -205,3 +205,8 @@ impl<B: ShrAssign> ShrAssign for Object<B> {
         self.0 >>= rhs.0;
     }
 }
+
+#[cfg(feature = "maplike")]
+impl_maplike_traits_for_scalar!(T, Object);
+
+// TODO: the remaining traits.
