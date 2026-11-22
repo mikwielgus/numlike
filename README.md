@@ -31,7 +31,7 @@ abstract number traits, also check out another crate of ours,
 
 ```toml
 [dependencies]
-numlike = { version = "0.10.2" }
+numlike = { version = "0.10.3" }
 ```
 
 ## Comparison to other libraries
