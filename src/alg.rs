@@ -64,6 +64,10 @@ impl<T: Zero + One + FieldOps + Sized> FieldKit for T {}
 pub trait FieldKitNum: NumCommon + FieldKit {}
 impl<T: NumCommon + TofieldKit> FieldKitNum for T {}
 
+/// Set of field operations and common sensible num traits.
+pub trait FieldOpsNum: NumCommon + FieldOps {}
+impl<T: NumCommon + FieldOps> FieldOpsNum for T {}
+
 /// Has total order, has ring operations.
 ///
 /// Having ring operations alone doesn't imply being a ring -- it may as well
@@ -111,3 +115,7 @@ impl<T: Zero + One + RingOps + Sized> RingKit for T {}
 /// there's "bundle" in this trait's name.
 pub trait RingKitNum: NumCommon + RingKit {}
 impl<T: NumCommon + PoringKit> RingKitNum for T {}
+
+/// Set of ring operations and common sensible num traits.
+pub trait RingOpsNum: NumCommon + RingOps {}
+impl<T: NumCommon + RingOps> RingOpsNum for T {}
