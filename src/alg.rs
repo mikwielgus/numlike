@@ -8,118 +8,121 @@ use core::fmt::Debug;
 
 use crate::{
     elem::{One, Zero},
-    limits::Bounds,
     ops::{AddGroupOps, FieldOps, RingOps},
 };
 
-/// Supertraits shared by all `*Num` traits.
-pub trait NumCommon: Clone + Bounds + Debug + Default + PartialEq {}
-impl<T: Clone + Bounds + Debug + Default + PartialEq> NumCommon for T {}
+/// Supertraits shared by all `*Kit` and `*Sensible` traits.
+pub trait Sensible: Clone + Debug + Default + PartialEq {}
+impl<T: Clone + Debug + Default + PartialEq> Sensible for T {}
 
-/// Has total order, has field operations.
+/// Has total order, has field operations and identity elements.
 ///
 /// Having field operations alone doesn't imply being a field -- it may as well
 /// be a meadow or skewfield, or something else entirely. This is why there's
 /// "bundle" in this trait's name.
-pub trait TofieldKit: Ord + FieldKit {}
-impl<T: Ord + FieldKit> TofieldKit for T {}
+pub trait TofieldOpsIds: Ord + FieldOpsIds {}
+impl<T: Ord + FieldOpsIds> TofieldOpsIds for T {}
 
-/// Has total order, has field operations, has common sensible num traits.
+/// Has total order, has field operations and identity elements, has common
+/// sensible num traits.
 ///
 /// Having field operations alone doesn't imply being a field -- it may as well
 /// be a meadow or skewfield, or something else entirely. This is why there's
 /// "bundle" in this trait's name.
-pub trait TofieldKitNum: NumCommon + TofieldKit {}
-impl<T: NumCommon + TofieldKit> TofieldKitNum for T {}
+pub trait TofieldKit: Sensible + TofieldOpsIds {}
+impl<T: Sensible + TofieldOpsIds> TofieldKit for T {}
 
-/// Has partial order, has field operations.
+/// Has partial order, has field operations and identity elements.
 ///
 /// Having field operations alone doesn't imply being a field -- it may as well
 /// be a meadow or skewfield, or something else entirely. This is why there's
 /// "bundle" in this trait's name.
-pub trait PofieldKit: PartialOrd + FieldKit {}
-impl<T: PartialOrd + FieldKit> PofieldKit for T {}
+pub trait PofieldOpsIds: PartialOrd + FieldOpsIds {}
+impl<T: PartialOrd + FieldOpsIds> PofieldOpsIds for T {}
 
-/// Has partial order, has field operations, has common sensible num traits.
+/// Has partial order, has field operations and identity elements, has common
+/// sensible num traits.
 ///
 /// Having field operations alone doesn't imply being a field -- it may as well
 /// be a meadow or skewfield, or something else entirely. This is why there's
 /// "bundle" in this trait's name.
-pub trait PofieldKitNum: NumCommon + PofieldKit {}
-impl<T: NumCommon + PofieldKit> PofieldKitNum for T {}
+pub trait PofieldKit: Sensible + PofieldOpsIds {}
+impl<T: Sensible + PofieldOpsIds> PofieldKit for T {}
 
-/// Has field operations.
+/// Has field operations and identity elements.
 ///
 /// Having field operations alone doesn't imply being a field -- it may as well
 /// be a meadow or skewfield, or something else entirely. This is why there's
 /// "bundle" in this trait's name.
-pub trait FieldKit: Zero + One + FieldOps + Sized {}
-impl<T: Zero + One + FieldOps + Sized> FieldKit for T {}
+pub trait FieldOpsIds: Zero + One + FieldOps + Sized {}
+impl<T: Zero + One + FieldOps + Sized> FieldOpsIds for T {}
 
-/// Has field operations, has common sensible num traits.
+/// Has field operations and identity elements, has common sensible num traits.
 ///
 /// Having field operations alone doesn't imply being a field -- it may as well
 /// be a meadow or skewfield, or something else entirely. This is why there's
 /// "bundle" in this trait's name.
-pub trait FieldKitNum: NumCommon + FieldKit {}
-impl<T: NumCommon + TofieldKit> FieldKitNum for T {}
+pub trait FieldKit: Sensible + FieldOpsIds {}
+impl<T: Sensible + TofieldOpsIds> FieldKit for T {}
 
-/// Kit of field operations and common sensible num traits.
-pub trait FieldOpsNum: NumCommon + FieldOps {}
-impl<T: NumCommon + FieldOps> FieldOpsNum for T {}
+/// Kit of field operations and identity elements and common sensible num traits.
+pub trait FieldOpsSensible: Sensible + FieldOps {}
+impl<T: Sensible + FieldOps> FieldOpsSensible for T {}
 
-/// Has total order, has ring operations.
+/// Has total order, has ring operations and identity elements.
 ///
 /// Having ring operations alone doesn't imply being a ring -- it may as well
 /// be a near-ring, semiring, hemiring, or something else entirely. This is why
 /// there's "bundle" in this trait's name.
-pub trait ToringKit: Ord + RingKit {}
-impl<T: Ord + RingKit> ToringKit for T {}
+pub trait ToringOpsIds: Ord + RingOpsIds {}
+impl<T: Ord + RingOpsIds> ToringOpsIds for T {}
 
-/// Has total order, has ring operations, has common sensible num traits.
+/// Has total order, has ring operations and identity elements, has common
+/// sensible num traits.
 ///
 /// Having ring operations alone doesn't imply being a ring -- it may as well
 /// be a near-ring, semiring, hemiring, or something else entirely. This is why
 /// there's "bundle" in this trait's name.
-pub trait ToringKitNum: NumCommon + ToringKit {}
-impl<T: NumCommon + ToringKit> ToringKitNum for T {}
+pub trait ToringKit: Sensible + ToringOpsIds {}
+impl<T: Sensible + ToringOpsIds> ToringKit for T {}
 
-/// Has partial order, has ring operations.
+/// Has partial order, has ring operations and identity elements.
 ///
 /// Having ring operations alone doesn't imply being a ring -- it may as well
 /// be a near-ring, semiring, hemiring, or something else entirely. This is why
 /// there's "bundle" in this trait's name.
-pub trait PoringKit: PartialOrd + RingKit {}
-impl<T: PartialOrd + RingKit> PoringKit for T {}
+pub trait PoringOpsIds: PartialOrd + RingOpsIds {}
+impl<T: PartialOrd + RingOpsIds> PoringOpsIds for T {}
 
-/// Has partial order, has ring operations, has common sensible num traits.
+/// Has partial order, has ring operations and identity elements, has common
+/// sensible num traits.
 ///
 /// Having ring operations alone doesn't imply being a ring -- it may as well
 /// be a near-ring, semiring, hemiring, or something else entirely. This is why
 /// there's "bundle" in this trait's name.
-pub trait PoringKitNum: NumCommon + PoringKit {}
-impl<T: NumCommon + PoringKit> PoringKitNum for T {}
+pub trait PoringKit: Sensible + PoringOpsIds {}
+impl<T: Sensible + PoringOpsIds> PoringKit for T {}
 
-/// Has ring operations.
+/// Has ring operations and identity elements.
 ///
 /// Having ring operations alone doesn't imply being a ring -- it may as well
 /// be a near-ring, semiring, hemiring, or something else entirely. This is why
 /// there's "bundle" in this trait's name.
-pub trait RingKit: Zero + One + RingOps + Sized {}
-impl<T: Zero + One + RingOps + Sized> RingKit for T {}
+pub trait RingOpsIds: Zero + One + RingOps + Sized {}
+impl<T: Zero + One + RingOps + Sized> RingOpsIds for T {}
 
-/// Has ring operations, has common sensible num traits.
+/// Has ring operations and identity elements, has common sensible num traits.
 ///
 /// Having ring operations alone doesn't imply being a ring -- it may as well
 /// be a near-ring, semiring, hemiring, or something else entirely. This is why
 /// there's "bundle" in this trait's name.
-pub trait RingKitNum: NumCommon + RingKit {}
-impl<T: NumCommon + PoringKit> RingKitNum for T {}
+pub trait RingKit: Sensible + RingOpsIds {}
+impl<T: Sensible + RingOpsIds> RingKit for T {}
 
 /// Kit of ring operations and common sensible num traits.
-pub trait RingOpsNum: NumCommon + RingOps {}
-impl<T: NumCommon + RingOps> RingOpsNum for T {}
+pub trait RingOpsSensible: Sensible + RingOps {}
+impl<T: Sensible + RingOps> RingOpsSensible for T {}
 
 /// Kit of group operations and common sensible num traits.
-pub trait AddGroupOpsNum: NumCommon + AddGroupOps {}
-impl<T: NumCommon + AddGroupOps> AddGroupOpsNum for T {}
+pub trait AddGroupOpsSensible: Sensible + AddGroupOps {}
+impl<T: Sensible + AddGroupOps> AddGroupOpsSensible for T {}
