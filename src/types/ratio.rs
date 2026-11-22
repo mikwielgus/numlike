@@ -25,7 +25,7 @@ use crate::{
 };
 
 /// A ratio between two numbers, with arbitrary numeric type as field.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Ratio<T> {
     numer: T,

@@ -9,7 +9,7 @@ use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAss
 use crate::ops::{CheckedAdd, CheckedDiv, CheckedNeg, CheckedSub, NegAssign};
 
 /// A two-dimensional vector, with arbitrary numeric type as field.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct Vector2<T> {
     x: T,
     y: T,
@@ -191,15 +191,6 @@ impl<T: CheckedNeg<Output = T> + Clone> CheckedNeg for Vector2<T> {
         })
     }
 }
-
-impl<T: PartialEq> PartialEq for Vector2<T> {
-    #[inline]
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y
-    }
-}
-
-impl<T: Eq> Eq for Vector2<T> {}
 
 #[cfg(feature = "maplike")]
 impl_maplike_traits_for_scalar!(T, Vector2);

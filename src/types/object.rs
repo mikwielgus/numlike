@@ -10,7 +10,7 @@ use core::ops::{
 };
 
 /// A wrapper to turn this library's trait methods into inherent methods.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Object<B>(pub(crate) B);
 
