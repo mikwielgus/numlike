@@ -209,4 +209,7 @@ impl<B: ShrAssign> ShrAssign for Object<B> {
 #[cfg(feature = "maplike")]
 impl_maplike_traits_for_scalar!(T, Object);
 
+#[cfg(feature = "undoredo")]
+impl_undoredo_traits_for_scalar!(T, Object);
+
 // TODO: the remaining traits.

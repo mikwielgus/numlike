@@ -1048,4 +1048,7 @@ impl<T: CheckedAbs<Output = T>> CheckedAbs for Ratio<T> {
 #[cfg(feature = "maplike")]
 impl_maplike_traits_for_scalar!(T, Ratio);
 
+#[cfg(feature = "undoredo")]
+impl_undoredo_traits_for_scalar!(T, Ratio);
+
 // TODO: the remaining traits.

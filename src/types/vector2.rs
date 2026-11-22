@@ -204,4 +204,7 @@ impl<T: Eq> Eq for Vector2<T> {}
 #[cfg(feature = "maplike")]
 impl_maplike_traits_for_scalar!(T, Vector2);
 
+#[cfg(feature = "undoredo")]
+impl_undoredo_traits_for_scalar!(T, Vector2);
+
 // TODO: the remaining traits.

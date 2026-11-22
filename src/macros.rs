@@ -331,3 +331,25 @@ macro_rules! impl_maplike_traits_for_scalar {
         }
     };
 }
+
+#[cfg(feature = "undoredo")]
+macro_rules! impl_undoredo_traits_for_scalar {
+    ($t:ident, $type:ident) => {
+        impl<$t> ::undoredo::ApplyDelta<::undoredo::alloc::collections::BTreeMap<usize, $type<$t>>>
+            for $type<$t>
+        {
+            #[inline]
+            fn apply_delta(
+                &mut self,
+                delta: ::undoredo::Delta<
+                    ::undoredo::alloc::collections::BTreeMap<usize, $type<$t>>,
+                >,
+            ) {
+                let (_removed, mut inserted) = delta.dissolve();
+                if let Some(value) = inserted.remove(&0) {
+                    *self = value;
+                }
+            }
+        }
+    };
+}
