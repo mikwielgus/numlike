@@ -13,8 +13,8 @@ use crate::{
 };
 
 /// Supertraits shared by all `*Num` traits.
-pub trait NumCommon: Clone + Debug + Default + Bounds {}
-impl<T: Clone + Debug + Default + Bounds> NumCommon for T {}
+pub trait NumCommon: Clone + Bounds + Debug + Default + PartialEq {}
+impl<T: Clone + Bounds + Debug + Default + PartialEq> NumCommon for T {}
 
 /// Has total order, has field operations.
 ///
