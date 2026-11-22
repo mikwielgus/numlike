@@ -367,17 +367,16 @@ impl<B: RcpAssign> Object<B> {
 }
 
 /// Kit of ring operations (addition, subtraction, multiplication, and negation).
-pub trait RingOps<Rhs = Self>:
-    Add<Rhs, Output = Self> + Sub<Rhs, Output = Self> + Mul<Rhs, Output = Self> + Neg<Output = Self>
+pub trait RingOps<Rhs = Self>: AddGroupOps<Rhs> + Mul<Rhs, Output = Self> {}
+impl<Rhs, T: AddGroupOps<Rhs> + Mul<Rhs, Output = Self>> RingOps<Rhs> for T {}
+
+/// Kit of additive group operations (addition, subtraction, and negation).
+pub trait AddGroupOps<Rhs = Self>:
+    Add<Rhs, Output = Self> + Sub<Rhs, Output = Self> + Neg<Output = Self>
 {
 }
-impl<
-    Rhs,
-    T: Add<Rhs, Output = Self>
-        + Sub<Rhs, Output = Self>
-        + Mul<Rhs, Output = Self>
-        + Neg<Output = Self>,
-> RingOps<Rhs> for T
+impl<Rhs, T: Add<Rhs, Output = Self> + Sub<Rhs, Output = Self> + Neg<Output = Self>>
+    AddGroupOps<Rhs> for T
 {
 }
 

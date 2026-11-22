@@ -300,19 +300,20 @@ impl<B: CheckedRcp<Output = B>> Object<B> {
 
 /// Kit of checked ring operations.
 pub trait CheckedRingOps<Rhs = Self>:
-    CheckedAdd<Rhs, Output = Self>
-    + CheckedSub<Rhs, Output = Self>
-    + CheckedMul<Rhs, Output = Self>
-    + CheckedNeg<Output = Self>
+    CheckedAddGroupOps<Rhs> + CheckedMul<Rhs, Output = Self>
+{
+}
+impl<Rhs, T: CheckedAddGroupOps<Rhs> + CheckedMul<Rhs, Output = Self>> CheckedRingOps<Rhs> for T {}
+
+/// Kit of checked additive group operations (addition, subtraction, and negation).
+pub trait CheckedAddGroupOps<Rhs = Self>:
+    CheckedAdd<Rhs, Output = Self> + CheckedSub<Rhs, Output = Self> + CheckedNeg<Output = Self>
 {
 }
 impl<
     Rhs,
-    T: CheckedAdd<Rhs, Output = Self>
-        + CheckedSub<Rhs, Output = Self>
-        + CheckedMul<Rhs, Output = Self>
-        + CheckedNeg<Output = Self>,
-> CheckedRingOps<Rhs> for T
+    T: CheckedAdd<Rhs, Output = Self> + CheckedSub<Rhs, Output = Self> + CheckedNeg<Output = Self>,
+> CheckedAddGroupOps<Rhs> for T
 {
 }
 

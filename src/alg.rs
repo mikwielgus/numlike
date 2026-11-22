@@ -9,7 +9,7 @@ use core::fmt::Debug;
 use crate::{
     elem::{One, Zero},
     limits::Bounds,
-    ops::{FieldOps, RingOps},
+    ops::{AddGroupOps, FieldOps, RingOps},
 };
 
 /// Supertraits shared by all `*Num` traits.
@@ -64,7 +64,7 @@ impl<T: Zero + One + FieldOps + Sized> FieldKit for T {}
 pub trait FieldKitNum: NumCommon + FieldKit {}
 impl<T: NumCommon + TofieldKit> FieldKitNum for T {}
 
-/// Set of field operations and common sensible num traits.
+/// Kit of field operations and common sensible num traits.
 pub trait FieldOpsNum: NumCommon + FieldOps {}
 impl<T: NumCommon + FieldOps> FieldOpsNum for T {}
 
@@ -116,6 +116,10 @@ impl<T: Zero + One + RingOps + Sized> RingKit for T {}
 pub trait RingKitNum: NumCommon + RingKit {}
 impl<T: NumCommon + PoringKit> RingKitNum for T {}
 
-/// Set of ring operations and common sensible num traits.
+/// Kit of ring operations and common sensible num traits.
 pub trait RingOpsNum: NumCommon + RingOps {}
 impl<T: NumCommon + RingOps> RingOpsNum for T {}
+
+/// Kit of group operations and common sensible num traits.
+pub trait AddGroupOpsNum: NumCommon + AddGroupOps {}
+impl<T: NumCommon + AddGroupOps> AddGroupOpsNum for T {}

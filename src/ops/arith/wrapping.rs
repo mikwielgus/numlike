@@ -312,19 +312,24 @@ impl<B: WrappingDiv<Output = B>> Object<B> {
 
 /// Kit of wrapping ring operations.
 pub trait WrappingRingOps<Rhs = Self>:
-    WrappingAdd<Rhs, Output = Self>
-    + WrappingSub<Rhs, Output = Self>
-    + WrappingMul<Rhs, Output = Self>
-    + WrappingNeg<Output = Self>
+    WrappingAddGroupOps<Rhs> + WrappingMul<Rhs, Output = Self>
+{
+}
+impl<Rhs, T: WrappingAddGroupOps<Rhs> + WrappingMul<Rhs, Output = Self>> WrappingRingOps<Rhs>
+    for T
+{
+}
+
+/// Kit of wrapping additive group operations (addition, subtraction, and
+/// negation).
+pub trait WrappingAddGroupOps<Rhs = Self>:
+    WrappingAdd<Rhs, Output = Self> + WrappingSub<Rhs, Output = Self> + WrappingNeg<Output = Self>
 {
 }
 impl<
     Rhs,
-    T: WrappingAdd<Rhs, Output = Self>
-        + WrappingSub<Rhs, Output = Self>
-        + WrappingMul<Rhs, Output = Self>
-        + WrappingNeg<Output = Self>,
-> WrappingRingOps<Rhs> for T
+    T: WrappingAdd<Rhs, Output = Self> + WrappingSub<Rhs, Output = Self> + WrappingNeg<Output = Self>,
+> WrappingAddGroupOps<Rhs> for T
 {
 }
 

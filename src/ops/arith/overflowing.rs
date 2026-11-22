@@ -357,9 +357,19 @@ impl<B: OverflowingRcp<Output = B>> Object<B> {
 
 /// Kit of overflowing ring operations.
 pub trait OverflowingRingOps<Rhs = Self>:
+    OverflowingAddGroupOps<Rhs> + OverflowingMul<Rhs, Output = Self>
+{
+}
+impl<Rhs, T: OverflowingAddGroupOps<Rhs> + OverflowingMul<Rhs, Output = Self>>
+    OverflowingRingOps<Rhs> for T
+{
+}
+
+/// Kit of overflowing additive group operations (addition, subtraction, and
+/// negation).
+pub trait OverflowingAddGroupOps<Rhs = Self>:
     OverflowingAdd<Rhs, Output = Self>
     + OverflowingSub<Rhs, Output = Self>
-    + OverflowingMul<Rhs, Output = Self>
     + OverflowingNeg<Output = Self>
 {
 }
@@ -367,9 +377,8 @@ impl<
     Rhs,
     T: OverflowingAdd<Rhs, Output = Self>
         + OverflowingSub<Rhs, Output = Self>
-        + OverflowingMul<Rhs, Output = Self>
         + OverflowingNeg<Output = Self>,
-> OverflowingRingOps<Rhs> for T
+> OverflowingAddGroupOps<Rhs> for T
 {
 }
 
