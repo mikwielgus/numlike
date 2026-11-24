@@ -12,8 +12,8 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 
 # numlike
 
-Numeric traits for generic mathematics. More fine-grained,
-less restrictive and less conservative alternative to
+Numeric traits for abstract algebra and generic mathematics. More
+fine-grained, less restrictive and less conservative alternative to
 [`num-traits`](https://docs.rs/num-traits/latest/num_traits/).
 
 This crate has no `unsafe` code and has only one mandatory dependency, `pastey`,
