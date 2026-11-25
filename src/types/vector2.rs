@@ -49,6 +49,26 @@ impl<T> Vector2<T> {
     }
 }
 
+impl<T: Add<Output = T> + Mul<Output = T>> Vector2<T> {
+    /// Returns the dot product of two 2D vectors.
+    ///
+    /// perp_dot = x1 * y1 + x2 * y2
+    #[inline]
+    pub fn dot(self, other: Self) -> T {
+        self.x * other.x + self.y * other.y
+    }
+}
+
+impl<T: Sub<Output = T> + Mul<Output = T>> Vector2<T> {
+    /// Returns the perp dot product of two 2D vectors.
+    ///
+    /// perp_dot = x1 * y2 - y1 * x2
+    #[inline]
+    pub fn perp_dot(self, other: Self) -> T {
+        self.x * other.y - self.y * other.x
+    }
+}
+
 impl<T: Add<Output = T>> Add for Vector2<T> {
     type Output = Self;
 
