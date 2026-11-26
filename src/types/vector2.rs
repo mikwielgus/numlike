@@ -52,7 +52,7 @@ impl<T> Vector2<T> {
 impl<T: Add<Output = T> + Mul<Output = T>> Vector2<T> {
     /// Returns the dot product of two 2D vectors.
     ///
-    /// perp_dot = x1 * y1 + x2 * y2
+    /// `perp_dot = x1 * y1 + x2 * y2`
     #[inline]
     pub fn dot(self, other: Self) -> T {
         self.x * other.x + self.y * other.y
@@ -62,10 +62,24 @@ impl<T: Add<Output = T> + Mul<Output = T>> Vector2<T> {
 impl<T: Sub<Output = T> + Mul<Output = T>> Vector2<T> {
     /// Returns the perp dot product of two 2D vectors.
     ///
-    /// perp_dot = x1 * y2 - y1 * x2
+    /// This is equal to `x1 * y2 - y1 * x2`.
+    ///
+    /// If you want to calculate the perp dot product on differences between
+    /// three consecutive vectors (a common operation), you can use [`tpdp()`]
+    /// instead.
     #[inline]
     pub fn perp_dot(self, other: Self) -> T {
         self.x * other.y - self.y * other.x
+    }
+}
+
+impl<T: Sub<Output = T> + Mul<Output = T> + Clone> Vector2<T> {
+    /// Perp dot product of the vectors `v1 - v0` and `v2 - v0`.
+    ///
+    /// `tpdp` stands for "Ternary Perp Dot Product".
+    #[inline]
+    pub fn tpdp(v0: Self, v1: Self, v2: Self) -> T {
+        (v1 - v0.clone()).perp_dot(v2 - v0)
     }
 }
 
